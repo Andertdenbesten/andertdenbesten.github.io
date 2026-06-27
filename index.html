@@ -503,19 +503,27 @@
                 0 6px 14px -8px rgba(0, 0, 0, .5);
         }
 
-        /* Big, light-faded line icon watermark behind the type */
+        /* Big, faded white duotone icon watermark behind the type.
+           The two tones come from per-shape opacities on the same white. */
         .tile__icon {
             position: absolute;
             top: 7%;
             right: -7%;
             width: 60%;
             height: auto;
-            color: var(--tile-ink);
-            opacity: .14;
+            color: #ffffff;
             z-index: 0;
             pointer-events: none;
             transform-origin: center;
             transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .tile__icon .duo-bg {
+            opacity: .14;
+        }
+
+        .tile__icon .duo-fg {
+            opacity: .32;
         }
 
         .tile:hover .tile__icon {
@@ -604,10 +612,10 @@
 
     <main class="tiles">
         <a class="tile tile--gw" href="guess-who.html">
-            <svg class="tile__icon" viewBox="0 0 100 100" fill="none" stroke="currentColor"
-                stroke-width="8" stroke-linecap="round" aria-hidden="true">
-                <circle cx="42" cy="42" r="30" />
-                <line x1="63" y1="63" x2="90" y2="90" />
+            <svg class="tile__icon" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+                <circle class="duo-bg" cx="50" cy="50" r="48" />
+                <text class="duo-fg" x="50" y="54" text-anchor="middle" dominant-baseline="central"
+                    font-family="Inter, sans-serif" font-weight="900" font-size="76">?</text>
             </svg>
             <span class="tile__text">
                 <span class="tile__sub">Language practice</span>
@@ -615,10 +623,9 @@
             </span>
         </a>
         <a class="tile tile--cc" href="chinese-card-rules.html">
-            <svg class="tile__icon" viewBox="0 0 100 100" fill="none" stroke="currentColor"
-                stroke-width="7" stroke-linejoin="round" aria-hidden="true">
-                <rect x="14" y="26" width="44" height="62" rx="7" transform="rotate(-13 36 57)" />
-                <rect x="42" y="26" width="44" height="62" rx="7" transform="rotate(13 64 57)" />
+            <svg class="tile__icon" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+                <rect class="duo-bg" x="14" y="26" width="44" height="62" rx="7" transform="rotate(-13 36 57)" />
+                <rect class="duo-fg" x="42" y="26" width="44" height="62" rx="7" transform="rotate(13 64 57)" />
             </svg>
             <span class="tile__text">
                 <span class="tile__sub">Game rules</span>
