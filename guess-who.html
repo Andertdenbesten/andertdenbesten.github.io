@@ -184,7 +184,11 @@
   /* vignette as a separate static layer (keeps the heavy mask off the rotating layer) */
   #sunfade{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
     background:radial-gradient(circle at 50% 28%, transparent 0%, transparent 34%, var(--home-bg) 80%); }
-  html[data-screen="home"] #sunburst, html[data-screen="home"] #sunfade{ opacity:1; }
+  /* fixed top fade, only where there's a top safe area (iPhone status bar); 0 height on desktop */
+  #topfade{ position:fixed; top:0; left:0; right:0; z-index:5; pointer-events:none; opacity:0; transition:opacity .35s ease;
+    height:calc(env(safe-area-inset-top, 0px) * 1.5);
+    background:linear-gradient(to bottom, var(--home-bg) 0%, rgba(245,158,26,.5) 50%, rgba(245,158,26,0) 100%); }
+  html[data-screen="home"] #sunburst, html[data-screen="home"] #sunfade, html[data-screen="home"] #topfade{ opacity:1; }
   @keyframes sunspin{ from{ transform:translate(-50%,-50%) rotate(0); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
 
   /* base buttons */
@@ -363,6 +367,7 @@
 <div id="bg" aria-hidden="true"></div>
 <div id="sunburst" aria-hidden="true"></div>
 <div id="sunfade" aria-hidden="true"></div>
+<div id="topfade" aria-hidden="true"></div>
 <div class="wrap">
 
   <!-- SETUP -->
