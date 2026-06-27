@@ -134,6 +134,7 @@
   /* LIGHT (warm) - ook op :root als vangnet */
   :root, [data-mode="light"]{
     --surface:#F3E9C8; --surface-deep:#E2D5AC; --surface-line:#FCF7E6; --surface-soft:#FBF6E4;
+    --pill-bg:#FFFCF2; --pill-deep:#EBE2C6;
     --ink:#3B4A55; --ink-soft:#6E7A84; --muted:#6E7A84;
     --home-bg:#F59E1A; --home-bg2:#ED9410; --home-edge:#CF7D0E;
     --field-bg:#2C8C82; --field-edge:#1C6961;
@@ -149,6 +150,7 @@
   /* DARK */
   [data-mode="dark"]{
     --surface:#2E343F; --surface-deep:#1C212A; --surface-line:#3C4450; --surface-soft:#363D49;
+    --pill-bg:#4A525F; --pill-deep:#2B313B;
     --ink:#ECEEF2; --ink-soft:#9AA4B0; --muted:#9AA4B0;
     /* gekleurde achtergronden blijven ook in dark: sunburst altijd geel, veld blauw */
     --home-bg:#F59E1A; --home-bg2:#ED9410; --home-edge:#CF7D0E;
@@ -277,12 +279,12 @@
   #game{ padding-bottom:calc(94px + env(safe-area-inset-bottom)); }
   .pill{ position:fixed; bottom:calc(12px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%);
     width:min(calc(100% - 20px),440px); z-index:6; display:flex; gap:4px; padding:8px;
-    background:var(--surface); border-radius:var(--r-lg); box-shadow:0 var(--lip) 0 var(--surface-deep), 0 4px 8px -2px rgba(20,30,25,.3); }
+    background:var(--pill-bg); border-radius:var(--r-lg); box-shadow:0 var(--lip) 0 var(--pill-deep), 0 4px 8px -2px rgba(20,30,25,.3); }
   .pill .cell{ flex:1; min-height:54px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
     background:transparent; border:none; box-shadow:none; border-radius:14px; color:var(--ink); padding:6px 2px; min-width:0;
     transition:transform var(--t), background-color var(--t), box-shadow var(--t); }
   .pill .cell:hover{ filter:none; }
-  .pill .cell:active{ transform:translateY(1px); background:var(--surface-deep); box-shadow:inset 0 3px 6px rgba(0,0,0,.2); }
+  .pill .cell:active{ transform:translateY(1px); background:var(--pill-deep); box-shadow:inset 0 3px 6px rgba(0,0,0,.2); }
   .pill .cell svg{ width:22px; height:22px; }
   .pill .cell .clab{ font-family:var(--body); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--ink); opacity:.72; line-height:1; }
   .langpair{ display:flex; align-items:center; gap:3px; font-family:var(--display); font-size:15px; font-weight:600; line-height:1; }
