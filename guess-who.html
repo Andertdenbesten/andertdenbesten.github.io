@@ -252,19 +252,19 @@
     pointer-events:none; }
   .start-row{ display:flex; align-items:stretch; gap:10px; width:min(100%,520px); pointer-events:auto; }
   .start-row #startBtn{ flex:1; min-width:0;
-    box-shadow:0 6px 0 var(--field-edge), 0 14px 24px -4px rgba(20,30,25,.22); }
-  .start-row #startBtn:active{ box-shadow:0 0 0 var(--field-edge), 0 8px 16px -4px rgba(20,30,25,.18); }
+    box-shadow:0 6px 0 var(--field-edge); }
+  .start-row #startBtn:active{ box-shadow:0 0 0 var(--field-edge); }
   .how-icon{ flex:0 0 auto; width:60px; min-height:60px; padding:0; display:flex; align-items:center; justify-content:center;
     background:var(--surface); color:var(--ink); border-radius:var(--r);
-    box-shadow:0 6px 0 var(--surface-deep), 0 14px 24px -4px rgba(20,30,25,.22); }
-  .how-icon:active{ transform:translateY(6px); box-shadow:0 0 0 var(--surface-deep), 0 8px 16px -4px rgba(20,30,25,.18); }
+    box-shadow:0 6px 0 var(--surface-deep); }
+  .how-icon:active{ transform:translateY(6px); box-shadow:0 0 0 var(--surface-deep); }
   .how-icon svg{ width:26px; height:26px; }
 
   /* PILL toolbar */
   #game{ padding-bottom:calc(94px + env(safe-area-inset-bottom)); }
   .pill{ position:fixed; bottom:calc(12px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%);
     width:min(calc(100% - 20px),440px); z-index:6; display:flex; gap:4px; padding:8px;
-    background:var(--surface); border-radius:var(--r-lg); }
+    background:var(--surface); border-radius:var(--r-lg); box-shadow:0 var(--lip) 0 var(--surface-deep); }
   .pill .cell{ flex:1; min-height:54px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
     background:transparent; border:none; box-shadow:none; border-radius:14px; color:var(--ink); padding:6px 2px; min-width:0;
     transition:transform var(--t), background-color var(--t), box-shadow var(--t); }
