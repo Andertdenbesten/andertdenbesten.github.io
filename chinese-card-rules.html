@@ -1,118 +1,1505 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+  CHINEES KAARTEN — Spelregels (one-page)
+  ─────────────────────────────────────────────────────────────────────────────
+  Handover voor Claude Code. Volledig zelfstandig HTML-bestand, geen build,
+  geen externe assets behalve Google Fonts.
 
+  ─── PRODUCTCONTEXT ─────────────────────────────────────────────────────────
+  Spel: Chinees Kaarten — speel je kaarten zo snel mogelijk weg.
+
+  Kernregels die de pagina uitlegt:
+  • Sterkte: 3 (laag) → 4-10 → B → V → H → A → 2 → zwarte joker → rode joker
+  • Begin: speler met schoppen 3 (bij 2 decks: meeste schoppen-3'en)
+  • Formats: Single, Paar, Drie dezelfde, Straat (min. 5), Dubbele straat
+    (2+2+2 aaneengesloten paren), Full house (3+2 — de drie bepaalt sterkte)
+  • Opener kiest format, volgende spelers moeten overtreffen binnen format
+  • Troef: 4 dezelfde, slaat alles. Supertroef: 5-6 dezelfde, slaat een troef
+  • Jokers: alleen als losse kaart. Rood > zwart
+
+  Het woord "bom" wilde de gebruiker niet — vervangen door "Troef/Supertroef".
+  In EN-vertaling wel "Bomb / Super bomb" (internationaal gangbaar).
+
+  Doelgroep: vrienden van de gebruiker, soms iemand die de regels niet kent.
+  Apparaat ligt aan tafel — daarom dark, warm, geen verblindend wit.
+
+  Hosting: GitHub Pages op andert.nl of andertdenbesten.nl.
+
+  ─── DESIGNPRINCIPES ────────────────────────────────────────────────────────
+  1. Sfeer: cozy maar niet kinderlijk. Chocolade-aubergine met lakrood en
+     warm oker. Past bij een Chinees-geïnspireerd spel zonder cliché-elementen.
+     Iteratie: crème (te bleek) → groen+goud (te formeel) → framboos (te lief)
+     → uiteindelijk chocolade-lakrood.
+
+  2. Scanbaarheid boven verbositeit. Formats tonen alleen numerieke patronen
+     (bv. "7 7 7 + 9 9" voor full house), geen lange uitleg.
+
+  3. De demo is het hart. Daar gaat de aandacht naartoe: hier zie je de
+     regels werken. Rest van de pagina is statisch en compact.
+
+  4. Eén doorlopend boekje, niet vier blokken. Alles in één paneel
+     (.booklet) met fijne dividers + gouden ruitje — geeft het gevoel van
+     een spelregelboekje.
+
+  5. Subtiele power: één giant ♠-watermerk (4.5% opacity) rechtsonder als
+     schaal-anker.
+
+  6. Weggehaald tijdens iteratie: Romeinse cijfers per sectie en dark-mode
+     toggle. Pagina is dark-only.
+
+  ─── TYPOGRAFIE ─────────────────────────────────────────────────────────────
+  Drie fonts, elk een eigen rol:
+
+  • Instrument Serif → hero-titel, alle koppen, spelernaam, captions.
+    Theatraal, elegant. "Kaarten" in rood italic valt licht uit de regel
+    (transform: translateY(0.04em)).
+
+  • Fraunces (weight 600) → cijfers/letters OP de speelkaarten zelf.
+    Meer body dan Instrument, leesbaar op kleine kaarten.
+
+  • Plus Jakarta Sans (400-700) → body, UI, kicker, sec-tags, knoppen,
+    joker "JKR"-tekst. Vriendelijke sans met stevigheid.
+
+  ─── KLEUR ──────────────────────────────────────────────────────────────────
+  Donker, warm. Iets donkerder dan gemiddelde dark mode zodat lakrood gloeit.
+  Alle tokens staan in :root als CSS-variabelen — wijzig daar.
+
+  • Basis donker:     #1a110e (bg) → #221712 (bg-warm) → #2e1f17 (elev)
+  • Tekst:            #f5e8d0 (ink) → #d4c2a4 (soft) → #8a7560 (muted)
+  • Accent (lakrood): #d04428 (accent) → #a8341f (deep)
+  • Hooglicht oker:   #c89240 (ocher)
+  • Kaartpapier:      #f5e8c8 met #d2c08a rand
+  • Kaart-zwart:      #1a0f0d
+  • Kaart-rood:       #c43820
+
+  ─── LAYOUT ─────────────────────────────────────────────────────────────────
+  <body>
+    <topbar>        Taal toggle (NL · EN · ع), altijd rechts, altijd LTR
+    <booklet>       Max 720px, dubbele binnenrand (accent-soft)
+      <hero>        Kicker + titel + meta-line (Spelregels / Editie i)
+      <sec>         Sterkte    — 2 rijen rank-blokjes, geen scroll
+      <sec>         Formats    — verticale lijst, 6 rijen (naam | patroon | tag)
+      <sec>         Troef      — 2 kolommen + joker-bar
+      <sec>         Demo       — stage met animaties, progress, controls
+      <colofon>     Suit-symbols + footer
+
+  Sec-dividers: horizontale lijn met gouden ruitje (::before op .sec).
+  Eerste sectie na hero krijgt geen extra divider.
+
+  ─── INTERACTIE & ANIMATIE ──────────────────────────────────────────────────
+  Taal-toggle:
+    - data-lang attribuut op <html> + dir="rtl" voor Arabisch
+    - applyLanguage(lang) update alle [data-i18n] elementen
+    - Keuze in localStorage (key: 'ck-lang')
+    - Topbar zelf altijd LTR — knoppen verschuiven niet bij taalwissel
+
+  Voorbeeldronde (7 stappen, DEMO_STEPS array):
+    - Dealen: nieuwe kaarten vliegen vanaf boven met staggered timing
+    - Vorige zet als gestapelde fan (.stage-prev), kleiner + dimmed
+    - Drift: bij elke nieuwe zet schuift vorige stapel kort 350ms naar
+      linksonder en de kaarten waaieren extra uit — alsof aangestoten
+    - Speler-naam flip-in (@keyframes flipIn)
+    - Troef glow: rode radial spotlight op stage
+    - Supertroef: pulsende glow (@keyframes pulse)
+    - Pas: pill met ✕ ipv kaarten, vorige stapel blijft
+
+  @media (prefers-reduced-motion: reduce) schakelt alles uit.
+
+  ─── I18N ───────────────────────────────────────────────────────────────────
+  Drie talen: NL (default), EN, AR.
+
+  Implementatie:
+    - I18N = { nl: {...}, en: {...}, ar: {...} }
+    - t(key) met NL als fallback
+    - Statische strings: data-i18n="key" → applyLanguage() vervangt innerHTML
+    - Dynamisch (formats, captions, speler): via t() in build-functies
+    - Arabische cijfers ٠-٩ via localizeNumber(n)
+
+  RTL voor Arabisch flipt tekst-flow, MAAR kaartrijen/ladder/patterns blijven
+  LTR (cijfers en speelkaarten zijn universeel). Zie [dir="rtl"] selectors.
+
+  Titel-vertaling met inline HTML: 'title.html' bevat <em> zodat het juiste
+  woord italic wordt per taal. In AR is dat صيني (Chinees), niet ورق (kaarten).
+
+  AANDACHTSPUNT: Arabische vertalingen leunen naar MSA. Gebruiker (Andert)
+  leert Levantijns dialect en kan I18N.ar later aanpassen naar spreektaal.
+
+  ─── CODESTRUCTUUR ──────────────────────────────────────────────────────────
+  <head>
+    - Meta + Google Fonts
+    - <style> ~750 regels, blok-geordend (vars → body → topbar → booklet
+      → hero → sec → ladder → formats → troef → card → stage → animaties → RTL)
+  <body>
+    - <main> met topbar + <article class="booklet">
+  <script> ~400 regels
+    - I18N + helpers (t, localizeNumber, applyLanguage)
+    - renderCard(code) — SVG voor één kaart
+      Codes: '3s', '10h', 'Ad', 'JOKr', 'JOKb'
+      Suits: s=schoppen, h=harten, d=ruiten, c=klaver
+      Rank-labels: B/V/H/A/2 (Nederlands via RANK_LABEL map)
+    - buildStrengthRow / buildFormats / buildTroef — statische bouw
+    - DEMO_STEPS + renderDemoStep / renderInitial — demo logica
+    - Event listeners (next, prev, reset)
+    - setupToggles() — taal + localStorage
+    - DOMContentLoaded init
+
+  ─── WAT NOG OPEN STAAT ─────────────────────────────────────────────────────
+  Voor de gebruiker:
+    1. Arabische vertalingen reviewen (Levantijns dialect i.p.v. MSA)
+    2. Hosting opzetten — DNS via vader (domain reseller), GitHub Pages
+    3. Favicon — rood ♠ op donker zou passen
+    4. Open Graph tags voor delen via WhatsApp/Slack
+
+  Mogelijke uitbreidingen:
+    - localStorage van laatste demo-positie bij herladen
+    - Print-stylesheet voor fysieke versie
+    - Geluidseffecten bij dealen (uit-default, met toggle)
+
+  Bekende beperkingen:
+    - Zeer smalle viewports (<340px) krappe sterkte-ladder (geaccepteerd)
+    - Stapel-animatie heeft hardcoded rotaties voor max 6 kaarten — bij
+      langere zetten (7-kaart straat) zijn extra kaarten minder uitgewaaierd
+═══════════════════════════════════════════════════════════════════════════════
+-->
+<html lang="nl" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chinese Card Game Rules - Andert den Besten</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chinese Kaarten — Spelregels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Chocolade + lakrood, ietsje donkerder voor meer drama */
+    --bg: #1a110e;
+    --bg-warm: #221712;
+    --bg-soft: #1c130f;
+    --bg-elev: #2e1f17;
+    --ink: #f5e8d0;
+    --ink-soft: #d4c2a4;
+    --ink-muted: #8a7560;
+    --line: #3a2820;
+    --line-soft: #251812;
 
-    <style>
-        @import url(https://rsms.me/inter/inter.css);
+    --accent: #d04428;          /* iets feller lakrood */
+    --accent-deep: #a8341f;
+    --accent-soft: rgba(208, 68, 40, 0.25);
+    --accent-glow: rgba(208, 68, 40, 0.5);
+    --ocher: #c89240;           /* warm oker voor hooglichten */
 
-        :root {
-            --alpha-value: .85;
-            --color-dark: #000000;
-            --color-primary-light: #fdfff0;
-            --color-primary-light-fade: rgb(253, 255, 240, var(--alpha-value));
-            --color-primary: #2f7444;
-            --color-primary-fade: rgb(47, 116, 68, var(--alpha-value));
-            --color-primary-dark: #13302c;
-            font-size: 16px;
-        }
+    --card-bg: #f5e8c8;
+    --card-bg-edge: #d2c08a;
+    --card-black: #1a0f0d;
+    --card-red: #c43820;
 
-        * {
-            box-sizing: border-box;
-        }
+    --font-display: 'Instrument Serif', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-        html {
-            background: var(--color-primary-light);
-            color: var(--color-primary-dark);
-            font-family: "Inter", sans-serif;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+    --radius: 10px;
+    --card-shadow: 0 2px 4px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35);
+  }
 
-        @media (prefers-color-scheme: dark) {
-            html {
-                background: var(--color-primary-dark);
-                color: var(--color-primary-light);
-            }
-        }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
 
-        body {
-            margin: 0;
-        }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 15% 0%, rgba(208, 68, 40, 0.16), transparent 55%),
+      radial-gradient(ellipse at 85% 100%, rgba(200, 146, 64, 0.08), transparent 55%);
+    background-attachment: fixed;
+    color: var(--ink);
+    line-height: 1.5;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
 
-        main {
-            max-width: 48rem;
-            margin: 0 auto;
-            padding: 3rem 1.25rem 5rem;
-        }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
 
-        h1 {
-            font-size: clamp(2.25rem, calc(4 / 60 * 100vw), 3.5rem);
-            font-weight: 800;
-            line-height: 1.2;
-            margin: 0 0 1rem;
-        }
+  main { position: relative; z-index: 1; }
 
-        h2 {
-            font-size: clamp(1.4rem, calc(2 / 60 * 100vw), 1.85rem);
-            font-weight: 600;
-            line-height: 1.3;
-            margin: 2.5rem 0 .75rem;
-        }
+  /* ============ TOPBAR — toggles ============ */
+  .topbar {
+    max-width: 720px;
+    margin: 16px auto 0;
+    padding: 0 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    direction: ltr;
+  }
+  .toggle-group {
+    display: inline-flex;
+    direction: ltr;
+    background: var(--bg-warm);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .toggle-btn {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+    line-height: 1;
+  }
+  .toggle-btn:hover { color: var(--ink); }
+  .toggle-btn.is-active {
+    background: var(--accent);
+    color: var(--card-bg);
+  }
 
-        h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 1.75rem 0 .5rem;
-        }
+  /* ============ HET BOEKJE ============ */
+  .booklet {
+    max-width: 720px;
+    margin: 12px auto 40px;
+    padding: 38px 28px 40px;
+    background: linear-gradient(180deg, var(--bg-warm) 0%, var(--bg-soft) 100%);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.04) inset,
+      0 30px 60px -20px rgba(0,0,0,0.65),
+      0 12px 24px -12px rgba(0,0,0,0.45);
+    position: relative;
+    overflow: hidden;
+  }
+  .booklet::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px solid var(--accent-soft);
+    border-radius: 11px;
+    pointer-events: none;
+    z-index: 1;
+  }
 
-        p,
-        li {
-            font-size: 1.05rem;
-        }
+  /* Giant watermark op de achtergrond */
+  .booklet::after {
+    content: "♠";
+    position: absolute;
+    bottom: -80px;
+    right: -40px;
+    font-family: var(--font-display);
+    font-size: 24rem;
+    line-height: 0.7;
+    color: var(--accent);
+    opacity: 0.045;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+  .booklet > * { position: relative; z-index: 2; }
 
-        ul,
-        ol {
-            padding-left: 1.5rem;
-        }
+  @media (max-width: 520px) {
+    .booklet {
+      margin: 14px 10px 24px;
+      padding: 24px 18px 28px;
+      border-radius: 14px;
+    }
+    .booklet::before {
+      inset: 5px;
+      border-radius: 9px;
+    }
+    .booklet::after {
+      font-size: 16rem;
+      bottom: -50px;
+      right: -20px;
+    }
+  }
 
-        li {
-            margin-bottom: .4rem;
-        }
+  /* ============ HERO ============ */
+  .hero {
+    text-align: center;
+    padding: 4px 0 14px;
+    position: relative;
+  }
+  .hero .crest {
+    font-size: 0.9rem;
+    letter-spacing: 0.5em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    text-indent: 0.5em;
+    opacity: 0.85;
+  }
+  .hero .kicker {
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 10vw, 4rem);
+    line-height: 0.9;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+    display: inline-block;
+    transform: translateY(0.04em);
+  }
+  .hero .meta-line {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-body);
+    font-size: 0.66rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 700;
+  }
+  .hero .meta-line .ocher { color: var(--ocher); }
 
-        a {
-            color: var(--color-primary);
-            text-decoration: none;
-            transition: .22s ease;
-        }
+  /* ============ SECTION ============ */
+  .sec {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-soft);
+    position: relative;
+  }
+  .sec::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+    opacity: 0.7;
+  }
+  /* Eerste sectie na de hero heeft al de hero meta-line erboven */
+  .hero + .sec {
+    margin-top: 24px;
+  }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .sec-head h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 4vw, 1.7rem);
+    margin: 0;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .sec-tag {
+    margin-left: auto;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 700;
+  }
 
-        @media (prefers-color-scheme: dark) {
-            a {
-                color: #70c9d9;
-            }
-        }
+  /* ============ STERKTE ============ */
+  .ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 0;
+  }
+  .ladder-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  .rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 32px;
+    padding: 0 8px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.1rem;
+    color: var(--ink);
+    flex: 0 0 auto;
+  }
+  .rank.joker {
+    color: var(--card-black);
+    background: var(--card-bg);
+    border-color: var(--card-bg-edge);
+    font-family: var(--font-body);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    padding: 0 8px;
+    font-weight: 700;
+  }
+  .rank.joker.red { color: var(--accent); }
+  .step {
+    color: var(--ink-muted);
+    font-size: 0.75rem;
+    opacity: 0.35;
+  }
+  .ladder-hint {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding: 0 4px;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .ladder-hint .high { color: var(--accent); }
 
-        a:hover {
-            text-decoration: underline;
-        }
+  /* ============ FORMATS ============ */
+  .formats {
+    display: flex;
+    flex-direction: column;
+  }
+  .format {
+    display: grid;
+    grid-template-columns: minmax(110px, 32%) 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 4px;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+  .format:last-child { border-bottom: none; }
+  .format-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.005em;
+  }
+  .format-pattern {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  .slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 28px;
+    padding: 0 8px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .sep {
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.78rem;
+    opacity: 0.5;
+    padding: 0 2px;
+  }
+  .sep.run {
+    color: var(--accent);
+    opacity: 0.8;
+  }
+  .format-tag {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1rem;
+    color: var(--ocher);
+    justify-self: end;
+  }
+  @media (max-width: 480px) {
+    .format {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      gap: 4px 10px;
+    }
+    .format-pattern {
+      grid-column: 1 / -1;
+      order: 3;
+    }
+  }
 
-        .lead {
-            font-size: 1.2rem;
-            opacity: .85;
-            margin-bottom: 2rem;
-        }
-    </style>
+  /* ============ TROEF ============ */
+  .troef {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .troef-card {
+    padding: 12px 14px;
+    border: 1px solid var(--accent-soft);
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(183, 62, 45, 0.08), transparent 70%);
+    position: relative;
+  }
+  .troef-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.3rem;
+    color: var(--accent);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .troef-rule {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    margin-bottom: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .troef-cards {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+  .troef-cards .card { width: 26px; height: 36px; }
+
+  .joker-bar {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-top: 1px dashed var(--line-soft);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .joker-bar .cards { display: flex; gap: 2px; }
+  .joker-bar .card { width: 28px; height: 39px; }
+  .joker-bar p {
+    flex: 1;
+    min-width: 160px;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .joker-bar strong { color: var(--ink); font-weight: 600; }
+
+  /* ============ CARD SVG ============ */
+  .card {
+    display: inline-block;
+    width: 36px;
+    height: 50px;
+    vertical-align: middle;
+    filter: drop-shadow(var(--card-shadow));
+  }
+
+  /* ============ DEMO — DE TAFEL ============ */
+  .stage {
+    background:
+      radial-gradient(ellipse at center top, #3a2128 0%, #2a181d 65%, #1d1117 100%);
+    border-radius: 14px;
+    padding: 18px 16px 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      inset 0 2px 14px rgba(0,0,0,0.55),
+      inset 0 0 0 1px rgba(255,255,255,0.04),
+      inset 0 0 0 6px rgba(0,0,0,0.18);
+    min-height: 220px;
+  }
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  /* Spotlight overlay (komt op bij troef) */
+  .stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center 60%, var(--accent-glow), transparent 60%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .stage.glow::after { opacity: 0.8; }
+  .stage.glow-strong::after {
+    opacity: 1;
+    background: radial-gradient(circle at center 60%, var(--accent-glow), transparent 50%);
+    animation: pulse 1.2s ease-in-out;
+  }
+  @keyframes pulse {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+
+  .stage-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 2;
+  }
+  .stage-player {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.3rem;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .stage-player .num {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .stage-player.flip {
+    animation: flipIn 0.4s ease;
+  }
+  @keyframes flipIn {
+    0%   { opacity: 0; transform: translateY(-6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Format-pill is nu de caption onderin */
+  .stage-caption {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(255,255,255,0.1);
+    position: relative;
+    z-index: 2;
+    min-height: 22px;
+    display: flex;
+    align-items: center;
+  }
+  .stage-format {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.005em;
+    line-height: 1.3;
+    transition: color 0.3s ease;
+  }
+  .stage-format.is-troef {
+    color: var(--ocher);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  /* Speelvloer — relatieve container voor stapeling */
+  .stage-floor {
+    position: relative;
+    z-index: 1;
+    min-height: 80px;
+  }
+
+  /* Vorige zet — blijft als stapel zichtbaar onder de nieuwe */
+  .stage-prev {
+    position: absolute;
+    top: 2px;
+    left: 14px;
+    display: flex;
+    gap: 3px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transform: rotate(-3deg) translateX(0);
+    filter: brightness(0.85) saturate(0.85);
+    transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  .stage-prev .card {
+    width: 32px;
+    height: 44px;
+    transition: transform 0.55s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  /* Kaarten in de stapel waaieren licht uit — gebruikt bij elke nieuwe zet */
+  .stage-prev .card:nth-child(1) { transform: rotate(-2.5deg) translateY(0); }
+  .stage-prev .card:nth-child(2) { transform: rotate(-0.8deg) translateY(1px); }
+  .stage-prev .card:nth-child(3) { transform: rotate(1deg)    translateY(-0.5px); }
+  .stage-prev .card:nth-child(4) { transform: rotate(2.2deg)  translateY(1.5px); }
+  .stage-prev .card:nth-child(5) { transform: rotate(3deg)    translateY(0.5px); }
+  .stage-prev .card:nth-child(6) { transform: rotate(-1.5deg) translateY(2px); }
+
+  /* Settling — basis stand */
+  .stage-prev.settling {
+    opacity: 0.7;
+    transform: rotate(-2deg) translateX(0);
+  }
+  /* Drift — komt op zodra een nieuwe zet erbij landt: stapel schuift naar linksonder */
+  .stage-prev.drift {
+    opacity: 0.5;
+    transform: rotate(-5deg) translate(-6px, 3px);
+  }
+  .stage-prev.drift .card:nth-child(1) { transform: rotate(-4deg) translateY(1px); }
+  .stage-prev.drift .card:nth-child(2) { transform: rotate(-1.5deg) translateY(2px); }
+  .stage-prev.drift .card:nth-child(3) { transform: rotate(1.8deg) translateY(0); }
+  .stage-prev.drift .card:nth-child(4) { transform: rotate(3.5deg) translateY(2.5px); }
+  .stage-prev.drift .card:nth-child(5) { transform: rotate(4.5deg) translateY(1.5px); }
+  .stage-prev.drift .card:nth-child(6) { transform: rotate(-2deg) translateY(3px); }
+
+  /* Nieuwe kaarten boven de stapel */
+  .stage-cards {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    min-height: 56px;
+    padding-left: 6px;
+    transition: padding-top 0.3s ease;
+  }
+  /* Extra ruimte bovenaan zodra er een vorige stapel ligt zodat die leesbaar uitsteekt */
+  .stage-floor.has-prev .stage-cards {
+    padding-top: 30px;
+  }
+  .stage-cards .card { width: 40px; height: 56px; }
+  .stage-empty {
+    color: var(--ink-muted);
+    font-style: italic;
+    font-size: 0.88rem;
+    opacity: 0.7;
+  }
+
+  /* Inkomende kaart — vliegt vanaf bovenaf naar zijn plek */
+  @keyframes deal {
+    0%   {
+      opacity: 0;
+      transform: translateY(-80px) translateX(var(--tx, -20px)) rotate(var(--rot, -18deg)) scale(0.85);
+    }
+    60%  {
+      opacity: 1;
+      transform: translateY(4px) translateX(0) rotate(2deg) scale(1.04);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) translateX(0) rotate(var(--final-rot, 0deg)) scale(1);
+    }
+  }
+  .stage-cards.dealing .card {
+    animation: deal 0.5s cubic-bezier(0.2, 0.7, 0.3, 1.1) both;
+  }
+  .stage-cards.dealing .card:nth-child(1) { --tx: -30px; --rot: -22deg; --final-rot: -1.5deg; animation-delay: 0.0s; }
+  .stage-cards.dealing .card:nth-child(2) { --tx: -10px; --rot: -8deg;  --final-rot: 0.5deg;  animation-delay: 0.08s; }
+  .stage-cards.dealing .card:nth-child(3) { --tx: 10px;  --rot: 8deg;   --final-rot: -0.8deg; animation-delay: 0.16s; }
+  .stage-cards.dealing .card:nth-child(4) { --tx: 30px;  --rot: 16deg;  --final-rot: 1deg;    animation-delay: 0.24s; }
+  .stage-cards.dealing .card:nth-child(5) { --tx: -25px; --rot: -14deg; --final-rot: -0.4deg; animation-delay: 0.32s; }
+  .stage-cards.dealing .card:nth-child(6) { --tx: 25px;  --rot: 12deg;  --final-rot: 0.6deg;  animation-delay: 0.40s; }
+  .stage-cards.dealing .card:nth-child(7) { --tx: -15px; --rot: -6deg;  --final-rot: -0.2deg; animation-delay: 0.48s; }
+
+  /* Past — toon een floating tekst die wegfade-t */
+  .pass-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--bg-elev);
+    border: 1px dashed var(--line);
+    border-radius: 999px;
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: 0.9rem;
+    animation: passIn 0.4s ease;
+  }
+  .pass-bubble::before {
+    content: "✕";
+    color: var(--accent);
+    font-style: normal;
+    opacity: 0.7;
+  }
+  @keyframes passIn {
+    0%   { opacity: 0; transform: scale(0.7) rotate(-4deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  /* Progress bar */
+  .stage-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .stage-progress-track {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-elev);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .stage-progress-track::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--progress, 0%);
+    background: linear-gradient(to right, var(--accent-deep), var(--accent));
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.2, 0.7, 0.3, 1);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .stage-progress-label {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    min-width: 40px;
+    text-align: right;
+  }
+
+  .stage-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 7px 16px;
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    color: var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+  .btn:hover { background: var(--bg-soft); border-color: var(--ink-muted); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn:disabled:hover { background: var(--bg-elev); border-color: var(--line); }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--card-bg);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .btn-primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
+  @media (max-width: 520px) {
+    .stage-controls {
+      gap: 6px;
+    }
+    .stage-controls .btn {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 11px 12px;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+  }
+
+  /* ============ COLOFON ============ */
+  .colofon {
+    text-align: center;
+    margin-top: 28px;
+    color: var(--ink-muted);
+    font-size: 0.72rem;
+  }
+  .colofon .suits {
+    color: var(--accent);
+    letter-spacing: 0.4em;
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+
+  /* RTL: tekst flow mirror-t, maar kaart/cijfer-rijen blijven LTR */
+  [dir="rtl"] .ladder-row,
+  [dir="rtl"] .format-pattern,
+  [dir="rtl"] .troef-cards,
+  [dir="rtl"] .stage-cards,
+  [dir="rtl"] .stage-prev,
+  [dir="rtl"] .joker-bar .cards {
+    direction: ltr;
+  }
+  [dir="rtl"] .stage-progress-label {
+    text-align: left;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage-cards.dealing .card,
+    .stage-prev,
+    .stage-player.flip,
+    .pass-bubble,
+    .stage.glow-strong::after { transition: none; animation: none; }
+  }
+</style>
 </head>
-
 <body>
-    <main>
-        <h1>Chinese Card Game Rules</h1>
-        <p class="lead">Rules and how to play. Content coming soon.</p>
-    </main>
-</body>
+<main>
+  <div class="topbar">
+    <div class="toggle-group" role="group" aria-label="Taal">
+      <button class="toggle-btn is-active" data-lang="nl" aria-pressed="true">NL</button>
+      <button class="toggle-btn" data-lang="en" aria-pressed="false">EN</button>
+      <button class="toggle-btn" data-lang="ar" aria-pressed="false">ع</button>
+    </div>
+  </div>
 
+  <article class="booklet">
+
+    <header class="hero">
+      <div class="kicker" data-i18n="kicker">Het Spel</div>
+      <h1 data-i18n="title.html">Chinees <em>Kaarten</em></h1>
+      <div class="meta-line">
+        <span data-i18n="meta.left">Spelregels</span>
+        <span class="ocher" data-i18n="meta.right">Editie i</span>
+      </div>
+    </header>
+
+    <!-- ============ STERKTE ============ -->
+    <section class="sec" id="strength">
+      <div class="sec-head">
+        <h2 data-i18n="sec.strength">Sterkte</h2>
+        <span class="sec-tag" data-i18n="sec.strength.tag">van laag naar hoog</span>
+      </div>
+      <div class="ladder">
+        <div class="ladder-row" id="strengthRow1"></div>
+        <div class="ladder-row" id="strengthRow2"></div>
+      </div>
+      <div class="ladder-hint">
+        <span data-i18n="ladder.low">Laag</span>
+        <span class="high" data-i18n="ladder.high">Hoog</span>
+      </div>
+    </section>
+
+    <!-- ============ FORMATS ============ -->
+    <section class="sec" id="formats">
+      <div class="sec-head">
+        <h2 data-i18n="sec.formats">Formats</h2>
+        <span class="sec-tag" data-i18n="sec.formats.tag">opener bepaalt</span>
+      </div>
+      <div class="formats" id="formatsGrid"></div>
+    </section>
+
+    <!-- ============ TROEF ============ -->
+    <section class="sec" id="troef">
+      <div class="sec-head">
+        <h2 data-i18n="sec.troef">Troef</h2>
+        <span class="sec-tag" data-i18n="sec.troef.tag">slaat alles</span>
+      </div>
+      <div class="troef">
+        <div class="troef-card">
+          <div class="troef-name" data-i18n="troef.name">Troef</div>
+          <div class="troef-rule" data-i18n="troef.rule">4 dezelfde</div>
+          <div class="troef-cards" id="troef4"></div>
+        </div>
+        <div class="troef-card">
+          <div class="troef-name" data-i18n="supertroef.name">Supertroef</div>
+          <div class="troef-rule" data-i18n="supertroef.rule">5 of 6 dezelfde</div>
+          <div class="troef-cards" id="troef5"></div>
+        </div>
+      </div>
+      <div class="joker-bar">
+        <div class="cards" id="jokers"></div>
+        <p data-i18n="jokers.text"><strong>Jokers</strong> alleen als losse kaart. De rode joker is sterker dan de zwarte.</p>
+      </div>
+    </section>
+
+    <!-- ============ DEMO ============ -->
+    <section class="sec" id="demo">
+      <div class="sec-head">
+        <h2 data-i18n="sec.demo">Voorbeeldronde</h2>
+        <span class="sec-tag" data-i18n="sec.demo.tag">klik door</span>
+      </div>
+      <div class="stage" id="stage">
+        <div class="stage-head">
+          <div class="stage-player" id="demoPlayer">—</div>
+        </div>
+        <div class="stage-floor">
+          <div class="stage-prev" id="demoPrev"></div>
+          <div class="stage-cards" id="demoCards">
+            <span class="stage-empty" data-i18n="demo.empty">Druk op start</span>
+          </div>
+        </div>
+        <div class="stage-caption">
+          <span class="stage-format" id="demoFormat"></span>
+        </div>
+      </div>
+      <div class="stage-progress">
+        <div class="stage-progress-track" id="demoProgressTrack"></div>
+        <span class="stage-progress-label" id="demoStep">0 / 7</span>
+      </div>
+      <div class="stage-controls">
+        <button class="btn" id="demoPrevBtn" disabled>Vorige</button>
+        <button class="btn btn-primary" id="demoNext">Start</button>
+        <button class="btn" id="demoReset" disabled>Opnieuw</button>
+      </div>
+    </section>
+
+    <footer class="colofon">
+      <div class="suits">♠ ♥ ♦ ♣</div>
+    </footer>
+
+  </article>
+</main>
+
+<script>
+/* ============================================================
+   I18N
+   ============================================================ */
+const I18N = {
+  nl: {
+    'kicker': 'Het Spel',
+    'title.html': 'Chinees <em>Kaarten</em>',
+    'meta.left': 'Spelregels',
+    'meta.right': 'Editie i',
+    'sec.strength': 'Sterkte',
+    'sec.strength.tag': 'van laag naar hoog',
+    'ladder.low': 'Laag',
+    'ladder.high': 'Hoog',
+    'sec.formats': 'Formats',
+    'sec.formats.tag': 'opener bepaalt',
+    'sec.troef': 'Troef',
+    'sec.troef.tag': 'slaat alles',
+    'troef.name': 'Troef',
+    'troef.rule': '4 dezelfde',
+    'supertroef.name': 'Supertroef',
+    'supertroef.rule': '5 of 6 dezelfde',
+    'jokers.text': '<strong>Jokers</strong> alleen als losse kaart. De rode joker is sterker dan de zwarte.',
+    'sec.demo': 'Voorbeeldronde',
+    'sec.demo.tag': 'klik door',
+    'demo.empty': 'Druk op start',
+    'demo.pass': 'Past',
+    'btn.prev': 'Vorige',
+    'btn.start': 'Start',
+    'btn.next': 'Volgende',
+    'btn.end': 'Einde',
+    'btn.reset': 'Opnieuw',
+    'fmt.single': 'Single',
+    'fmt.pair': 'Paar',
+    'fmt.three': 'Drie',
+    'fmt.straight': 'Straat',
+    'fmt.double-straight': 'Dubbele straat',
+    'fmt.full-house': 'Full house',
+    'player': 'Speler',
+    'step.1': 'Opent met een full house (3+2).',
+    'step.2': 'Overtreft met drie achten.',
+    'step.3': 'Legt er drie boeren overheen.',
+    'step.4': 'Past — heeft geen hogere 3+2.',
+    'step.5': 'Troef! Vier vrouwen breken het format.',
+    'step.6': 'Supertroef. Vijf vijven slaan alles.',
+    'step.7': 'Pakt de stoot en opent met een nieuwe straat.'
+  },
+  en: {
+    'kicker': 'The Game',
+    'title.html': 'Chinese <em>Cards</em>',
+    'meta.left': 'Rules',
+    'meta.right': 'Edition i',
+    'sec.strength': 'Strength',
+    'sec.strength.tag': 'low to high',
+    'ladder.low': 'Low',
+    'ladder.high': 'High',
+    'sec.formats': 'Formats',
+    'sec.formats.tag': 'opener decides',
+    'sec.troef': 'Bomb',
+    'sec.troef.tag': 'beats everything',
+    'troef.name': 'Bomb',
+    'troef.rule': '4 of a kind',
+    'supertroef.name': 'Super bomb',
+    'supertroef.rule': '5 or 6 of a kind',
+    'jokers.text': '<strong>Jokers</strong> only as a single card. The red joker beats the black one.',
+    'sec.demo': 'Example round',
+    'sec.demo.tag': 'click through',
+    'demo.empty': 'Press start',
+    'demo.pass': 'Pass',
+    'btn.prev': 'Back',
+    'btn.start': 'Start',
+    'btn.next': 'Next',
+    'btn.end': 'End',
+    'btn.reset': 'Restart',
+    'fmt.single': 'Single',
+    'fmt.pair': 'Pair',
+    'fmt.three': 'Three of a kind',
+    'fmt.straight': 'Straight',
+    'fmt.double-straight': 'Double straight',
+    'fmt.full-house': 'Full house',
+    'player': 'Player',
+    'step.1': 'Opens with a full house (3+2).',
+    'step.2': 'Beats it with three eights.',
+    'step.3': 'Trumps that with three jacks.',
+    'step.4': 'Passes — no higher 3+2 available.',
+    'step.5': 'Bomb! Four queens break the format.',
+    'step.6': 'Super bomb. Five fives beat everything.',
+    'step.7': 'Takes the trick and opens with a new straight.'
+  },
+  ar: {
+    'kicker': 'اللعبة',
+    'title.html': 'ورق <em>صيني</em>',
+    'meta.left': 'القواعد',
+    'meta.right': 'الإصدار ١',
+    'sec.strength': 'القوة',
+    'sec.strength.tag': 'من الأدنى إلى الأعلى',
+    'ladder.low': 'منخفض',
+    'ladder.high': 'مرتفع',
+    'sec.formats': 'الأنماط',
+    'sec.formats.tag': 'البادئ يقرر',
+    'sec.troef': 'قنبلة',
+    'sec.troef.tag': 'تتفوق على الجميع',
+    'troef.name': 'قنبلة',
+    'troef.rule': '٤ متشابهة',
+    'supertroef.name': 'قنبلة كبرى',
+    'supertroef.rule': '٥ أو ٦ متشابهة',
+    'jokers.text': '<strong>الجوكر</strong> يُلعب فقط كورقة منفردة. الجوكر الأحمر أقوى من الأسود.',
+    'sec.demo': 'جولة مثال',
+    'sec.demo.tag': 'تنقّل بالنقر',
+    'demo.empty': 'اضغط للبدء',
+    'demo.pass': 'تمرير',
+    'btn.prev': 'السابق',
+    'btn.start': 'ابدأ',
+    'btn.next': 'التالي',
+    'btn.end': 'النهاية',
+    'btn.reset': 'إعادة',
+    'fmt.single': 'فردي',
+    'fmt.pair': 'زوج',
+    'fmt.three': 'ثلاثة',
+    'fmt.straight': 'سلسلة',
+    'fmt.double-straight': 'سلسلة مزدوجة',
+    'fmt.full-house': 'بيت كامل',
+    'player': 'لاعب',
+    'step.1': 'يبدأ ببيت كامل (٣+٢).',
+    'step.2': 'يتفوق بثلاث ثمانيات.',
+    'step.3': 'يضع ثلاثة شُبّان فوقها.',
+    'step.4': 'يمرّر — لا يملك ٣+٢ أعلى.',
+    'step.5': 'قنبلة! أربع ملكات تكسر النمط.',
+    'step.6': 'قنبلة كبرى. خمس خمسات تتفوق على الجميع.',
+    'step.7': 'يأخذ الدور ويبدأ بسلسلة جديدة.'
+  }
+};
+
+let currentLang = 'nl';
+const t = (key) => (I18N[currentLang] && I18N[currentLang][key]) || I18N.nl[key] || key;
+
+function applyLanguage(lang) {
+  currentLang = (I18N[lang]) ? lang : 'nl';
+  document.documentElement.setAttribute('lang', currentLang === 'ar' ? 'ar' : currentLang);
+  document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+  // Statische teksten
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.innerHTML = t(key);
+  });
+  // Dynamische onderdelen herbouwen
+  buildFormats();
+  renderDemoStep();
+}
+
+const SUIT_DATA = {
+  s: { symbol: '♠', color: 'var(--card-black)' },
+  h: { symbol: '♥', color: 'var(--card-red)'   },
+  d: { symbol: '♦', color: 'var(--card-red)'   },
+  c: { symbol: '♣', color: 'var(--card-black)' }
+};
+const RANK_LABEL = {
+  '3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10',
+  'J':'B','Q':'V','K':'H','A':'A','2':'2'
+};
+
+function renderCard(code) {
+  if (code.startsWith('JOK')) {
+    const red = code === 'JOKr';
+    const color = red ? 'var(--accent)' : 'var(--card-black)';
+    return `
+      <svg class="card" viewBox="0 0 54 76" xmlns="http://www.w3.org/2000/svg" aria-label="${red?'Rode joker':'Zwarte joker'}">
+        <rect x="1" y="1" width="52" height="74" rx="5" ry="5" fill="var(--card-bg)" stroke="var(--card-bg-edge)" stroke-width="1"/>
+        <rect x="3" y="3" width="48" height="70" rx="3.5" ry="3.5" fill="none" stroke="${color}" stroke-width="0.7" stroke-dasharray="2 1.5" opacity="0.5"/>
+        <text x="6" y="14" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="${color}" letter-spacing="0.5">JKR</text>
+        <text x="27" y="48" text-anchor="middle" font-size="28" fill="${color}">★</text>
+        <g transform="rotate(180 48 63)">
+          <text x="48" y="63" text-anchor="end" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="${color}" letter-spacing="0.5">JKR</text>
+        </g>
+      </svg>
+    `;
+  }
+  const suitChar = code.slice(-1);
+  const rankChar = code.slice(0, -1);
+  const suit = SUIT_DATA[suitChar];
+  const label = RANK_LABEL[rankChar] || rankChar;
+  if (!suit) return '';
+  const rankSize = label.length > 1 ? 13 : 16;
+  return `
+    <svg class="card" viewBox="0 0 54 76" xmlns="http://www.w3.org/2000/svg" aria-label="${label}${suit.symbol}">
+      <rect x="1" y="1" width="52" height="74" rx="5" ry="5" fill="var(--card-bg)" stroke="var(--card-bg-edge)" stroke-width="1"/>
+      <text x="7" y="17" font-family="Fraunces, serif" font-size="${rankSize}" font-weight="600" fill="${suit.color}">${label}</text>
+      <text x="7" y="28" font-size="11" fill="${suit.color}">${suit.symbol}</text>
+      <text x="27" y="50" text-anchor="middle" font-size="30" fill="${suit.color}">${suit.symbol}</text>
+      <g transform="rotate(180 47 60)">
+        <text x="47" y="60" text-anchor="end" font-family="Fraunces, serif" font-size="${rankSize}" font-weight="600" fill="${suit.color}">${label}</text>
+        <text x="47" y="49" text-anchor="end" font-size="11" fill="${suit.color}">${suit.symbol}</text>
+      </g>
+    </svg>
+  `;
+}
+
+/* Sterkte */
+function buildStrengthRow() {
+  const row1 = ['3','4','5','6','7','8','9','10'];
+  const row2 = ['B','V','H','A','2'];
+  const toHtml = ranks => ranks.map(r => `<span class="rank">${r}</span>`).join('<span class="step">·</span>');
+  document.getElementById('strengthRow1').innerHTML = toHtml(row1);
+  document.getElementById('strengthRow2').innerHTML =
+    toHtml(row2) +
+    '<span class="step">·</span><span class="rank joker">JKR ♠</span>' +
+    '<span class="step">·</span><span class="rank joker red">JKR ♥</span>';
+}
+
+/* Formats */
+const FORMATS = [
+  { key: 'fmt.single',          tag: '1',     slots: [['7']] },
+  { key: 'fmt.pair',            tag: '2',     slots: [['8','8']] },
+  { key: 'fmt.three',           tag: '3',     slots: [['9','9','9']] },
+  { key: 'fmt.straight',        tag: '5+',    slots: [['4'],['5'],['6'],['7'],['8']], run: true },
+  { key: 'fmt.double-straight', tag: '2+2+2', slots: [['5','5'],['6','6'],['7','7']], run: true },
+  { key: 'fmt.full-house',      tag: '3+2',   slots: [['7','7','7'],['9','9']] }
+];
+function buildFormats() {
+  const grid = document.getElementById('formatsGrid');
+  grid.innerHTML = FORMATS.map(f => {
+    const slots = f.slots.map((group, i) => {
+      const values = group.join(' ');
+      const sep = i < f.slots.length - 1
+        ? `<span class="sep${f.run ? ' run' : ''}">${f.run ? '·' : '+'}</span>`
+        : '';
+      return `<span class="slot">${values}</span>${sep}`;
+    }).join('');
+    return `
+      <div class="format">
+        <div class="format-name">${t(f.key)}</div>
+        <div class="format-pattern">${slots}</div>
+        <div class="format-tag">${f.tag}</div>
+      </div>
+    `;
+  }).join('');
+}
+function buildTroef() {
+  document.getElementById('troef4').innerHTML = ['Qs','Qh','Qd','Qc'].map(renderCard).join('');
+  document.getElementById('troef5').innerHTML = ['2s','2h','2d','2c','2s'].map(renderCard).join('');
+  document.getElementById('jokers').innerHTML = ['JOKb','JOKr'].map(renderCard).join('');
+}
+
+/* ============================================================
+   DEMO — met animaties
+   ============================================================ */
+const DEMO_STEPS = [
+  { playerNum: 1, captionKey: 'step.1', cards: ['7s','7h','7d','9c','9d'] },
+  { playerNum: 2, captionKey: 'step.2', cards: ['8s','8h','8d','4c','4s'] },
+  { playerNum: 3, captionKey: 'step.3', cards: ['Js','Jh','Jd','3c','3s'] },
+  { playerNum: 4, captionKey: 'step.4', cards: [] },
+  { playerNum: 1, captionKey: 'step.5', cards: ['Qs','Qh','Qd','Qc'],     troef: 'normal' },
+  { playerNum: 2, captionKey: 'step.6', cards: ['5s','5h','5d','5c','5s'], troef: 'super' },
+  { playerNum: 2, captionKey: 'step.7', cards: ['3s','4h','5d','6c','7s'] }
+];
+
+let demoIndex = -1;
+let lastCards = [];
+const dEl = {
+  stage:    document.getElementById('stage'),
+  floor:    document.querySelector('.stage-floor'),
+  player:   document.getElementById('demoPlayer'),
+  format:   document.getElementById('demoFormat'),
+  cards:    document.getElementById('demoCards'),
+  prev:     document.getElementById('demoPrev'),
+  next:     document.getElementById('demoNext'),
+  prevBtn:  document.getElementById('demoPrevBtn'),
+  reset:    document.getElementById('demoReset'),
+  step:     document.getElementById('demoStep'),
+  progress: document.getElementById('demoProgressTrack')
+};
+
+function resetStageClasses() {
+  dEl.stage.classList.remove('glow', 'glow-strong');
+  dEl.format.classList.remove('is-troef');
+  dEl.player.classList.remove('flip');
+}
+
+const AR_DIGITS = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+function localizeNumber(n) {
+  if (currentLang !== 'ar') return String(n);
+  return String(n).split('').map(d => /\d/.test(d) ? AR_DIGITS[Number(d)] : d).join('');
+}
+
+function renderInitial() {
+  resetStageClasses();
+  dEl.player.textContent = '—';
+  dEl.format.textContent = '';
+  dEl.cards.classList.remove('dealing');
+  dEl.cards.innerHTML = `<span class="stage-empty">${t('demo.empty')}</span>`;
+  dEl.prev.innerHTML = '';
+  dEl.prev.classList.remove('settling', 'drift');
+  dEl.floor.classList.remove('has-prev');
+  dEl.step.textContent = `${localizeNumber(0)} / ${localizeNumber(DEMO_STEPS.length)}`;
+  dEl.progress.style.setProperty('--progress', '0%');
+  dEl.next.textContent = t('btn.start');
+  dEl.next.disabled = false;
+  dEl.prevBtn.textContent = t('btn.prev');
+  dEl.prevBtn.disabled = true;
+  dEl.reset.textContent = t('btn.reset');
+  dEl.reset.disabled = true;
+  lastCards = [];
+}
+
+function renderDemoStep() {
+  if (demoIndex < 0) { renderInitial(); return; }
+
+  const step = DEMO_STEPS[demoIndex];
+
+  // 1) Reset glow van vorige stap
+  resetStageClasses();
+
+  // 2) Vorige kaarten als stapel — met "drift" bij elke nieuwe zet
+  if (lastCards.length > 0) {
+    dEl.prev.innerHTML = lastCards.map(renderCard).join('');
+    dEl.prev.classList.add('settling');
+    dEl.floor.classList.add('has-prev');
+    // Drift: korte verschuiving alsof er een nieuwe stapel bovenop landt
+    void dEl.prev.offsetWidth;
+    dEl.prev.classList.add('drift');
+    setTimeout(() => {
+      dEl.prev.classList.remove('drift');
+    }, 350);
+  } else {
+    dEl.prev.innerHTML = '';
+    dEl.prev.classList.remove('settling', 'drift');
+    dEl.floor.classList.remove('has-prev');
+  }
+
+  // 3) Spelernaam met flip-in animatie
+  dEl.player.innerHTML = `${t('player')} <span class="num">${localizeNumber(step.playerNum)}</span>`;
+  void dEl.player.offsetWidth;
+  dEl.player.classList.add('flip');
+
+  // 4) Caption (full sentence)
+  dEl.format.textContent = t(step.captionKey);
+  if (step.troef) dEl.format.classList.add('is-troef');
+
+  // 5) Stage glow bij troef
+  if (step.troef === 'normal') dEl.stage.classList.add('glow');
+  else if (step.troef === 'super') dEl.stage.classList.add('glow-strong');
+
+  // 6) Kaarten — pas of dealen
+  dEl.cards.classList.remove('dealing');
+  dEl.cards.innerHTML = '';
+
+  if (step.cards.length === 0) {
+    setTimeout(() => {
+      dEl.cards.innerHTML = `<span class="pass-bubble">${t('demo.pass')}</span>`;
+    }, 100);
+    // Bij pass blijft de vorige zet wel zichtbaar onder; lastCards niet resetten
+  } else {
+    setTimeout(() => {
+      dEl.cards.innerHTML = step.cards.map(renderCard).join('');
+      void dEl.cards.offsetWidth;
+      dEl.cards.classList.add('dealing');
+    }, lastCards.length > 0 ? 150 : 50);
+    lastCards = step.cards.slice();
+  }
+
+  // 7) UI state
+  const stepNum = demoIndex + 1;
+  dEl.step.textContent = `${localizeNumber(stepNum)} / ${localizeNumber(DEMO_STEPS.length)}`;
+  dEl.progress.style.setProperty('--progress', (stepNum / DEMO_STEPS.length * 100) + '%');
+  dEl.prevBtn.textContent = t('btn.prev');
+  dEl.reset.textContent = t('btn.reset');
+  dEl.reset.disabled = false;
+  dEl.prevBtn.disabled = demoIndex <= 0;
+  const isLast = demoIndex >= DEMO_STEPS.length - 1;
+  dEl.next.textContent = isLast ? t('btn.end') : t('btn.next');
+  dEl.next.disabled = isLast;
+}
+
+dEl.next.addEventListener('click', () => {
+  if (demoIndex < DEMO_STEPS.length - 1) { demoIndex++; renderDemoStep(); }
+});
+dEl.prevBtn.addEventListener('click', () => {
+  if (demoIndex > 0) {
+    demoIndex--;
+    // Bij terug: geen discard-animatie van vorige zet (lastCards leeg)
+    lastCards = [];
+    renderDemoStep();
+  }
+});
+dEl.reset.addEventListener('click', () => { demoIndex = -1; renderDemoStep(); });
+
+/* ============================================================
+   TOGGLES — taal
+   ============================================================ */
+function setupToggles() {
+  const langButtons = document.querySelectorAll('[data-lang]');
+  langButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      applyLanguage(lang);
+      langButtons.forEach(b => {
+        const active = b === btn;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', active);
+      });
+      try { localStorage.setItem('ck-lang', lang); } catch (e) {}
+    });
+  });
+
+  try {
+    const savedLang = localStorage.getItem('ck-lang');
+    if (savedLang) {
+      const btn = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (btn) btn.click();
+    }
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupToggles();
+  buildStrengthRow();
+  buildFormats();
+  buildTroef();
+  renderInitial();
+});
+</script>
+</body>
 </html>
