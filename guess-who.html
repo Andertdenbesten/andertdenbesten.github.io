@@ -176,11 +176,11 @@
   /* rotating sunburst (home only) */
   #bg{ position:fixed; inset:0; z-index:-1; pointer-events:none; background:var(--field-bg); transition:background-color .3s ease; }
   html[data-screen="home"] #bg{ background:var(--home-bg); }
-  #sunburst{ position:fixed; top:30%; left:50%; width:175vmax; height:175vmax; transform:translate(-50%,-50%);
+  #sunburst{ position:fixed; top:28%; left:50%; width:200vmax; height:200vmax; transform:translate(-50%,-50%);
     z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
     background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 15deg, var(--home-bg2) 15deg 30deg);
-    -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 0%, #000 22%, transparent 60%);
-            mask-image:radial-gradient(circle at 50% 50%, #000 0%, #000 22%, transparent 60%);
+    -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 0%, #000 32%, transparent 82%);
+            mask-image:radial-gradient(circle at 50% 50%, #000 0%, #000 32%, transparent 82%);
     animation:sunspin 120s linear infinite; }
   html[data-screen="home"] #sunburst{ opacity:1; }
   @keyframes sunspin{ from{ transform:translate(-50%,-50%) rotate(0); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
@@ -244,8 +244,12 @@
   .below{ display:flex; justify-content:center; }
   #setup{ padding-bottom:calc(160px + env(safe-area-inset-bottom)); }
   .start-bar{ position:fixed; left:0; right:0; bottom:0; z-index:7; display:flex; flex-direction:column; align-items:center; gap:8px;
-    padding:28px 14px calc(14px + env(safe-area-inset-bottom));
-    background:linear-gradient(to top, var(--home-bg) 62%, transparent); pointer-events:none; }
+    padding:64px 14px calc(16px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, rgba(245,158,26,.80) 0%, rgba(245,158,26,.5) 42%, rgba(245,158,26,0) 100%);
+    -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px);
+    -webkit-mask-image:linear-gradient(to top, #000 58%, transparent);
+            mask-image:linear-gradient(to top, #000 58%, transparent);
+    pointer-events:none; }
   .start-bar #startBtn{ width:min(100%,520px); pointer-events:auto; }
   .start-bar .below{ pointer-events:auto; }
 
