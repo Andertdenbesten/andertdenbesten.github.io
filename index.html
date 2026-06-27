@@ -473,7 +473,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            justify-content: space-between;
             aspect-ratio: 4 / 5;
             padding: clamp(1.1rem, 4%, 1.75rem);
             border-radius: 24px;
@@ -504,24 +504,32 @@
         }
 
         .tile__emoji {
-            font-size: clamp(2.8rem, 11vw, 4.5rem);
+            font-size: clamp(2rem, 6vw, 2.7rem);
             line-height: 1;
-            filter: drop-shadow(0 4px 0 rgba(0, 0, 0, .12));
+            filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .12));
         }
 
-        .tile__title {
-            margin-top: .55rem;
-            font-size: clamp(1.55rem, 5.5vw, 2.15rem);
-            font-weight: 800;
-            line-height: 1.04;
-            letter-spacing: -.015em;
+        /* Typography is the hero graphic — big, heavy, edge-to-edge */
+        .tile__text {
+            display: flex;
+            flex-direction: column;
         }
 
         .tile__sub {
-            margin-top: .35rem;
-            font-size: clamp(.8rem, 2.6vw, .95rem);
-            font-weight: 600;
-            opacity: .82;
+            margin-bottom: .55rem;
+            font-size: clamp(.72rem, 1.9vw, .82rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .17em;
+            opacity: .68;
+        }
+
+        .tile__title {
+            font-size: clamp(2.7rem, 10.5vw, 4.4rem);
+            font-weight: 900;
+            line-height: .9;
+            letter-spacing: -.035em;
+            text-transform: uppercase;
         }
 
         /* Decorative per-destination background sits behind the content */
@@ -532,31 +540,11 @@
             z-index: -1;
         }
 
-        /* Diagonal corner ribbon (work-in-progress flag) */
-        .tile__ribbon {
-            position: absolute;
-            top: 16px;
-            right: -36px;
-            width: 150px;
-            transform: rotate(45deg);
-            text-align: center;
-            font-size: .68rem;
-            font-weight: 800;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            padding: .32rem 0;
-            background: var(--ribbon-bg);
-            color: var(--ribbon-ink);
-            box-shadow: 0 2px 6px -1px rgba(0, 0, 0, .35);
-        }
-
-        /* --- Wie is het? : amber sunburst + teal --- */
+        /* --- Guess Who : amber sunburst --- */
         .tile--gw {
             --tile-bg: #F59E1A;
             --tile-lip: #B0670F;
             --tile-ink: #2C3842;
-            --ribbon-bg: #2C8C82;
-            --ribbon-ink: #FCF7E6;
         }
 
         .tile--gw::before {
@@ -567,7 +555,7 @@
             opacity: .9;
         }
 
-        /* --- Chinese Kaarten : red playing-card + parchment glow --- */
+        /* --- Chinese Cards : red playing-card + parchment glow --- */
         .tile--cc {
             --tile-bg: #C43820;
             --tile-lip: #7C2012;
@@ -595,15 +583,18 @@
 
     <main class="tiles">
         <a class="tile tile--gw" href="guess-who.html">
-            <span class="tile__ribbon">In aanbouw</span>
             <span class="tile__emoji">🕵️</span>
-            <span class="tile__title">Wie is het?</span>
-            <span class="tile__sub">Taal oefenen met spel</span>
+            <span class="tile__text">
+                <span class="tile__sub">Language practice</span>
+                <span class="tile__title">Guess Who</span>
+            </span>
         </a>
         <a class="tile tile--cc" href="chinese-card-rules.html">
             <span class="tile__emoji">🃏</span>
-            <span class="tile__title">Chinese Kaarten</span>
-            <span class="tile__sub">Spelregels</span>
+            <span class="tile__text">
+                <span class="tile__sub">Game rules</span>
+                <span class="tile__title">Chinese Cards</span>
+            </span>
         </a>
     </main>
 
