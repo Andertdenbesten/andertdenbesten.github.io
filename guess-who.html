@@ -176,13 +176,14 @@
   /* rotating sunburst (home only) */
   #bg{ position:fixed; inset:0; z-index:-1; pointer-events:none; background:var(--field-bg); transition:background-color .3s ease; }
   html[data-screen="home"] #bg{ background:var(--home-bg); }
-  #sunburst{ position:fixed; top:28%; left:50%; width:200vmax; height:200vmax; transform:translate(-50%,-50%);
+  #sunburst{ position:fixed; top:28%; left:50%; width:140vmax; height:140vmax; transform:translate(-50%,-50%);
     z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
     background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 15deg, var(--home-bg2) 15deg 30deg);
-    -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 0%, #000 32%, transparent 82%);
-            mask-image:radial-gradient(circle at 50% 50%, #000 0%, #000 32%, transparent 82%);
     animation:sunspin 120s linear infinite; }
-  html[data-screen="home"] #sunburst{ opacity:1; }
+  /* vignette as a separate static layer (keeps the heavy mask off the rotating layer) */
+  #sunfade{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
+    background:radial-gradient(circle at 50% 28%, transparent 0%, transparent 34%, var(--home-bg) 80%); }
+  html[data-screen="home"] #sunburst, html[data-screen="home"] #sunfade{ opacity:1; }
   @keyframes sunspin{ from{ transform:translate(-50%,-50%) rotate(0); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
 
   /* base buttons */
@@ -241,19 +242,19 @@
   .theme-btn[aria-pressed="true"] .sub{ color:var(--on-accent); opacity:.85; }
 
   #startBtn{ width:100%; padding:16px; font-size:1.1rem; min-height:60px; }
-  #setup{ padding-bottom:calc(150px + env(safe-area-inset-bottom)); }
+  #setup{ padding-bottom:calc(170px + env(safe-area-inset-bottom)); }
   .start-bar{ position:fixed; left:0; right:0; bottom:0; z-index:7; display:flex; justify-content:center;
-    padding:48px 14px calc(16px + env(safe-area-inset-bottom));
-    background:linear-gradient(to top, rgba(245,158,26,.72) 0%, rgba(245,158,26,.32) 55%, rgba(245,158,26,0) 100%);
+    padding:80px 14px calc(16px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, rgba(245,158,26,.96) 0%, rgba(245,158,26,.8) 36%, rgba(245,158,26,.28) 72%, rgba(245,158,26,0) 100%);
     pointer-events:none; }
   .start-row{ display:flex; align-items:stretch; gap:10px; width:min(100%,520px); pointer-events:auto; }
   .start-row #startBtn{ flex:1; min-width:0;
-    box-shadow:0 8px 0 var(--field-edge), 0 16px 26px rgba(20,30,25,.34); }
-  .start-row #startBtn:active{ box-shadow:0 0 0 var(--field-edge), 0 8px 16px rgba(20,30,25,.28); }
+    box-shadow:0 6px 0 var(--field-edge), 0 14px 24px -4px rgba(20,30,25,.22); }
+  .start-row #startBtn:active{ box-shadow:0 0 0 var(--field-edge), 0 8px 16px -4px rgba(20,30,25,.18); }
   .how-icon{ flex:0 0 auto; width:60px; min-height:60px; padding:0; display:flex; align-items:center; justify-content:center;
     background:var(--surface); color:var(--ink); border-radius:var(--r);
-    box-shadow:0 8px 0 var(--surface-deep), 0 16px 26px rgba(20,30,25,.34); }
-  .how-icon:active{ transform:translateY(8px); box-shadow:0 0 0 var(--surface-deep), 0 8px 16px rgba(20,30,25,.28); }
+    box-shadow:0 6px 0 var(--surface-deep), 0 14px 24px -4px rgba(20,30,25,.22); }
+  .how-icon:active{ transform:translateY(6px); box-shadow:0 0 0 var(--surface-deep), 0 8px 16px -4px rgba(20,30,25,.18); }
   .how-icon svg{ width:26px; height:26px; }
 
   /* PILL toolbar */
@@ -363,6 +364,7 @@
 <body>
 <div id="bg" aria-hidden="true"></div>
 <div id="sunburst" aria-hidden="true"></div>
+<div id="sunfade" aria-hidden="true"></div>
 <div class="wrap">
 
   <!-- SETUP -->
