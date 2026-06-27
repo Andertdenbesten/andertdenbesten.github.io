@@ -183,9 +183,7 @@
     animation:sunspin 120s linear infinite; }
   /* vignette as a separate static layer (keeps the heavy mask off the rotating layer) */
   #sunfade{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
-    background:
-      linear-gradient(to top, transparent 74%, rgba(245,158,26,.6) 90%, var(--home-bg) 100%),
-      radial-gradient(circle at 50% 28%, transparent 0%, transparent 34%, var(--home-bg) 80%); }
+    background:radial-gradient(circle at 50% 28%, transparent 0%, transparent 34%, var(--home-bg) 80%); }
   html[data-screen="home"] #sunburst, html[data-screen="home"] #sunfade{ opacity:1; }
   @keyframes sunspin{ from{ transform:translate(-50%,-50%) rotate(0); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
 
