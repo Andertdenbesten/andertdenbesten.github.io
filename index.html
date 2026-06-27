@@ -504,32 +504,62 @@
         }
 
         .tile__emoji {
-            font-size: clamp(2rem, 6vw, 2.7rem);
+            font-size: clamp(2.4rem, 8vw, 3.4rem);
             line-height: 1;
             filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .12));
+            transform-origin: 60% 80%;
+            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
         }
 
-        /* Typography is the hero graphic — big, heavy, edge-to-edge */
+        .tile:hover .tile__emoji {
+            transform: rotate(-10deg) scale(1.15);
+        }
+
+        /* Typography is the hero graphic — huge, heavy, edge-to-edge,
+           tilted a touch so it feels hand-placed and playful */
         .tile__text {
             display: flex;
             flex-direction: column;
+            transform-origin: 0 100%;
+            transition: transform .22s ease;
+        }
+
+        .tile--gw .tile__text {
+            transform: rotate(-2.5deg);
+        }
+
+        .tile--cc .tile__text {
+            transform: rotate(2.5deg);
+        }
+
+        .tile--gw:hover .tile__text {
+            transform: rotate(-2.5deg) scale(1.04);
+        }
+
+        .tile--cc:hover .tile__text {
+            transform: rotate(2.5deg) scale(1.04);
         }
 
         .tile__sub {
-            margin-bottom: .55rem;
-            font-size: clamp(.72rem, 1.9vw, .82rem);
-            font-weight: 700;
+            margin-bottom: .5rem;
+            font-size: clamp(.72rem, 1.9vw, .85rem);
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: .17em;
-            opacity: .68;
+            letter-spacing: .18em;
+            opacity: .7;
         }
 
         .tile__title {
-            font-size: clamp(2.7rem, 10.5vw, 4.4rem);
+            font-size: clamp(3.4rem, 14vw, 5.6rem);
             font-weight: 900;
-            line-height: .9;
-            letter-spacing: -.035em;
+            line-height: .82;
+            letter-spacing: -.045em;
             text-transform: uppercase;
+        }
+
+        /* "CHINESE" is a long word — size it so it stays on the card */
+        .tile--cc .tile__title {
+            font-size: clamp(2.9rem, 11vw, 4.4rem);
         }
 
         /* Decorative per-destination background sits behind the content */
