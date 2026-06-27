@@ -142,12 +142,12 @@
     --home-bg:#F59E1A; --home-bg2:#ED9410; --home-edge:#CF7D0E;
     --field-bg:#2C8C82; --field-edge:#1C6961;
     --menu-bg:#F59E1A;
-    --on-bg:#F3E9C8; --on-accent:#F8F0D8;
+    --on-bg:#F3E9C8; --on-accent:#F8F0D8; --on-control:#3B4A55;
     --title-edge:#BE7615;
     --accent:#57A99F; --accent-deep:#3E847B;
     --primary:#ECA23C; --primary-deep:#CC8021;
-    --seg-bg:#3B4A55; --seg-deep:#2C3842;
-    --tag-bg:#3B4A55; --tag-deep:#2C3842;
+    --seg-bg:#FFFCF2; --seg-deep:#EBE2C6;
+    --tag-bg:#FFFCF2; --tag-deep:#EBE2C6;
     --overlay:rgba(20,15,5,.5);
   }
   /* DARK */
@@ -160,7 +160,7 @@
     --home-bg:#F59E1A; --home-bg2:#ED9410; --home-edge:#CF7D0E;
     --field-bg:#2C8C82; --field-edge:#1C6961;
     --menu-bg:#F59E1A;
-    --on-bg:#F8F0D8; --on-accent:#F8F0D8;
+    --on-bg:#F8F0D8; --on-accent:#F8F0D8; --on-control:#F8F0D8;
     --title-edge:#BE7615;
     --accent:#5CB3A7; --accent-deep:#3E847B;
     --primary:#F0A94A; --primary-deep:#C9821F;
@@ -224,13 +224,13 @@
   .hero .hero-big{ font-family:var(--display); font-weight:600; text-transform:uppercase; font-size:clamp(3.8rem,19vw,6.5rem); line-height:.85; letter-spacing:.01em;
     color:var(--on-bg); text-shadow:0 3px 0 var(--title-edge), 0 8px 11px rgba(20,30,25,.26); }
   .hero .hero-tag{ display:inline-block; margin-top:16px; font-family:var(--display); font-weight:500; font-size:.92rem;
-    background:var(--tag-bg); color:var(--on-bg); border-radius:var(--r-pill); padding:7px 18px; box-shadow:0 4px 0 var(--tag-deep); }
+    background:var(--tag-bg); color:var(--on-control); border-radius:var(--r-pill); padding:7px 18px; box-shadow:0 4px 0 var(--tag-deep); }
   .intro{ margin:0; align-self:center; max-width:48ch; text-align:center; color:var(--on-bg); font-weight:600; font-size:.96rem; line-height:1.5; text-shadow:var(--label-shadow); }
   .field .lab{ font-family:var(--display); font-weight:600; font-size:1.25rem; color:var(--on-bg); margin-bottom:10px; text-shadow:var(--label-shadow); }
 
   /* segmented (navy pill, active = teal) */
   .seg{ display:flex; gap:6px; background:var(--seg-bg); border-radius:var(--r-pill); padding:6px; box-shadow:0 5px 0 var(--seg-deep), var(--ambient-sm); }
-  .seg button{ flex:1; min-height:46px; background:transparent; color:var(--on-bg); box-shadow:none; border-radius:var(--r-pill);
+  .seg button{ flex:1; min-height:46px; background:transparent; color:var(--on-control); box-shadow:none; border-radius:var(--r-pill);
     font-family:var(--display); font-weight:500; padding:10px 8px; transition:transform var(--t), background var(--t), box-shadow var(--t); }
   .seg button:hover{ filter:none; }
   .seg button:active{ transform:translateY(2px); box-shadow:none; }
