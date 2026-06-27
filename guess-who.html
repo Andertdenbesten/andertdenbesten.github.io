@@ -1,0 +1,125 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess Who - Andert den Besten</title>
+
+    <style>
+        @import url(https://rsms.me/inter/inter.css);
+
+        :root {
+            --alpha-value: .85;
+            --color-dark: #000000;
+            --color-primary-light: #fdfff0;
+            --color-primary-light-fade: rgb(253, 255, 240, var(--alpha-value));
+            --color-primary: #2f7444;
+            --color-primary-fade: rgb(47, 116, 68, var(--alpha-value));
+            --color-primary-dark: #13302c;
+            --btn-border-size: 3px;
+            font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            background: var(--color-primary-light);
+            color: var(--color-primary-dark);
+            font-family: "Inter", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-stroke-width: 0;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            html {
+                background: var(--color-primary-dark);
+                color: var(--color-primary-light);
+            }
+        }
+
+        body {
+            margin: 0;
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            width: 100%;
+            max-width: 60rem;
+            margin: 0 1rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, calc(4 / 60 * 100vw), 4rem);
+            font-weight: 800;
+            line-height: 1.2em;
+            margin: 0 0 1rem;
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, calc(2 / 60 * 100vw), 2rem);
+            line-height: 1.4em;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: .22s ease;
+        }
+
+        .button {
+            transform: translate(0, 0);
+            display: inline-block;
+            height: 4rem;
+            margin-top: 4rem;
+            padding: 0 3rem;
+            border-radius: 12px;
+            border: var(--btn-border-size) solid var(--color-dark);
+            box-shadow: var(--btn-border-size) var(--btn-border-size) 0 0 var(--color-dark);
+            background: var(--color-primary);
+            font-size: 1.25rem;
+            line-height: 4rem;
+            text-align: center;
+            color: var(--color-primary-light);
+            font-weight: 500;
+            transition: all .2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .button:hover {
+            background: var(--color-primary-fade);
+        }
+
+        .button:active {
+            transform: translate(var(--btn-border-size), var(--btn-border-size));
+            box-shadow: 0 0 0 0 var(--color-dark);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .button {
+                background: var(--color-primary-light);
+                color: var(--color-dark)
+            }
+
+            .button:hover {
+                background: var(--color-primary-light-fade);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Guess Who 🚧</h1>
+        <h2>Work in progress</h2>
+        <a class="button" href="index.html">← Back home</a>
+    </header>
+</body></html>
