@@ -1059,7 +1059,7 @@ $('langSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); 
 function makeThemeBtn(key,t){
   const b=document.createElement('button');
   b.className='theme-btn'; b.setAttribute('aria-pressed','false');
-  b.innerHTML='<span class="em">'+t.em+'</span><span class="txt"><span class="nm">'+t.naam+'</span><span class="sub">'+t.sub+'</span></span>';
+  b.innerHTML='<span class="em">'+t.em+'</span><span class="txt"><span class="nm">'+t.naam+'</span></span>';
   b.addEventListener('click', ()=>{ selectedKey=key; document.querySelectorAll('.theme-btn').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); startBtn.classList.remove('is-disabled'); startBtn.setAttribute('aria-disabled','false'); });
   return b;
 }
