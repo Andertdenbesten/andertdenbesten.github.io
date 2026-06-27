@@ -254,14 +254,14 @@
     pointer-events:none; }
   .start-row{ display:flex; align-items:stretch; gap:10px; width:min(100%,520px); pointer-events:auto; }
   .start-row #startBtn{ flex:1; min-width:0;
-    box-shadow:0 6px 0 var(--field-edge); }
+    box-shadow:0 6px 0 var(--field-edge), 0 4px 8px -2px rgba(20,30,25,.3); }
   .start-row #startBtn:active{ box-shadow:0 0 0 var(--field-edge); }
-  .start-row #startBtn.is-disabled{ background:#9AA1A8; color:#F2F4F6; box-shadow:0 6px 0 #797F86; opacity:1; }
-  .start-row #startBtn.is-disabled:active{ transform:none; box-shadow:0 6px 0 #797F86; }
-  [data-mode="dark"] .start-row #startBtn.is-disabled{ background:#4A515B; color:#AEB6BF; box-shadow:0 6px 0 #353B43; }
+  .start-row #startBtn.is-disabled{ background:#9AA1A8; color:#F2F4F6; box-shadow:0 6px 0 #797F86, 0 4px 8px -2px rgba(20,30,25,.25); opacity:1; }
+  .start-row #startBtn.is-disabled:active{ transform:none; box-shadow:0 6px 0 #797F86, 0 4px 8px -2px rgba(20,30,25,.25); }
+  [data-mode="dark"] .start-row #startBtn.is-disabled{ background:#4A515B; color:#AEB6BF; box-shadow:0 6px 0 #353B43, 0 4px 8px -2px rgba(0,0,0,.3); }
   .how-icon{ flex:0 0 auto; width:60px; min-height:60px; padding:0; display:flex; align-items:center; justify-content:center;
     background:var(--surface); color:var(--ink); border-radius:var(--r);
-    box-shadow:0 6px 0 var(--surface-deep); }
+    box-shadow:0 6px 0 var(--surface-deep), 0 4px 8px -2px rgba(20,30,25,.3); }
   .how-icon:active{ transform:translateY(6px); box-shadow:0 0 0 var(--surface-deep); }
   .how-icon svg{ width:26px; height:26px; }
 
@@ -277,7 +277,7 @@
   #game{ padding-bottom:calc(94px + env(safe-area-inset-bottom)); }
   .pill{ position:fixed; bottom:calc(12px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%);
     width:min(calc(100% - 20px),440px); z-index:6; display:flex; gap:4px; padding:8px;
-    background:var(--surface); border-radius:var(--r-lg); box-shadow:0 var(--lip) 0 var(--surface-deep); }
+    background:var(--surface); border-radius:var(--r-lg); box-shadow:0 var(--lip) 0 var(--surface-deep), 0 4px 8px -2px rgba(20,30,25,.3); }
   .pill .cell{ flex:1; min-height:54px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
     background:transparent; border:none; box-shadow:none; border-radius:14px; color:var(--ink); padding:6px 2px; min-width:0;
     transition:transform var(--t), background-color var(--t), box-shadow var(--t); }
