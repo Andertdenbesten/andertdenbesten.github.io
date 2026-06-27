@@ -419,104 +419,192 @@
         }
 
         body {
-            height: 100%;
+            min-height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
-        }
-
-        header {
-            width: 100%;
-            max-width: 60rem;
-            margin: 0 1rem;
-        }
-
-        h1,
-        h2 {
-            margin-top: 0;
-        }
-
-        h1 {
-            font-size: clamp(2.5rem, calc(4 / 60 * 100vw), 4rem);
-            font-weight: 800;
-            line-height: 1.2em;
-            margin-bottom: clamp(1rem, calc(1.5 / 60 * 100vw), 1.5rem);
-        }
-
-        h2 {
-            font-size: clamp(1.5rem, calc(2 / 60 * 100vw), 2rem);
-            line-height: 1.4em;
-        }
-
-        h2,
-        .button {
-            font-weight: 500;
+            padding: clamp(1rem, 4vw, 2.5rem);
+            box-sizing: border-box;
         }
 
         a {
             text-decoration: none;
             color: inherit;
-            transition: .22s ease;
         }
 
-        .link:hover {
-            color: #70c9d9;
+        /* Visually hidden, but kept for SEO + screen readers */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
 
-        .button {
-            transform: translate(0, 0);
-            display: inline-block;
-            height: 4rem;
-            margin-top: 4rem;
-            padding: 0 3rem;
-            border-radius: 12px;
-            border: var(--btn-border-size) solid var(--color-dark);
-            box-shadow: var(--btn-border-size) var(--btn-border-size) 0 0 var(--color-dark);
-            background: var(--color-primary);
-            font-size: 1.25rem;
-            line-height: 4rem;
-            text-align: center;
-            color: var(--color-primary-light);
-            transition: all .2s ease;
-            cursor: pointer;
-            -ms-user-select: none;
-            user-select: none;
-            -moz-user-select: none;
-            -webkit-user-select: none;
+        /* ---- Tile menu ---------------------------------------------------- */
+
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(1rem, 3vw, 2.25rem);
+            width: 100%;
+            max-width: 46rem;
         }
 
-        .button:hover {
-            background: var(--color-primary-fade);
-        }
-
-        .button:active {
-            transform: translate(var(--btn-border-size), var(--btn-border-size));
-            box-shadow: 0 0 0 0 var(--color-dark);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .button {
-                background: var(--color-primary-light);
-                color: var(--color-dark)
+        @media (max-width: 560px) {
+            .tiles {
+                grid-template-columns: 1fr;
+                max-width: 23rem;
             }
+        }
 
-            .button:hover {
-                background: var(--color-primary-light-fade);
+        /* Shared silhouette — both tiles are identical in shape, radius,
+           the chunky 3D bottom-lip, and the press-down interaction. Only
+           the colours / texture change per destination. */
+        .tile {
+            --lip: 10px;
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            aspect-ratio: 4 / 5;
+            padding: clamp(1.1rem, 4%, 1.75rem);
+            border-radius: 24px;
+            color: var(--tile-ink);
+            background: var(--tile-bg);
+            box-shadow:
+                0 var(--lip) 0 0 var(--tile-lip),
+                0 calc(var(--lip) + 14px) 30px -12px rgba(0, 0, 0, .45);
+            transform: translateY(0);
+            transition: transform .16s ease, box-shadow .16s ease;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .tile:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 calc(var(--lip) + 3px) 0 0 var(--tile-lip),
+                0 calc(var(--lip) + 20px) 38px -12px rgba(0, 0, 0, .5);
+        }
+
+        .tile:active {
+            transform: translateY(var(--lip));
+            box-shadow:
+                0 0 0 0 var(--tile-lip),
+                0 6px 14px -8px rgba(0, 0, 0, .5);
+        }
+
+        .tile__emoji {
+            font-size: clamp(2.8rem, 11vw, 4.5rem);
+            line-height: 1;
+            filter: drop-shadow(0 4px 0 rgba(0, 0, 0, .12));
+        }
+
+        .tile__title {
+            margin-top: .55rem;
+            font-size: clamp(1.55rem, 5.5vw, 2.15rem);
+            font-weight: 800;
+            line-height: 1.04;
+            letter-spacing: -.015em;
+        }
+
+        .tile__sub {
+            margin-top: .35rem;
+            font-size: clamp(.8rem, 2.6vw, .95rem);
+            font-weight: 600;
+            opacity: .82;
+        }
+
+        /* Decorative per-destination background sits behind the content */
+        .tile::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+        }
+
+        /* Diagonal corner ribbon (work-in-progress flag) */
+        .tile__ribbon {
+            position: absolute;
+            top: 16px;
+            right: -36px;
+            width: 150px;
+            transform: rotate(45deg);
+            text-align: center;
+            font-size: .68rem;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: .32rem 0;
+            background: var(--ribbon-bg);
+            color: var(--ribbon-ink);
+            box-shadow: 0 2px 6px -1px rgba(0, 0, 0, .35);
+        }
+
+        /* --- Wie is het? : amber sunburst + teal --- */
+        .tile--gw {
+            --tile-bg: #F59E1A;
+            --tile-lip: #B0670F;
+            --tile-ink: #2C3842;
+            --ribbon-bg: #2C8C82;
+            --ribbon-ink: #FCF7E6;
+        }
+
+        .tile--gw::before {
+            background: repeating-conic-gradient(from 0deg at 50% 32%,
+                    #F59E1A 0deg 15deg, #F7AC44 15deg 30deg);
+            -webkit-mask: radial-gradient(circle at 50% 32%, #000 0%, #000 26%, transparent 68%);
+            mask: radial-gradient(circle at 50% 32%, #000 0%, #000 26%, transparent 68%);
+            opacity: .9;
+        }
+
+        /* --- Chinese Kaarten : red playing-card + parchment glow --- */
+        .tile--cc {
+            --tile-bg: #C43820;
+            --tile-lip: #7C2012;
+            --tile-ink: #F8EAD0;
+        }
+
+        .tile--cc::before {
+            background:
+                radial-gradient(circle at 50% 36%, rgba(248, 234, 208, .22), rgba(248, 234, 208, 0) 58%),
+                repeating-linear-gradient(45deg, rgba(0, 0, 0, .05) 0 7px, transparent 7px 14px);
+        }
+
+        /* Shorter, landscape-ish tiles when stacked so both fit on screen.
+           Placed after the base .tile rule so it wins the cascade. */
+        @media (max-width: 560px) {
+            .tile {
+                aspect-ratio: 16 / 10;
             }
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <h1>Hi, I'm Andert</h1>
-        <h2>Digital Design</h2>
-        <a class="button" href="guess-who.html">🚧 Wie is het?</a>
-        <a class="button" href="chinese-card-rules.html">🃏 Chinese Cards</a>
-    </header>
+    <h1 class="sr-only">Andert den Besten — Digital Design</h1>
 
-
+    <main class="tiles">
+        <a class="tile tile--gw" href="guess-who.html">
+            <span class="tile__ribbon">In aanbouw</span>
+            <span class="tile__emoji">🕵️</span>
+            <span class="tile__title">Wie is het?</span>
+            <span class="tile__sub">Taal oefenen met spel</span>
+        </a>
+        <a class="tile tile--cc" href="chinese-card-rules.html">
+            <span class="tile__emoji">🃏</span>
+            <span class="tile__title">Chinese Kaarten</span>
+            <span class="tile__sub">Spelregels</span>
+        </a>
+    </main>
 
 </body></html>
