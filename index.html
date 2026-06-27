@@ -473,7 +473,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-end;
             aspect-ratio: 4 / 5;
             padding: clamp(1.1rem, 4%, 1.75rem);
             border-radius: 24px;
@@ -503,41 +503,32 @@
                 0 6px 14px -8px rgba(0, 0, 0, .5);
         }
 
-        .tile__emoji {
-            font-size: clamp(2.4rem, 8vw, 3.4rem);
-            line-height: 1;
-            filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .12));
-            transform-origin: 60% 80%;
-            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+        /* Big, light-faded line icon watermark behind the type */
+        .tile__icon {
+            position: absolute;
+            top: 7%;
+            right: -7%;
+            width: 60%;
+            height: auto;
+            color: var(--tile-ink);
+            opacity: .14;
+            z-index: 0;
+            pointer-events: none;
+            transform-origin: center;
+            transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
         }
 
-        .tile:hover .tile__emoji {
-            transform: rotate(-10deg) scale(1.15);
+        .tile:hover .tile__icon {
+            transform: rotate(-8deg) scale(1.06);
         }
 
-        /* Typography is the hero graphic — huge, heavy, edge-to-edge,
-           tilted a touch so it feels hand-placed and playful */
+        /* Typography is the hero graphic — huge, heavy, edge-to-edge.
+           Sits above the faded icon watermark. */
         .tile__text {
+            position: relative;
+            z-index: 1;
             display: flex;
             flex-direction: column;
-            transform-origin: 0 100%;
-            transition: transform .22s ease;
-        }
-
-        .tile--gw .tile__text {
-            transform: rotate(-2.5deg);
-        }
-
-        .tile--cc .tile__text {
-            transform: rotate(2.5deg);
-        }
-
-        .tile--gw:hover .tile__text {
-            transform: rotate(-2.5deg) scale(1.04);
-        }
-
-        .tile--cc:hover .tile__text {
-            transform: rotate(2.5deg) scale(1.04);
         }
 
         .tile__sub {
@@ -613,14 +604,22 @@
 
     <main class="tiles">
         <a class="tile tile--gw" href="guess-who.html">
-            <span class="tile__emoji">🕵️</span>
+            <svg class="tile__icon" viewBox="0 0 100 100" fill="none" stroke="currentColor"
+                stroke-width="8" stroke-linecap="round" aria-hidden="true">
+                <circle cx="42" cy="42" r="30" />
+                <line x1="63" y1="63" x2="90" y2="90" />
+            </svg>
             <span class="tile__text">
                 <span class="tile__sub">Language practice</span>
                 <span class="tile__title">Guess Who</span>
             </span>
         </a>
         <a class="tile tile--cc" href="chinese-card-rules.html">
-            <span class="tile__emoji">🃏</span>
+            <svg class="tile__icon" viewBox="0 0 100 100" fill="none" stroke="currentColor"
+                stroke-width="7" stroke-linejoin="round" aria-hidden="true">
+                <rect x="14" y="26" width="44" height="62" rx="7" transform="rotate(-13 36 57)" />
+                <rect x="42" y="26" width="44" height="62" rx="7" transform="rotate(13 64 57)" />
+            </svg>
             <span class="tile__text">
                 <span class="tile__sub">Game rules</span>
                 <span class="tile__title">Chinese Cards</span>
