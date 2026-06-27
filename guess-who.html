@@ -240,18 +240,21 @@
   .theme-btn[aria-pressed="true"]{ background:var(--accent); color:var(--on-accent); border-color:var(--accent-deep); box-shadow:0 5px 0 var(--accent-deep), var(--ambient-sm); }
   .theme-btn[aria-pressed="true"] .sub{ color:var(--on-accent); opacity:.85; }
 
-  #startBtn{ width:100%; padding:16px; font-size:1.1rem; min-height:54px; }
-  .below{ display:flex; justify-content:center; }
-  #setup{ padding-bottom:calc(160px + env(safe-area-inset-bottom)); }
-  .start-bar{ position:fixed; left:0; right:0; bottom:0; z-index:7; display:flex; flex-direction:column; align-items:center; gap:8px;
-    padding:64px 14px calc(16px + env(safe-area-inset-bottom));
-    background:linear-gradient(to top, rgba(245,158,26,.80) 0%, rgba(245,158,26,.5) 42%, rgba(245,158,26,0) 100%);
-    -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px);
-    -webkit-mask-image:linear-gradient(to top, #000 58%, transparent);
-            mask-image:linear-gradient(to top, #000 58%, transparent);
+  #startBtn{ width:100%; padding:16px; font-size:1.1rem; min-height:60px; }
+  #setup{ padding-bottom:calc(150px + env(safe-area-inset-bottom)); }
+  .start-bar{ position:fixed; left:0; right:0; bottom:0; z-index:7; display:flex; justify-content:center;
+    padding:48px 14px calc(16px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, rgba(245,158,26,.72) 0%, rgba(245,158,26,.32) 55%, rgba(245,158,26,0) 100%);
     pointer-events:none; }
-  .start-bar #startBtn{ width:min(100%,520px); pointer-events:auto; }
-  .start-bar .below{ pointer-events:auto; }
+  .start-row{ display:flex; align-items:stretch; gap:10px; width:min(100%,520px); pointer-events:auto; }
+  .start-row #startBtn{ flex:1; min-width:0;
+    box-shadow:0 8px 0 var(--field-edge), 0 16px 26px rgba(20,30,25,.34); }
+  .start-row #startBtn:active{ box-shadow:0 0 0 var(--field-edge), 0 8px 16px rgba(20,30,25,.28); }
+  .how-icon{ flex:0 0 auto; width:60px; min-height:60px; padding:0; display:flex; align-items:center; justify-content:center;
+    background:var(--surface); color:var(--ink); border-radius:var(--r);
+    box-shadow:0 8px 0 var(--surface-deep), 0 16px 26px rgba(20,30,25,.34); }
+  .how-icon:active{ transform:translateY(8px); box-shadow:0 0 0 var(--surface-deep), 0 8px 16px rgba(20,30,25,.28); }
+  .how-icon svg{ width:26px; height:26px; }
 
   /* PILL toolbar */
   #game{ padding-bottom:calc(94px + env(safe-area-inset-bottom)); }
@@ -385,8 +388,10 @@
     </div>
 
     <div id="startBar" class="start-bar">
-      <button id="startBtn" class="primary" disabled>Start game</button>
-      <div class="below"><button id="setupHow" class="ghost">How to play</button></div>
+      <div class="start-row">
+        <button id="startBtn" class="primary" disabled>Start game</button>
+        <button id="setupHow" class="how-icon" aria-label="How to play" title="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.3.8c0 1.8-2.7 2.1-2.7 3.9"/><path d="M12 17.4v.01"/></svg></button>
+      </div>
     </div>
   </section>
 
