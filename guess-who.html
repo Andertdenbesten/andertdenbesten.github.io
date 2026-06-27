@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F59E1A">
 <title>Guess Who — language practice</title>
 <!--
   ============================================================
@@ -1055,8 +1056,10 @@ function makeThemeBtn(key,t){
 startBtn.addEventListener('click', ()=>{ currentKey=selectedKey; newSet(); showGame(); openSecret(); });
 
 const setupEl=$('setup'), gameEl=$('game'), boardEl=$('board');
-function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; window.scrollTo(0,0); }
-function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; }
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+function setThemeColor(c){ if(themeColorMeta) themeColorMeta.setAttribute('content', c); }
+function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; setThemeColor('#2C8C82'); window.scrollTo(0,0); }
+function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); }
 
 function newSet(){ activeItems=THEMES[currentKey].items.slice(); pickSecret(); buildBoard(); }
 function replaySameCards(){ pickSecret(); buildBoard(); }
