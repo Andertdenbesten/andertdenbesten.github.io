@@ -1,125 +1,1144 @@
-<html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess Who - Andert den Besten</title>
+<!DOCTYPE html>
+<html lang="en" data-mode="light" data-screen="home">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guess Who — language practice</title>
+<!--
+  ============================================================
+  Guess Who, bilingual language-practice game
+  Decision log / build notes (context for future edits or another LLM session)
+  ============================================================
 
-    <style>
-        @import url(https://rsms.me/inter/inter.css);
+  PURPOSE
+  - Two-player "Guess Who" to practise asking yes/no questions in a target
+    language. One player learns Arabic (Levantine), the other learns Dutch.
+  - Each player opens the SAME page on their OWN device, picks the SAME set,
+    and gets an independent secret character. No server, no sync, no accounts;
+    coordination is verbal ("same set?"). Single self-contained static HTML file.
 
-        :root {
-            --alpha-value: .85;
-            --color-dark: #000000;
-            --color-primary-light: #fdfff0;
-            --color-primary-light-fade: rgb(253, 255, 240, var(--alpha-value));
-            --color-primary: #2f7444;
-            --color-primary-fade: rgb(47, 116, 68, var(--alpha-value));
-            --color-primary-dark: #13302c;
-            --btn-border-size: 3px;
-            font-size: 16px;
-        }
+  UI LANGUAGE
+  - Interface chrome is ENGLISH on purpose: the shared language both players read.
+    Learning CONTENT is Arabic + Dutch only.
+  - Each player sees ONLY the language they are learning on the cards (read, not
+    translate). Switch via the "ARABIC / NL" cell in the bottom pill or on start.
 
-        * {
-            box-sizing: border-box;
-        }
+  SETS / CONTENT MODEL
+  - One pickable "set" = one self-contained card list with its own icon. No
+    "Part 1/2", no A/B, no easy/hard. Sets are named by category.
+  - Sets are split along the MOST OBVIOUS first question, so that trivial
+    question is already decided and play forces the interesting ones. Example:
+    Fruit and Vegetables are separate sets ("is it fruit?" is already given).
+  - Sets stay BROAD and mixed, not niche (no "wild" vs "farm" animals): mixing
+    is what trains varied questioning.
+  - Target 18 cards per set (clean grids 3x6 / 6x3 / 2x9); a set can be smaller
+    when good vocabulary runs out.
+  - People is a "dual" set: each card shows BOTH the Arabic and Dutch name (a
+    name is not a translation) so partners can confirm "do you have X". Every
+    other set shows a single label in the learner's language.
 
-        html {
-            height: 100%;
-            background: var(--color-primary-light);
-            color: var(--color-primary-dark);
-            font-family: "Inter", sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -webkit-text-stroke-width: 0;
-            -moz-osx-font-smoothing: grayscale;
-        }
+  LOANWORD POLICY
+  - Prefer words that are genuinely DIFFERENT in Arabic vs Dutch (more to learn).
+    Same-sounding loanwords (kiwi, avocado, ananas, hamburger, pizza) were
+    pulled out of Fruit and Food in an earlier pass.
+  - BUT set size matters too (more cards = more question types), so some
+    loanwords are deliberately allowed to reach 18. Fruit is padded to 18 with
+    mango / ananas / kiwi / avocado for exactly this reason.
+  - Transport and Clothing are inherently loanword-heavy in modern Arabic
+    (taxi, helikopter, t-shirt, short) and are left as-is on purpose; forcing
+    rare native terms would hurt usefulness. Candidate for a later light pass.
+  - Arabic is LEVANTINE colloquial with harakat, not MSA.
 
-        @media (prefers-color-scheme: dark) {
-            html {
-                background: var(--color-primary-dark);
-                color: var(--color-primary-light);
-            }
-        }
+  FUNCTION DECISIONS
+  - No "12 or 24" card-count option (removed for simplicity and to avoid
+    mismatched boards between the two devices).
+  - Secret card: starting a game opens a modal immediately, but the card is
+    FACE DOWN (eye icon, identical to the toolbar Secret cell) for privacy. Tap
+    to flip and reveal; the eye in the pill reveals it directly. It shows BOTH
+    languages. (The old toolbar pulse-on-close was removed: low value, extra upkeep.)
+  - A confirm dialog appears ONLY when leaving or changing a set while cards are
+    already flipped (progress would be lost). No confirm if nothing is flipped.
+  - FAQ ("Questions") is a pill popup: per-set yes/no starters, each with a
+    scannable emoji, plus a shared "Handy words" block of slightly advanced game
+    phrases (your turn, answer only yes/no, I have one left). Basic yes/no/maybe
+    are intentionally NOT taught; everyone knows them.
+  - FAQ shows each question in the player's TARGET language (main) with the other
+    learning language beneath as a gloss. Both `ar` (Levantine) and `nl` (Dutch)
+    fields carry real content; English is NOT used here. Because the two players
+    are each other's native speakers, the gloss is effectively their mother tongue.
+  - Long Dutch words wrap via CSS hyphens:auto with a lang attribute, so they
+    break on syllables, not arbitrary characters.
+  - Escape and tapping outside close any open modal or the menu.
+  - QR-code sharing was considered and REJECTED as a base mechanic: it would
+    force scanning every game. (The "one big pool, shared random draw" idea
+    depended on it, so that was dropped too.)
 
-        body {
-            margin: 0;
-            min-height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  STYLE DECISIONS (v2 - "soft-3D" toy look, inspired by Triband's What the... games)
+  - Three colour modes (Menu > Theme): Light, Dark, System (follows the OS).
+    The coloured backgrounds (amber home + sunburst, blue game field, amber menu)
+    stay the SAME in both modes; DARK only turns card surfaces grey and text light.
+    All colours are CSS custom properties under [data-mode="light"|"dark"].
+  - Per-screen background, NOT one flat canvas:
+      * HOME (start screen) + SECRET card module = warm amber (blue in dark) with
+        a slowly ROTATING radial sunburst behind it. These are the "special" screens.
+      * GAME field (behind the board) = blue / petrol (darker blue in dark), FLAT.
+      * MENU (slideout) matches the home colour, flat (no sunburst).
+    Sunburst is confined to home + secret so eliminated tiles (greyscale + fade)
+    on the flat game field never fight a busy background.
+  - Depth comes from a darker bottom "lip" + a soft ambient shadow, NOT outlines
+    or hard offsets. Tappable things (buttons, board tiles, pill cells, theme
+    cards) use the lip and press down; the STATIC secret card uses an outline.
+  - Surfaces (cards / pill / menu buttons / modals) are cream in light, grey in
+    dark; content always sits on a surface so words and harakat stay readable.
+  - One calm accent system: TEAL is the interactive / secondary colour (active
+    language, selected set), ORANGE is reserved for the single primary action,
+    INK (navy / light) is text. A selected set turns teal but stays raised (not
+    pressed) - colour carries the selection, contrast holds in light and dark.
+  - Titles get depth from a downward-only shadow (no all-around stroke), plus a
+    little extra letter-spacing.
+  - Type: Fredoka (display / titles / buttons / card labels, lighter weights) +
+    Nunito (body + the small "learn words" sub-labels). Arabic always falls back
+    to a system Arabic font so harakat render; Fredoka is never bound to Arabic.
+  - Bottom pill = one surface bar, 4 cells (Menu / Language / Questions / Secret),
+    icon + tiny label. (No attention pulse - removed.)
+  - CLS-conscious: nothing appears or disappears in the layout; space reserved.
+  - Fonts load from Google Fonts here; for production, self-host the woff2.
 
-        header {
-            width: 100%;
-            max-width: 60rem;
-            margin: 0 1rem;
-            text-align: center;
-        }
+  NOT PERSISTED
+  - Learn-language, chosen set and the colour mode (light/dark/system) are
+    in-memory only (reset on reload). localStorage is avoided so the file also
+    works inside sandboxed artifact previews; on a real host add localStorage.
 
-        h1 {
-            font-size: clamp(2.5rem, calc(4 / 60 * 100vw), 4rem);
-            font-weight: 800;
-            line-height: 1.2em;
-            margin: 0 0 1rem;
-        }
+  POSSIBLE NEXT STEPS
+  - Even out the set count (currently 9) with one more set (e.g. Sport, Weather).
+  - Optional light loanword cleanup for Transport / Clothing.
+  - Persistence via localStorage on the production host.
+  ============================================================
+-->
 
-        h2 {
-            font-size: clamp(1.5rem, calc(2 / 60 * 100vw), 2rem);
-            line-height: 1.4em;
-            font-weight: 500;
-            margin: 0;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --r-sm:14px; --r:18px; --r-lg:24px; --r-pill:999px;
+    --lip:6px;
+    --ambient:0 12px 18px rgba(20,30,25,.22);
+    --ambient-sm:0 7px 12px rgba(20,30,25,.20);
+    --t:.1s ease;
+    --display:"Fredoka", ui-rounded, "Segoe UI Rounded", system-ui, sans-serif;
+    --body:"Nunito", system-ui, "Segoe UI", sans-serif;
+    --arabic:"Noto Naskh Arabic","Geeza Pro","Segoe UI","Tahoma", sans-serif;
+  }
+  /* LIGHT (warm) - ook op :root als vangnet */
+  :root, [data-mode="light"]{
+    --surface:#F3E9C8; --surface-deep:#E2D5AC; --surface-line:#FCF7E6; --surface-soft:#FBF6E4;
+    --ink:#3B4A55; --ink-soft:#6E7A84; --muted:#6E7A84;
+    --home-bg:#F59E1A; --home-bg2:#ED9410; --home-edge:#CF7D0E;
+    --field-bg:#2C8C82; --field-edge:#1C6961;
+    --menu-bg:#F59E1A;
+    --on-bg:#F3E9C8; --on-accent:#F8F0D8;
+    --title-edge:#BE7615;
+    --accent:#57A99F; --accent-deep:#3E847B;
+    --primary:#ECA23C; --primary-deep:#CC8021;
+    --seg-bg:#3B4A55; --seg-deep:#2C3842;
+    --tag-bg:#3B4A55; --tag-deep:#2C3842;
+    --overlay:rgba(20,15,5,.5);
+  }
+  /* DARK */
+  [data-mode="dark"]{
+    --surface:#2E343F; --surface-deep:#1C212A; --surface-line:#3C4450; --surface-soft:#363D49;
+    --ink:#ECEEF2; --ink-soft:#9AA4B0; --muted:#9AA4B0;
+    /* gekleurde achtergronden blijven ook in dark: sunburst altijd geel, veld blauw */
+    --home-bg:#F59E1A; --home-bg2:#ED9410; --home-edge:#CF7D0E;
+    --field-bg:#2C8C82; --field-edge:#1C6961;
+    --menu-bg:#F59E1A;
+    --on-bg:#F8F0D8; --on-accent:#F8F0D8;
+    --title-edge:#BE7615;
+    --accent:#5CB3A7; --accent-deep:#3E847B;
+    --primary:#F0A94A; --primary-deep:#C9821F;
+    --seg-bg:#2C3842; --seg-deep:#1B232B;
+    --tag-bg:#2C3842; --tag-deep:#1B232B;
+    --overlay:rgba(0,0,0,.55);
+  }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-            transition: .22s ease;
-        }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ background:var(--field-bg); color:var(--on-bg); font-family:var(--body); font-weight:500;
+    -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased; min-height:100dvh; transition:background-color .3s ease; }
+  html[data-screen="home"] body{ background:var(--home-bg); }
+  html[data-screen="game"] body{ background:var(--field-bg); }
+  .wrap{ max-width:760px; margin:0 auto; padding:14px 14px 0; min-height:100dvh; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; }
+  .ar{ font-family:var(--arabic); direction:rtl; }
+  .hidden{ display:none !important; }
+  .title-depth{ color:var(--on-bg); text-shadow:0 2px 0 var(--title-edge), 0 5px 7px rgba(20,30,25,.2); }
 
-        .button {
-            transform: translate(0, 0);
-            display: inline-block;
-            height: 4rem;
-            margin-top: 4rem;
-            padding: 0 3rem;
-            border-radius: 12px;
-            border: var(--btn-border-size) solid var(--color-dark);
-            box-shadow: var(--btn-border-size) var(--btn-border-size) 0 0 var(--color-dark);
-            background: var(--color-primary);
-            font-size: 1.25rem;
-            line-height: 4rem;
-            text-align: center;
-            color: var(--color-primary-light);
-            font-weight: 500;
-            transition: all .2s ease;
-            cursor: pointer;
-            user-select: none;
-        }
+  /* rotating sunburst (home only) */
+  #bg{ position:fixed; inset:0; z-index:-1; pointer-events:none; background:var(--field-bg); transition:background-color .3s ease; }
+  html[data-screen="home"] #bg{ background:var(--home-bg); }
+  #sunburst{ position:fixed; top:30%; left:50%; width:175vmax; height:175vmax; transform:translate(-50%,-50%);
+    z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
+    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 15deg, var(--home-bg2) 15deg 30deg);
+    -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 0%, #000 22%, transparent 60%);
+            mask-image:radial-gradient(circle at 50% 50%, #000 0%, #000 22%, transparent 60%);
+    animation:sunspin 120s linear infinite; }
+  html[data-screen="home"] #sunburst{ opacity:1; }
+  @keyframes sunspin{ from{ transform:translate(-50%,-50%) rotate(0); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
 
-        .button:hover {
-            background: var(--color-primary-fade);
-        }
+  /* base buttons */
+  button{ font-family:var(--display); font-weight:600; font-size:1rem; cursor:pointer; color:var(--ink);
+    background:var(--surface); border:none; border-radius:var(--r); padding:13px 16px; min-height:48px; line-height:1.1;
+    box-shadow:0 5px 0 var(--surface-deep), var(--ambient-sm);
+    transition:transform var(--t), box-shadow var(--t), filter .12s ease; }
+  button:hover{ filter:brightness(1.03); }
+  button:active{ transform:translateY(5px); box-shadow:0 0 0 var(--surface-deep), var(--ambient-sm); }
+  button:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  button[disabled]{ opacity:.55; cursor:not-allowed; }
+  button.primary{ background:var(--primary); color:var(--on-accent); text-transform:uppercase; letter-spacing:.02em;
+    text-shadow:0 1px 1px rgba(20,30,25,.18); box-shadow:0 6px 0 var(--primary-deep), var(--ambient); }
+  button.primary:active{ transform:translateY(6px); box-shadow:0 0 0 var(--primary-deep), var(--ambient-sm); }
+  #startBtn{ background:var(--field-bg); box-shadow:0 6px 0 var(--field-edge), var(--ambient); }
+  #startBtn:active{ box-shadow:0 0 0 var(--field-edge), var(--ambient-sm); }
+  button.ghost{ background:transparent; box-shadow:none; color:var(--on-bg); text-decoration:underline; text-underline-offset:4px;
+    min-height:40px; padding:8px; font-weight:600; text-shadow:0 1px 2px rgba(20,30,25,.2); }
+  button.ghost:active{ transform:translateY(2px); box-shadow:none; }
 
-        .button:active {
-            transform: translate(var(--btn-border-size), var(--btn-border-size));
-            box-shadow: 0 0 0 0 var(--color-dark);
-        }
+  /* SETUP / HERO (title sits over the sunburst; no box) */
+  .setup{ display:flex; flex-direction:column; gap:18px; padding-bottom:30px; }
+  .hero{ text-align:center; padding:clamp(28px,8vw,52px) 12px clamp(6px,2vw,14px); }
+  .hero .hero-small{ font-family:var(--display); font-weight:500; text-transform:uppercase; font-size:clamp(1rem,4vw,1.4rem); line-height:1; letter-spacing:.05em; }
+  .hero .hero-big{ font-family:var(--display); font-weight:600; text-transform:uppercase; font-size:clamp(3rem,15vw,5rem); line-height:.85; letter-spacing:.01em;
+    color:var(--on-bg); text-shadow:0 3px 0 var(--title-edge), 0 8px 11px rgba(20,30,25,.26); }
+  .hero .hero-tag{ display:inline-block; margin-top:16px; font-family:var(--display); font-weight:500; font-size:.92rem;
+    background:var(--tag-bg); color:var(--on-bg); border-radius:var(--r-pill); padding:7px 18px; box-shadow:0 4px 0 var(--tag-deep); }
+  .intro{ margin:0; align-self:center; max-width:48ch; text-align:center; color:var(--on-bg); font-weight:600; font-size:.96rem; line-height:1.5; text-shadow:0 1px 2px rgba(20,30,25,.15); }
+  .field .lab{ font-family:var(--display); font-weight:600; font-size:.95rem; color:var(--on-bg); margin-bottom:8px; text-shadow:0 1px 2px rgba(20,30,25,.15); }
 
-        @media (prefers-color-scheme: dark) {
-            .button {
-                background: var(--color-primary-light);
-                color: var(--color-dark)
-            }
+  /* segmented (navy pill, active = teal) */
+  .seg{ display:flex; gap:6px; background:var(--seg-bg); border-radius:var(--r-pill); padding:6px; box-shadow:0 5px 0 var(--seg-deep), var(--ambient-sm); }
+  .seg button{ flex:1; min-height:46px; background:transparent; color:var(--on-bg); box-shadow:none; border-radius:var(--r-pill);
+    font-family:var(--display); font-weight:500; padding:10px 8px; transition:transform var(--t), background var(--t), box-shadow var(--t); }
+  .seg button:hover{ filter:none; }
+  .seg button:active{ transform:translateY(2px); box-shadow:none; }
+  .seg button[aria-pressed="true"]{ background:var(--accent); color:var(--on-accent); box-shadow:0 4px 0 var(--accent-deep); }
+  .seg-mode button{ font-size:.92rem; }
 
-            .button:hover {
-                background: var(--color-primary-light-fade);
-            }
-        }
-    </style>
+  /* theme picker (cards; selected = teal, raised) */
+  .themes{ display:grid; grid-template-columns:repeat(2,1fr); column-gap:12px; row-gap:18px; }
+  .theme-group-head{ grid-column:1 / -1; font-family:var(--display); font-weight:600; font-size:.82rem; text-transform:uppercase; letter-spacing:.06em; color:var(--on-bg); opacity:.7; margin:6px 2px -6px; display:flex; align-items:center; gap:8px; }
+  .theme-group-head::after{ content:""; flex:1; height:2px; border-radius:2px; background:var(--on-bg); opacity:.18; }
+  .theme-group-head:first-child{ margin-top:0; }
+  .theme-btn{ font-family:var(--display); display:flex; align-items:center; gap:12px; text-align:start; min-height:64px; padding:12px 14px;
+    background:var(--surface); color:var(--ink); border:3px solid var(--surface-line); border-radius:var(--r-lg);
+    box-shadow:0 5px 0 var(--surface-deep), var(--ambient-sm);
+    transition:transform var(--t), background var(--t), box-shadow var(--t), color var(--t), border-color var(--t); }
+  .theme-btn:active{ transform:translateY(5px); box-shadow:0 0 0 var(--surface-deep), var(--ambient-sm); }
+  .theme-btn .em{ font-size:30px; line-height:1; }
+  .theme-btn .txt{ display:flex; flex-direction:column; gap:1px; }
+  .theme-btn .nm{ font-family:var(--display); font-weight:600; font-size:15px; }
+  .theme-btn .sub{ font-family:var(--body); font-size:11px; color:var(--ink-soft); font-weight:500; }
+  .theme-btn[aria-pressed="true"]{ background:var(--accent); color:var(--on-accent); border-color:var(--accent-deep); box-shadow:0 5px 0 var(--accent-deep), var(--ambient-sm); }
+  .theme-btn[aria-pressed="true"] .sub{ color:var(--on-accent); opacity:.85; }
+
+  #startBtn{ width:100%; padding:16px; font-size:1.1rem; min-height:54px; }
+  .below{ display:flex; justify-content:center; }
+  #setup{ padding-bottom:calc(160px + env(safe-area-inset-bottom)); }
+  .start-bar{ position:fixed; left:0; right:0; bottom:0; z-index:7; display:flex; flex-direction:column; align-items:center; gap:8px;
+    padding:28px 14px calc(14px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, var(--home-bg) 62%, transparent); pointer-events:none; }
+  .start-bar #startBtn{ width:min(100%,520px); pointer-events:auto; }
+  .start-bar .below{ pointer-events:auto; }
+
+  /* PILL toolbar */
+  #game{ padding-bottom:calc(94px + env(safe-area-inset-bottom)); }
+  .pill{ position:fixed; bottom:calc(12px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%);
+    width:min(calc(100% - 20px),440px); z-index:6; display:flex; gap:4px; padding:8px;
+    background:var(--surface); border-radius:var(--r-lg); box-shadow:0 var(--lip) 0 var(--surface-deep), var(--ambient); }
+  .pill .cell{ flex:1; min-height:54px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    background:transparent; border:none; box-shadow:none; border-radius:14px; color:var(--ink); padding:6px 2px; min-width:0;
+    transition:transform var(--t), background-color var(--t), box-shadow var(--t); }
+  .pill .cell:hover{ filter:none; }
+  .pill .cell:active{ transform:translateY(1px); background:var(--surface-deep); box-shadow:inset 0 3px 6px rgba(0,0,0,.2); }
+  .pill .cell svg{ width:22px; height:22px; }
+  .pill .cell .clab{ font-family:var(--body); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--ink); opacity:.72; line-height:1; }
+  .langpair{ display:flex; align-items:center; gap:3px; font-family:var(--display); font-size:15px; font-weight:600; line-height:1; }
+  .langpair b{ color:var(--ink); opacity:.38; transition:opacity var(--t), color var(--t); }
+  .langpair b.on{ opacity:1; color:var(--accent-deep); }
+  .langpair .sep{ color:var(--ink); opacity:.38; font-weight:400; }
+
+  /* BOARD */
+  .board{ display:grid; grid-template-columns:repeat(auto-fill, minmax(104px, 1fr)); column-gap:12px; row-gap:18px; }
+  .tile{ position:relative; background:var(--surface); color:var(--ink); border:none; border-radius:var(--r);
+    padding:12px 6px 12px; display:flex; flex-direction:column; align-items:center; gap:3px; user-select:none; text-align:center; cursor:pointer;
+    box-shadow:0 var(--lip) 0 var(--surface-deep), var(--ambient-sm);
+    transition:transform .12s ease, box-shadow .12s ease, filter .2s ease, opacity .2s ease; }
+  .tile:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  .tile .emoji{ font-size:clamp(38px, 9vw, 52px); line-height:1.05; }
+  .tile .lbl{ font-family:var(--display); font-size:15px; font-weight:500; line-height:1.25; max-width:100%; overflow-wrap:break-word; hyphens:auto; -webkit-hyphens:auto; }
+  .tile .lbl.ar{ direction:rtl; font-family:var(--arabic); font-weight:600; font-size:17px; }
+  .tile .lbl2{ font-size:13px; color:var(--ink); opacity:.6; font-weight:600; line-height:1.3; }
+  .tile .lbl2.ar{ direction:rtl; font-family:var(--arabic); font-size:14px; }
+  .tile:active{ transform:translateY(var(--lip)); box-shadow:0 0 0 var(--surface-deep), var(--ambient-sm); }
+  .tile.out{ filter:grayscale(1); opacity:.42; transform:translateY(var(--lip)) scale(.96); box-shadow:0 0 0 var(--surface-deep); }
+
+  /* MENU (matches home bg) */
+  .menu-overlay{ position:fixed; inset:0; background:var(--overlay); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:8; }
+  .menu-overlay.open{ opacity:1; pointer-events:auto; }
+  .menu-panel{ position:fixed; top:0; left:0; height:100dvh; width:min(310px, 88vw); background:var(--menu-bg); color:var(--on-bg); z-index:9;
+    transform:translateX(-100%); transition:transform .25s ease; padding:20px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;
+    box-shadow:10px 0 34px rgba(20,15,5,.4); }
+  .menu-panel.open{ transform:translateX(0); }
+  .menu-panel h3{ margin:0 0 6px; font-family:var(--display); font-weight:600; font-size:1.2rem; color:var(--on-bg); text-shadow:0 1px 2px rgba(20,30,25,.2); }
+  .menu-panel .stack{ display:flex; flex-direction:column; gap:13px; }
+  .menu-panel .stack button{ display:flex; align-items:center; gap:12px; justify-content:flex-start; text-align:left;
+    background:var(--surface); color:var(--ink); box-shadow:0 5px 0 var(--surface-deep), var(--ambient-sm); }
+  .menu-panel .stack button svg{ width:20px; height:20px; flex:0 0 auto; color:var(--accent-deep); }
+  .menu-panel hr{ border:0; border-top:1px solid rgba(255,255,255,.18); margin:6px 0; width:100%; }
+  .menu-mode{ display:flex; flex-direction:column; gap:8px; }
+  .menu-mode .lab{ font-family:var(--display); font-weight:500; font-size:.95rem; color:var(--on-bg); text-shadow:0 1px 2px rgba(20,30,25,.2); }
+
+  /* MODALS */
+  .modal-bg{ position:fixed; inset:0; background:var(--overlay); display:none; align-items:center; justify-content:center; padding:20px; z-index:10; }
+  .modal-bg.open{ display:flex; }
+  .modal{ background:var(--surface); color:var(--ink); border:3px solid var(--surface-line); border-radius:var(--r-lg); padding:22px; width:min(340px,100%); text-align:center; box-shadow:var(--ambient); }
+  .modal.wide{ width:min(440px,100%); text-align:left; }
+  .modal h3{ margin:0 0 12px; font-family:var(--display); font-weight:600; font-size:1.25rem; }
+  .modal .label{ font-family:var(--display); font-weight:600; text-transform:uppercase; letter-spacing:.06em; font-size:.8rem; color:var(--muted); }
+  .modal .emoji{ font-size:60px; margin:6px 0; }
+  .modal .lbl{ font-family:var(--display); font-size:24px; font-weight:600; }
+  .modal .lbl .ar, .modal .lbl2.ar{ direction:rtl; font-family:var(--arabic); }
+  .modal .lbl2{ font-size:15px; color:var(--accent-deep); font-weight:700; }
+  .modal button.primary{ margin-top:18px; width:100%; }
+
+  /* secret modal = home colour + rotating sunburst; flip card with outline */
+  .modal.secret-modal{ position:relative; overflow:hidden; border:3px solid rgba(255,255,255,.92); color:var(--on-bg); background:var(--home-bg); }
+  .secret-modal::before{ content:""; position:absolute; top:50%; left:50%; width:210%; aspect-ratio:1; transform:translate(-50%,-50%);
+    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 15deg, var(--home-bg2) 15deg 30deg);
+    animation:sunspin 100s linear infinite; z-index:0; }
+  .secret-modal::after{ content:""; position:absolute; inset:0; z-index:0;
+    background:radial-gradient(circle at 50% 50%, transparent 8%, var(--home-edge) 105%); }
+  .secret-modal > *{ position:relative; z-index:1; }
+  .secret-modal .label{ color:var(--on-bg); text-shadow:0 1px 2px rgba(20,30,25,.25); }
+  .secret-card{ perspective:900px; margin:14px 0 4px; cursor:pointer; }
+  .sc-inner{ position:relative; width:100%; height:190px; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.2,.9,.3,1.2); }
+  .sc-inner.revealed{ transform:rotateY(180deg); }
+  .sc-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; border-radius:var(--r-lg); box-shadow:var(--ambient-sm); }
+  .sc-back{ background:var(--primary); color:var(--on-accent); border:3px solid rgba(255,250,235,.5); }
+  .sc-back svg{ width:42px; height:42px; }
+  .sc-hint{ font-family:var(--display); font-weight:500; text-transform:uppercase; letter-spacing:.06em; font-size:.85rem; }
+  .sc-front{ background:var(--surface); color:var(--ink); border:3px solid var(--surface-line); transform:rotateY(180deg); }
+  .sc-front .emoji{ font-size:54px; margin:0; }
+  .secret-modal .primary{ background:var(--surface); color:var(--ink); text-shadow:none; box-shadow:0 5px 0 var(--surface-deep), var(--ambient-sm); }
+  .secret-modal .primary:active{ transform:translateY(5px); box-shadow:0 0 0 var(--surface-deep), var(--ambient-sm); }
+  @keyframes popIn{ 0%{ transform:scale(.55); opacity:0; } 65%{ transform:scale(1.04); opacity:1; } 100%{ transform:scale(1); opacity:1; } }
+  .modal-bg.open .secret-modal{ animation:popIn .42s cubic-bezier(.2,1.3,.35,1); }
+
+  /* FAQ */
+  .faq-rows{ max-height:60vh; overflow-y:auto; margin:0 -2px; }
+  .qrow{ display:flex; align-items:flex-start; gap:12px; padding:12px 4px; border-top:2px dashed var(--surface-deep); }
+  .qrow:first-child{ border-top:0; }
+  .q-em{ font-size:24px; line-height:1.3; flex:0 0 auto; }
+  .q-text{ flex:1; min-width:0; }
+  .q-main{ font-family:var(--display); font-size:18px; font-weight:600; line-height:1.4; }
+  .q-main.ar, .q-sub.ar{ direction:rtl; font-family:var(--arabic); }
+  .q-sub{ color:var(--ink); opacity:.6; font-size:14px; font-weight:600; margin-top:2px; }
+  .faq-sub-head{ font-family:var(--display); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-deep); padding:16px 4px 2px; }
+
+  /* HOW TO (emoji steps) */
+  .howto-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; }
+  .howto-list li{ display:flex; align-items:flex-start; gap:12px; font-size:15px; line-height:1.4; font-weight:600; }
+  .howto-list .he{ font-size:22px; line-height:1.15; flex:0 0 auto; }
+  .howto-tip{ margin-top:14px; color:var(--ink); opacity:.7; font-size:14px; }
+
+  @media (prefers-reduced-motion: reduce){ .sc-inner,.menu-panel,.menu-overlay,.tile,button{ transition:none; } #sunburst,.secret-modal::before,.modal-bg.open .secret-modal{ animation:none; } }
+</style>
 </head>
-
 <body>
-    <header>
-        <h1>Guess Who 🚧</h1>
-        <h2>Work in progress</h2>
-        <a class="button" href="index.html">← Back home</a>
-    </header>
-</body></html>
+<div id="bg" aria-hidden="true"></div>
+<div id="sunburst" aria-hidden="true"></div>
+<div class="wrap">
+
+  <!-- SETUP -->
+  <section id="setup" class="setup">
+    <div class="hero">
+      <div class="hero-small title-depth">Guess</div>
+      <div class="hero-big">Who?</div>
+      <span class="hero-tag">two phones &middot; two languages &middot; one secret</span>
+    </div>
+    <p class="intro">Two players, two devices, the same set. Each of you gets a secret character. Take turns asking yes or no questions out loud in the language you're learning, and tap away the cards that don't fit.</p>
+
+    <div class="field">
+      <div class="lab">Which language do you want to learn?</div>
+      <div id="langSeg" class="seg">
+        <button data-lang="ar" aria-pressed="true">Arabic (Levantine)</button>
+        <button data-lang="nl" aria-pressed="false">Dutch</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="lab">Choose a set</div>
+      <div id="themeList" class="themes"></div>
+    </div>
+
+    <div id="startBar" class="start-bar">
+      <button id="startBtn" class="primary" disabled>Start game</button>
+      <div class="below"><button id="setupHow" class="ghost">How to play</button></div>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <div id="game" class="hidden">
+    <div id="board" class="board"></div>
+
+    <div class="pill">
+      <button id="hamBtn" class="cell" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="clab">Menu</span></button>
+      <button id="langBtn" class="cell" aria-label="Switch label language"><span class="langpair"><b id="langAr">ع</b><span class="sep">/</span><b id="langNl">NL</b></span><span class="clab">Language</span></button>
+      <button id="helpBtn" class="cell" aria-label="Useful questions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.3.8c0 1.8-2.7 2.1-2.7 3.9"/><path d="M12 17.4v.01"/></svg><span class="clab">Questions</span></button>
+      <button id="peekBtn" class="cell" aria-label="Reveal secret card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><span class="clab">Secret</span></button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SLIDEOUT MENU -->
+<div id="menuOverlay" class="menu-overlay"></div>
+<aside id="menuPanel" class="menu-panel" aria-hidden="true">
+  <h3>Menu</h3>
+  <div class="stack">
+    <button id="menuHow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.3.8c0 1.8-2.7 2.1-2.7 3.9"/><path d="M12 17.4v.01"/></svg><span>How to play</span></button>
+    <button id="menuReplay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg><span>Play again (same cards)</span></button>
+    <button id="menuBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Change set</span></button>
+  </div>
+  <hr>
+  <div class="menu-mode">
+    <span class="lab">Theme</span>
+    <div id="modeSeg" class="seg seg-mode" role="group" aria-label="Theme">
+      <button data-mode="light" aria-pressed="false">Light</button>
+      <button data-mode="dark" aria-pressed="false">Dark</button>
+      <button data-mode="system" aria-pressed="true">System</button>
+    </div>
+  </div>
+</aside>
+
+<!-- SECRET MODAL -->
+<div id="modalBg" class="modal-bg">
+  <div class="modal secret-modal">
+    <div class="label">Your secret character</div>
+    <div id="secretCard" class="secret-card" role="button" tabindex="0" aria-label="Tap to reveal your card">
+      <div id="scInner" class="sc-inner">
+        <div class="sc-face sc-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span class="sc-hint">Tap to reveal</span>
+        </div>
+        <div class="sc-face sc-front">
+          <div id="mEmoji" class="emoji"></div>
+          <div id="mLbl" class="lbl"></div>
+        </div>
+      </div>
+    </div>
+    <button id="closeModal" class="primary">Got it</button>
+  </div>
+</div>
+
+<!-- FAQ MODAL -->
+<div id="faqBg" class="modal-bg">
+  <div class="modal wide">
+    <h3>Useful questions</h3>
+    <div id="faqRows" class="faq-rows"></div>
+    <button id="closeFaq" class="primary">Close</button>
+  </div>
+</div>
+
+<!-- HOW TO PLAY MODAL -->
+<div id="howtoBg" class="modal-bg">
+  <div class="modal wide">
+    <h3>How to play</h3>
+    <ul class="howto-list">
+      <li><span class="he">📱</span><span>Open this page on both devices and pick the same set.</span></li>
+      <li><span class="he">🤫</span><span>Each player gets a secret character. Tap the eye to see yours.</span></li>
+      <li><span class="he">💬</span><span>Take turns asking yes or no questions out loud in the language you're learning.</span></li>
+      <li><span class="he">🚫</span><span>Tap a card to grey it out when it can't be the answer.</span></li>
+      <li><span class="he">🏆</span><span>First to guess the other player's character wins.</span></li>
+    </ul>
+    <div class="howto-tip">Tip: switch your label language anytime with the ع / NL button.</div>
+    <button id="closeHow" class="primary">Got it</button>
+  </div>
+</div>
+
+<!-- LEAVE CONFIRM -->
+<div id="confirmBg" class="modal-bg">
+  <div class="modal">
+    <div class="lbl" style="font-size:18px">Start over?</div>
+    <p style="color:var(--muted);font-size:14px;margin:8px 0 0">You've already flipped some cards. They'll be cleared.</p>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button id="confirmCancel" style="flex:1;width:auto">Cancel</button>
+      <button id="confirmOk" class="primary" style="flex:1;width:auto;margin-top:0">Continue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const THEMES = {
+  mensen: {
+    naam: "People", sub: "learn names", em: "🧑", dual: true, tier:"easy",
+    items: [
+      {e:"👨🏼", ar:"سامِر", nl:"Sander"},{e:"👩🏽", ar:"لينا", nl:"Lena"},{e:"🧔🏽", ar:"كَريم", nl:"Kasper"},
+      {e:"👱🏼‍♂️", ar:"رامي", nl:"Rik"},{e:"👱🏾‍♀️", ar:"هَلا", nl:"Hella"},{e:"👴🏼", ar:"عِماد", nl:"Henk"},
+      {e:"👵🏽", ar:"سَلمى", nl:"Selma"},{e:"👨🏾‍🦰", ar:"وَسيم", nl:"Wessel"},{e:"👩🏼‍🦰", ar:"رَنا", nl:"Renske"},
+      {e:"👨🏽‍🦳", ar:"نادِر", nl:"Niek"},{e:"👩🏾‍🦳", ar:"جُمانة", nl:"Johanna"},{e:"👨🏼‍🦲", ar:"مَروان", nl:"Maarten"},
+      {e:"👩🏽‍🦱", ar:"ريم", nl:"Rieke"},{e:"👨🏿‍🦱", ar:"زِياد", nl:"Sjoerd"},{e:"🧕🏽", ar:"ياسمين", nl:"Jasmijn"},
+      {e:"👳🏽‍♂️", ar:"طارِق", nl:"Teun"},{e:"👲🏼", ar:"باسِل", nl:"Bas"},{e:"🧓🏾", ar:"نور", nl:"Noor"}
+    ]
+  },
+  dieren: {
+    naam: "Animals", sub: "learn words", em: "🦊", tier:"easy",
+    items: [
+      {e:"🐶", ar:"كَلْب", nl:"hond"},{e:"🐱", ar:"قِطَّة", nl:"kat"},{e:"🦁", ar:"أَسَد", nl:"leeuw"},
+      {e:"🐯", ar:"نِمْر", nl:"tijger"},{e:"🐴", ar:"حْصان", nl:"paard"},{e:"🐮", ar:"بَقَرة", nl:"koe"},
+      {e:"🐷", ar:"خِنْزير", nl:"varken"},{e:"🐑", ar:"خَروف", nl:"schaap"},{e:"🐔", ar:"دَجاجة", nl:"kip"},
+      {e:"🐦", ar:"عُصْفور", nl:"vogel"},{e:"🦅", ar:"نِسْر", nl:"arend"},{e:"🦉", ar:"بومة", nl:"uil"},
+      {e:"🐸", ar:"ضِفْدَع", nl:"kikker"},{e:"🐢", ar:"سُلَحفاة", nl:"schildpad"},{e:"🐍", ar:"أَفعى", nl:"slang"},
+      {e:"🐟", ar:"سَمَكة", nl:"vis"},{e:"🐘", ar:"فيل", nl:"olifant"},{e:"🦒", ar:"زَرافة", nl:"giraf"}
+    ]
+  },
+  vogels: {
+    naam: "Birds", sub: "learn words", em: "🦅", tier:"hard",
+    items: [
+      {e:"🕊️", ar:"حَمامة", nl:"duif"},{e:"🦅", ar:"نِسِر", nl:"adelaar"},{e:"🦉", ar:"بومة", nl:"uil"},
+      {e:"🐓", ar:"ديك", nl:"haan"},{e:"🐔", ar:"دَجاجة", nl:"kip"},{e:"🦃", ar:"حَبَش", nl:"kalkoen"},
+      {e:"🦆", ar:"بَطّة", nl:"eend"},{e:"🦢", ar:"تِمّ", nl:"zwaan"},{e:"🪿", ar:"إوَزّة", nl:"gans"},
+      {e:"🐧", ar:"بَطريق", nl:"pinguïn"},{e:"🦩", ar:"فلامينغو", nl:"flamingo"},{e:"🦚", ar:"طاووس", nl:"pauw"},
+      {e:"🦜", ar:"بَبّغاء", nl:"papegaai"},{e:"🐦", ar:"عُصفور", nl:"vogel"},{e:"🐦‍⬛", ar:"غُراب", nl:"kraai"},
+      {e:"🐣", ar:"كَتكوت", nl:"kuiken"},{e:"🐥", ar:"صوص", nl:"kuikentje"}
+    ]
+  },
+  insecten: {
+    naam: "Bugs & crawlers", sub: "learn words", em: "🐝", tier:"hard",
+    items: [
+      {e:"🦂", ar:"عَقرَب", nl:"schorpioen"},{e:"🐝", ar:"نَحلة", nl:"bij"},{e:"🦋", ar:"فَراشة", nl:"vlinder"},
+      {e:"🐞", ar:"دَعسوقة", nl:"lieveheersbeestje"},{e:"🐜", ar:"نَملة", nl:"mier"},{e:"🦗", ar:"جَرادة", nl:"sprinkhaan"},
+      {e:"🪲", ar:"خُنفُسة", nl:"kever"},{e:"🪳", ar:"صَرصور", nl:"kakkerlak"},{e:"🕷️", ar:"عَنكَبوت", nl:"spin"},
+      {e:"🦟", ar:"ناموسة", nl:"mug"},{e:"🪰", ar:"دِبّانة", nl:"vlieg"},{e:"🐌", ar:"حَلَزون", nl:"slak"},
+      {e:"🐛", ar:"يَرَقة", nl:"rups"},{e:"🪱", ar:"دودة", nl:"worm"}
+    ]
+  },
+  water: {
+    naam: "Water animals", sub: "learn words", em: "🐟", tier:"hard",
+    items: [
+      {e:"🐟", ar:"سَمَكة", nl:"vis"},{e:"🐠", ar:"سَمَكة مْلَوّنة", nl:"tropische vis"},{e:"🐡", ar:"سَمَكة مْنَفّخة", nl:"kogelvis"},
+      {e:"🦈", ar:"قِرش", nl:"haai"},{e:"🐬", ar:"دولفين", nl:"dolfijn"},{e:"🐳", ar:"حوت", nl:"walvis"},
+      {e:"🦭", ar:"فُقمة", nl:"zeehond"},{e:"🐙", ar:"أَخطَبوط", nl:"octopus"},{e:"🦑", ar:"حَبّار", nl:"inktvis"},
+      {e:"🦀", ar:"سَرَطان", nl:"krab"},{e:"🦞", ar:"جَراد البَحر", nl:"kreeft"},{e:"🦐", ar:"جَمبَري", nl:"garnaal"},
+      {e:"🦪", ar:"مَحار", nl:"oester"},{e:"🪼", ar:"قِنديل البَحر", nl:"kwal"}
+    ]
+  },
+  klein: {
+    naam: "Small animals", sub: "learn words", em: "🐭", tier:"hard",
+    items: [
+      {e:"🐁", ar:"فار", nl:"muis"},{e:"🐀", ar:"جُرَذ", nl:"rat"},{e:"🐹", ar:"هامْستَر", nl:"hamster"},
+      {e:"🐇", ar:"أَرنَب", nl:"konijn"},{e:"🐈", ar:"قِطّة", nl:"kat"},{e:"🦔", ar:"قُنفُذ", nl:"egel"},
+      {e:"🐿️", ar:"سِنجاب", nl:"eekhoorn"},{e:"🦇", ar:"وَطواط", nl:"vleermuis"},{e:"🦊", ar:"ثَعلَب", nl:"vos"},
+      {e:"🦝", ar:"راكون", nl:"wasbeer"},{e:"🦨", ar:"ظَرِبان", nl:"stinkdier"},{e:"🦡", ar:"غُرَير", nl:"das"},
+      {e:"🦫", ar:"قُندُس", nl:"bever"},{e:"🦦", ar:"قُضاعة", nl:"otter"},{e:"🐸", ar:"ضِفدَع", nl:"kikker"},
+      {e:"🦎", ar:"سَحلِيّة", nl:"hagedis"},{e:"🐍", ar:"حَيّة", nl:"slang"},{e:"🐢", ar:"سُلَحفاة", nl:"schildpad"}
+    ]
+  },
+  middel: {
+    naam: "Medium animals", sub: "learn words", em: "🐕", tier:"hard",
+    items: [
+      {e:"🐕", ar:"كَلب", nl:"hond"},{e:"🐖", ar:"خَنزير", nl:"varken"},{e:"🐐", ar:"عَنزة", nl:"geit"},
+      {e:"🐑", ar:"خَروف", nl:"schaap"},{e:"🐏", ar:"كَبش", nl:"ram"},{e:"🦙", ar:"لاما", nl:"lama"},
+      {e:"🫏", ar:"حْمار", nl:"ezel"},{e:"🦌", ar:"غَزال", nl:"hert"},{e:"🐗", ar:"خَنزير بَرّي", nl:"wild zwijn"},
+      {e:"🐺", ar:"ذيب", nl:"wolf"},{e:"🐆", ar:"فَهد", nl:"luipaard"},{e:"🦘", ar:"كَنغَر", nl:"kangoeroe"},
+      {e:"🐒", ar:"قِرد", nl:"aap"},{e:"🦧", ar:"أورانغوتان", nl:"orang-oetan"},{e:"🐨", ar:"كوالا", nl:"koala"},
+      {e:"🦥", ar:"كَسلان", nl:"luiaard"},{e:"🐊", ar:"تِمساح", nl:"krokodil"}
+    ]
+  },
+  groot: {
+    naam: "Big animals", sub: "learn words", em: "🐘", tier:"hard",
+    items: [
+      {e:"🐪", ar:"جَمَل", nl:"dromedaris"},{e:"🐫", ar:"جَمَل بْسَنامَين", nl:"kameel"},{e:"🐴", ar:"حْصان", nl:"paard"},
+      {e:"🐂", ar:"ثور", nl:"os"},{e:"🐃", ar:"جاموس", nl:"buffel"},{e:"🐄", ar:"بَقَرة", nl:"koe"},
+      {e:"🫎", ar:"موظ", nl:"eland"},{e:"🦁", ar:"أَسَد", nl:"leeuw"},{e:"🐯", ar:"نِمر", nl:"tijger"},
+      {e:"🐘", ar:"فيل", nl:"olifant"},{e:"🦏", ar:"وَحيد القَرن", nl:"neushoorn"},{e:"🦛", ar:"فَرَس النَهر", nl:"nijlpaard"},
+      {e:"🦒", ar:"زَرافة", nl:"giraf"},{e:"🦓", ar:"حْمار وَحشي", nl:"zebra"},{e:"🐻", ar:"دُبّ", nl:"beer"},
+      {e:"🐼", ar:"باندا", nl:"panda"},{e:"🦍", ar:"غوريلا", nl:"gorilla"},{e:"🦬", ar:"بايسون", nl:"bizon"}
+    ]
+  },
+  fruit: {
+    naam: "Fruit", sub: "learn words", em: "🍎", tier:"easy",
+    items: [
+      {e:"🍎", ar:"تُفّاحة", nl:"appel"},{e:"🍐", ar:"إجّاصة", nl:"peer"},{e:"🍊", ar:"بُرتُقالة", nl:"sinaasappel"},
+      {e:"🍋", ar:"لَيمونة", nl:"citroen"},{e:"🍌", ar:"موزة", nl:"banaan"},{e:"🍉", ar:"بَطّيخة", nl:"watermeloen"},
+      {e:"🍇", ar:"عِنَب", nl:"druiven"},{e:"🍓", ar:"فَراولة", nl:"aardbei"},{e:"🫐", ar:"توت", nl:"bosbes"},
+      {e:"🍒", ar:"كَرَز", nl:"kers"},{e:"🍑", ar:"خوخة", nl:"perzik"},{e:"🥭", ar:"مانجا", nl:"mango"},
+      {e:"🍍", ar:"أَناناس", nl:"ananas"},{e:"🥥", ar:"جوز هِند", nl:"kokosnoot"},{e:"🥝", ar:"كيوي", nl:"kiwi"},
+      {e:"🫒", ar:"زَيتون", nl:"olijf"},{e:"🥑", ar:"أفوكادو", nl:"avocado"}
+    ]
+  },
+  groente: {
+    naam: "Vegetables", sub: "learn words", em: "🥕", tier:"easy",
+    items: [
+      {e:"🍆", ar:"باذِنجان", nl:"aubergine"},{e:"🥔", ar:"بَطاطا", nl:"aardappel"},{e:"🥕", ar:"جَزَرة", nl:"wortel"},
+      {e:"🌽", ar:"ذُرة", nl:"maïs"},{e:"🌶️", ar:"فِلفِل حارّ", nl:"pepertje"},{e:"🫑", ar:"فِلفِل حِلو", nl:"paprika"},
+      {e:"🥒", ar:"خيار", nl:"komkommer"},{e:"🥬", ar:"خَسّ", nl:"sla"},{e:"🥦", ar:"بروكلي", nl:"broccoli"},
+      {e:"🧄", ar:"ثوم", nl:"knoflook"},{e:"🧅", ar:"بَصَلة", nl:"ui"},{e:"🍅", ar:"بَندورة", nl:"tomaat"},
+      {e:"🍄", ar:"فِطر", nl:"paddenstoel"},{e:"🥜", ar:"فول سوداني", nl:"pinda"},{e:"🌰", ar:"كَستَنا", nl:"kastanje"}
+    ]
+  },
+  beroepen: {
+    naam: "Jobs", sub: "learn words", em: "👮", tier:"easy",
+    items: [
+      {e:"👨‍⚕️", ar:"طَبيب", nl:"dokter"},{e:"👩‍⚕️", ar:"مُمَرِّضة", nl:"verpleegster"},{e:"👩‍🏫", ar:"مُعَلِّمة", nl:"lerares"},
+      {e:"👮", ar:"شُرطي", nl:"politieagent"},{e:"👨‍🍳", ar:"طَبّاخ", nl:"kok"},{e:"👨‍🚒", ar:"إطفائي", nl:"brandweerman"},
+      {e:"👨‍🌾", ar:"فَلّاح", nl:"boer"},{e:"👨‍🔧", ar:"ميكانيكي", nl:"monteur"},{e:"👨‍🔬", ar:"عالِم", nl:"wetenschapper"},
+      {e:"👨‍💻", ar:"مُبَرمِج", nl:"programmeur"},{e:"👨‍✈️", ar:"طَيّار", nl:"piloot"},{e:"👨‍🎨", ar:"رَسّام", nl:"schilder"},
+      {e:"👨‍🚀", ar:"رائِد فَضا", nl:"astronaut"},{e:"👷", ar:"عامِل بِنا", nl:"bouwvakker"},{e:"💂", ar:"حارِس", nl:"bewaker"},
+      {e:"🕵️", ar:"مُحَقِّق", nl:"detective"},{e:"👨‍⚖️", ar:"قاضي", nl:"rechter"},{e:"🧑‍🎤", ar:"مُغَنّي", nl:"zanger"}
+    ]
+  },
+  vervoer: {
+    naam: "Transport", sub: "learn words", em: "🚗", tier:"easy",
+    items: [
+      {e:"🚗", ar:"سَيّارة", nl:"auto"},{e:"🚌", ar:"باص", nl:"bus"},{e:"🚆", ar:"قِطار", nl:"trein"},
+      {e:"🚲", ar:"بِسِكليت", nl:"fiets"},{e:"🏍️", ar:"موتوسيكل", nl:"motor"},{e:"✈️", ar:"طَيّارة", nl:"vliegtuig"},
+      {e:"🚁", ar:"هيليكوبتر", nl:"helikopter"},{e:"🚢", ar:"سَفينة", nl:"schip"},{e:"⛵", ar:"قارِب", nl:"boot"},
+      {e:"🚕", ar:"تاكسي", nl:"taxi"},{e:"🚑", ar:"إسعاف", nl:"ambulance"},{e:"🚒", ar:"مَطافي", nl:"brandweer"},
+      {e:"🚓", ar:"سَيّارة شُرطة", nl:"politieauto"},{e:"🚚", ar:"شاحنة", nl:"vrachtwagen"},{e:"🚜", ar:"جَرّار", nl:"tractor"},
+      {e:"🛴", ar:"سْكوتر", nl:"step"},{e:"🚀", ar:"صاروخ", nl:"raket"},{e:"🚠", ar:"تِلِفريك", nl:"kabelbaan"}
+    ]
+  },
+  eten: {
+    naam: "Food & drinks", sub: "learn words", em: "🍞", tier:"easy",
+    items: [
+      {e:"🥩", ar:"لَحمة", nl:"vlees"},{e:"🐟", ar:"سَمَك", nl:"vis"},{e:"🍞", ar:"خُبز", nl:"brood"},
+      {e:"🧀", ar:"جِبنة", nl:"kaas"},{e:"🥚", ar:"بيضة", nl:"ei"},{e:"🍚", ar:"رُزّ", nl:"rijst"},
+      {e:"🍟", ar:"بَطاطا مَقلية", nl:"friet"},{e:"🍗", ar:"دَجاج", nl:"kip"},{e:"🍲", ar:"شوربة", nl:"soep"},
+      {e:"🫒", ar:"زَيتون", nl:"olijven"},{e:"🍝", ar:"مَعكَرونة", nl:"pasta"},{e:"🍰", ar:"كَيكة", nl:"taart"},
+      {e:"🍯", ar:"عَسَل", nl:"honing"},{e:"🍦", ar:"بوظة", nl:"ijs"},{e:"☕", ar:"قَهوة", nl:"koffie"},
+      {e:"🍵", ar:"شاي", nl:"thee"},{e:"🥛", ar:"حليب", nl:"melk"},{e:"🧃", ar:"عَصير", nl:"sap"}
+    ]
+  },
+  plaatsen: {
+    naam: "Places", sub: "learn words", em: "🏠", tier:"easy",
+    items: [
+      {e:"🏠", ar:"بيت", nl:"huis"},{e:"🏫", ar:"مَدرسة", nl:"school"},{e:"🏥", ar:"مُستَشفى", nl:"ziekenhuis"},
+      {e:"🏪", ar:"دُكّان", nl:"winkel"},{e:"🏨", ar:"فُندُق", nl:"hotel"},{e:"🏦", ar:"بَنك", nl:"bank"},
+      {e:"🍽️", ar:"مَطعَم", nl:"restaurant"},{e:"🏛️", ar:"مَتحَف", nl:"museum"},{e:"🌉", ar:"جِسر", nl:"brug"},
+      {e:"🏰", ar:"قَلعة", nl:"kasteel"},{e:"🗼", ar:"بُرج", nl:"toren"},{e:"🏭", ar:"مَصنَع", nl:"fabriek"},
+      {e:"🏟️", ar:"مَلعَب", nl:"stadion"},{e:"✈️", ar:"مَطار", nl:"luchthaven"},{e:"🚉", ar:"مَحَطّة", nl:"station"},
+      {e:"📚", ar:"مَكتَبة", nl:"bibliotheek"},{e:"🌳", ar:"حَديقة", nl:"park"},{e:"🏖️", ar:"شاطئ", nl:"strand"}
+    ]
+  },
+  kleding: {
+    naam: "Clothing", sub: "learn words", em: "👕", tier:"easy",
+    items: [
+      {e:"👕", ar:"تي شيرت", nl:"t-shirt"},{e:"👖", ar:"بَنطَلون", nl:"broek"},{e:"👗", ar:"فُستان", nl:"jurk"},
+      {e:"🧥", ar:"جاكيت", nl:"jas"},{e:"👔", ar:"كرافة", nl:"stropdas"},{e:"🧦", ar:"كَلسات", nl:"sokken"},
+      {e:"👟", ar:"صَباط", nl:"schoen"},{e:"👢", ar:"بوط", nl:"laars"},{e:"🧢", ar:"قُبّعة", nl:"pet"},
+      {e:"🧣", ar:"شال", nl:"sjaal"},{e:"🧤", ar:"كُفوف", nl:"handschoenen"},{e:"👜", ar:"شَنطة", nl:"tas"},
+      {e:"👓", ar:"نَضّارات", nl:"bril"},{e:"⌚", ar:"ساعة إيد", nl:"horloge"},{e:"💍", ar:"خاتم", nl:"ring"},
+      {e:"🩳", ar:"شورت", nl:"korte broek"},{e:"👚", ar:"بلوزة", nl:"blouse"},{e:"🩴", ar:"شَحّاطة", nl:"slippers"}
+    ]
+  },
+  muziek: {
+    naam: "Music", sub: "learn words", em: "🎸", tier:"hard",
+    items: [
+      {e:"🎸", ar:"جيتار", nl:"gitaar"},{e:"🎻", ar:"كَمان", nl:"viool"},{e:"🪕", ar:"بانجو", nl:"banjo"},
+      {e:"🎷", ar:"ساكسوفون", nl:"saxofoon"},{e:"🎺", ar:"تْرومبيت", nl:"trompet"},{e:"🪈", ar:"ناي", nl:"fluit"},
+      {e:"📯", ar:"بوق", nl:"hoorn"},{e:"🥁", ar:"طَبل", nl:"trommel"},{e:"🪘", ar:"دَربَكة", nl:"handtrommel"},
+      {e:"🎹", ar:"بيانو", nl:"piano"},{e:"🪗", ar:"أَكورديون", nl:"accordeon"}
+    ]
+  },
+  zoet: {
+    naam: "Sweets", sub: "learn words", em: "🍦", tier:"hard",
+    items: [
+      {e:"🍦", ar:"بوظة", nl:"ijs"},{e:"🍩", ar:"دونات", nl:"donut"},{e:"🍪", ar:"بِسكوِت", nl:"koekje"},
+      {e:"🍰", ar:"كَيكة", nl:"taart"},{e:"🧁", ar:"كَب كيك", nl:"cupcake"},{e:"🍫", ar:"شوكولا", nl:"chocolade"},
+      {e:"🍬", ar:"مَلبّس", nl:"snoepje"},{e:"🍭", ar:"مَصّاصة", nl:"lolly"},{e:"🍮", ar:"مُهَلَّبية", nl:"pudding"},
+      {e:"🍯", ar:"عَسَل", nl:"honing"},{e:"🧇", ar:"وافِل", nl:"wafel"},{e:"🥞", ar:"بان كيك", nl:"pannenkoek"}
+    ]
+  },
+  accessoires: {
+    naam: "Accessories & aids", sub: "learn words", em: "🦽", tier:"hard",
+    items: [
+      {e:"👓", ar:"نَضّارات", nl:"bril"},{e:"🕶️", ar:"نَضّارات شَمس", nl:"zonnebril"},{e:"👜", ar:"شَنطة", nl:"handtas"},
+      {e:"👛", ar:"جُزدان", nl:"portemonnee"},{e:"🎒", ar:"شَنطة ضَهر", nl:"rugzak"},{e:"💼", ar:"شَنطة مَكتَب", nl:"aktetas"},
+      {e:"💍", ar:"خاتِم", nl:"ring"},{e:"🌂", ar:"شَمسِيّة", nl:"paraplu"},{e:"🧳", ar:"شَنطة سَفَر", nl:"reiskoffer"},
+      {e:"🦽", ar:"كُرسي مُتَحَرِّك", nl:"rolstoel"},{e:"🦯", ar:"عَصا المَكفوفين", nl:"taststok"},{e:"🩼", ar:"عُكّاز", nl:"kruk"},
+      {e:"🦻", ar:"سَمّاعة أُذُن", nl:"gehoorapparaat"},{e:"🦾", ar:"إيد صِناعية", nl:"prothese-arm"},{e:"🦿", ar:"إجر صِناعية", nl:"prothese-been"},
+      {e:"🦮", ar:"كَلب إرشاد", nl:"geleidehond"},{e:"💊", ar:"حَبّة دَوا", nl:"medicijn"},{e:"🩹", ar:"لَزقة", nl:"pleister"}
+    ]
+  },
+  kleding2: {
+    naam: "Clothing+", sub: "learn words", em: "👑", tier:"hard",
+    items: [
+      {e:"👑", ar:"تاج", nl:"kroon"},{e:"👳", ar:"عِمامة", nl:"tulband"},{e:"🤵", ar:"بَدلة", nl:"pak"},
+      {e:"🧢", ar:"كاسكيت", nl:"pet"},{e:"👒", ar:"قُبّعة", nl:"zonnehoed"},{e:"⛑️", ar:"خوذة", nl:"helm"},
+      {e:"🧕", ar:"حِجاب", nl:"hoofddoek"},{e:"👕", ar:"تي شيرت", nl:"t-shirt"},{e:"👔", ar:"كرافة", nl:"stropdas"},
+      {e:"🧥", ar:"جاكيت", nl:"jas"},{e:"👗", ar:"فُستان", nl:"jurk"},{e:"🩱", ar:"مايو", nl:"badpak"},
+      {e:"👖", ar:"بَنطَلون", nl:"broek"},{e:"🩳", ar:"شورت", nl:"korte broek"},{e:"🩲", ar:"كَلسون", nl:"onderbroek"},
+      {e:"🧦", ar:"كَلسات", nl:"sokken"},{e:"🧤", ar:"كُفوف", nl:"handschoenen"},{e:"🧣", ar:"شال", nl:"sjaal"},
+      {e:"👟", ar:"صَباط رياضي", nl:"sportschoen"},{e:"👠", ar:"كَعب عالي", nl:"hak"},{e:"🥿", ar:"بالارينا", nl:"ballerina"},
+      {e:"👢", ar:"بوط", nl:"laars"},{e:"🥾", ar:"بوط مَشي", nl:"wandelschoen"},{e:"🩴", ar:"شَحّاطة", nl:"slipper"}
+    ]
+  }
+};
+
+const HELPER = {
+  mensen: [
+    {em:"👫", ar:"هُوّي رِجّال ولّا مَرا؟", nl:"Is het een man of een vrouw?"},
+    {em:"🧔", ar:"عِندو دَقِن؟", nl:"Heeft hij een baard?"},
+    {em:"👓", ar:"عَم بيلبِس نَضّارة؟", nl:"Draagt hij of zij een bril?"},
+    {em:"🧢", ar:"لابِس شي عَ راسو؟", nl:"Draagt hij iets op zijn hoofd?"},
+    {em:"🎨", ar:"شو لون شَعرو؟", nl:"Welke haarkleur?"},
+    {em:"💇", ar:"شَعرو طَويل؟", nl:"Is het haar lang?"},
+    {em:"✋", ar:"شو لون بَشَرتو؟", nl:"Welke huidskleur?"},
+    {em:"👴", ar:"كبير بالعُمر؟", nl:"Is de persoon ouder?"}
+  ],
+  dieren: [
+    {em:"🦁", ar:"هَيدا حَيوان بَري؟", nl:"Is het een wild dier?"},
+    {em:"🏠", ar:"بيعيش بِالبَيت؟", nl:"Woont het in huis?"},
+    {em:"🍖", ar:"بياكُل لَحمة؟", nl:"Eet het vlees?"},
+    {em:"🦅", ar:"بيطير؟", nl:"Kan het vliegen?"},
+    {em:"🐾", ar:"عِندو أربَع إجرين؟", nl:"Heeft het vier poten?"},
+    {em:"🌊", ar:"بيعيش بِالمَيّ؟", nl:"Leeft het in het water?"},
+    {em:"🐈", ar:"إلو ديل؟", nl:"Heeft het een staart?"},
+    {em:"🐘", ar:"كبير بالحَجِم؟", nl:"Is het groot?"}
+  ],
+  vogels: [
+    {em:"🪽", ar:"بيقدِر يطير؟", nl:"Kan het vliegen?"},
+    {em:"🦅", ar:"طير جارِح؟", nl:"Is het een roofvogel?"},
+    {em:"💧", ar:"طير مايّ؟", nl:"Is het een watervogel?"},
+    {em:"🗣️", ar:"بيقدِر يِحكي؟", nl:"Kan het praten?"},
+    {em:"🌈", ar:"مْلَوّن؟", nl:"Is het kleurrijk?"},
+    {em:"🐔", ar:"مِن الدَواجِن؟", nl:"Houd je het als pluimvee?"}
+  ],
+  insecten: [
+    {em:"🪽", ar:"عِندو جْناح؟", nl:"Heeft het vleugels?"},
+    {em:"⚡", ar:"بيلسَع وِلّا بيعَضّ؟", nl:"Steekt of bijt het?"},
+    {em:"🦵", ar:"عِندو سِت إجرين أو أكتَر؟", nl:"Heeft het zes poten of meer?"},
+    {em:"🔊", ar:"بيطلِّع صوت؟", nl:"Maakt het geluid?"},
+    {em:"🏠", ar:"بيعيش بِالبَيت؟", nl:"Leeft het in huis?"}
+  ],
+  water: [
+    {em:"🐟", ar:"سَمَكة وِلّا حَيوان ثَديي؟", nl:"Is het een vis of een zoogdier?"},
+    {em:"🛡️", ar:"عِندو صَدَفة أو قِشرة قاسية؟", nl:"Heeft het een pantser of schaal?"},
+    {em:"🐙", ar:"عِندو مَجَسّات؟", nl:"Heeft het tentakels?"},
+    {em:"🍤", ar:"مِن المَأكولات البَحريّة؟", nl:"Eet je het als zeevruchten?"},
+    {em:"🦷", ar:"بيقدِر يعَضّ؟", nl:"Kan het bijten?"}
+  ],
+  klein: [
+    {em:"🐭", ar:"مِن القَوارِض؟", nl:"Is het een knaagdier?"},
+    {em:"🦔", ar:"عِندو شوك؟", nl:"Heeft het stekels?"},
+    {em:"🐍", ar:"عِندو حَراشِف؟", nl:"Heeft het schubben?"},
+    {em:"🦵", ar:"عِندو إجرين؟", nl:"Heeft het poten?"},
+    {em:"💧", ar:"بيعيش حَوالي المَيّ؟", nl:"Leeft het bij water?"},
+    {em:"🦇", ar:"بيقدِر يطير؟", nl:"Kan het vliegen?"},
+    {em:"🐿️", ar:"ذيلو كبير وكَثيف؟", nl:"Heeft het een pluimstaart?"}
+  ],
+  middel: [
+    {em:"🐴", ar:"عِندو حَوافِر؟", nl:"Heeft het hoeven?"},
+    {em:"🦌", ar:"عِندو قْرون؟", nl:"Heeft het horens of een gewei?"},
+    {em:"🐆", ar:"عِندو بُقَع؟", nl:"Heeft het vlekken?"},
+    {em:"🦘", ar:"عِندو جِراب؟", nl:"Heeft het een buidel?"},
+    {em:"🐒", ar:"بيتسَلَّق عَالشَجَر؟", nl:"Klimt het?"},
+    {em:"🥩", ar:"بياكُل لَحمة؟", nl:"Eet het vlees?"},
+    {em:"🧍", ar:"بيوقَف مُنتَصِب؟", nl:"Staat het rechtop?"}
+  ],
+  groot: [
+    {em:"🐘", ar:"عِندو خُرطوم؟", nl:"Heeft het een slurf?"},
+    {em:"🐫", ar:"عِندو سَنام؟", nl:"Heeft het een bult?"},
+    {em:"🦓", ar:"عِندو خْطوط؟", nl:"Heeft het strepen?"},
+    {em:"🦒", ar:"رَقَبتو طَويلة؟", nl:"Heeft het een lange nek?"},
+    {em:"🥩", ar:"بياكُل لَحمة؟", nl:"Eet het vlees?"},
+    {em:"💧", ar:"بيعيش بِالمَيّ؟", nl:"Leeft het in of bij water?"},
+    {em:"🦌", ar:"عِندو قْرون مْتَفَرّعة؟", nl:"Heeft het een gewei?"}
+  ],
+  fruit: [
+    {em:"🍃", ar:"بيتقَشّر؟", nl:"Gaat er een schil af?"},
+    {em:"🌳", ar:"بينبِت عَ شَجرة؟", nl:"Groeit het aan een boom?"},
+    {em:"🎨", ar:"شو لونو؟", nl:"Welke kleur heeft het?"},
+    {em:"🟤", ar:"إلو بِزرة كبيرة؟", nl:"Heeft het één grote pit?"},
+    {em:"🍇", ar:"عَنقود وِلّا حَبّة؟", nl:"Is het een tros of een losse bes?"}
+  ],
+  groente: [
+    {em:"🌱", ar:"بينبِت تَحت الأرض؟", nl:"Groeit het onder de grond?"},
+    {em:"🌶️", ar:"حِرّيف؟", nl:"Is het scherp of heet?"},
+    {em:"🥬", ar:"وَرَق وِلّا مَلفوف؟", nl:"Is het blad of kool?"},
+    {em:"🥗", ar:"بْتاكلو ني؟", nl:"Eet je het rauw?"},
+    {em:"🌰", ar:"إلو قِشرة قاسية؟", nl:"Zit het in een schil of dop?"}
+  ],
+  beroepen: [
+    {em:"🌳", ar:"بيشتغِل بَرّا؟", nl:"Werkt hij of zij buiten?"},
+    {em:"🦺", ar:"بيلبِس بَدلة خاصّة؟", nl:"Draagt hij speciale kleding?"},
+    {em:"🏥", ar:"بيشتغِل بِالمُستَشفى؟", nl:"Werkt hij in een ziekenhuis?"},
+    {em:"🎓", ar:"لازِم شَهادة جامعة؟", nl:"Heb je er een diploma voor nodig?"},
+    {em:"👥", ar:"بيتعامَل مَع ناس كتير؟", nl:"Heeft hij met veel mensen te maken?"},
+    {em:"✋", ar:"بيشتغِل بإيدو؟", nl:"Werkt hij met zijn handen?"},
+    {em:"🤝", ar:"بيساعِد الناس؟", nl:"Helpt hij mensen?"},
+    {em:"🏢", ar:"بيشتغِل بمَكتَب؟", nl:"Werkt hij op kantoor?"}
+  ],
+  vervoer: [
+    {em:"🛞", ar:"إلو دَواليب؟", nl:"Heeft het wielen?"},
+    {em:"✈️", ar:"بيطير؟", nl:"Vliegt het?"},
+    {em:"🌊", ar:"بيمشي عَ المَيّ؟", nl:"Gaat het over water?"},
+    {em:"⚙️", ar:"إلو موتور؟", nl:"Heeft het een motor?"},
+    {em:"👥", ar:"نَقل عام؟", nl:"Is het openbaar vervoer?"},
+    {em:"🚌", ar:"بيشيل ناس كتير؟", nl:"Vervoert het veel mensen?"},
+    {em:"⚡", ar:"سَريع؟", nl:"Is het snel?"},
+    {em:"🚨", ar:"مَركَبة طَوارِئ؟", nl:"Is het een hulpvoertuig?"}
+  ],
+  eten: [
+    {em:"🍬", ar:"حِلو؟", nl:"Is het zoet?"},
+    {em:"🥤", ar:"هَيدا مَشروب؟", nl:"Is het een drankje?"},
+    {em:"🔥", ar:"بيتاكَل سُخن؟", nl:"Wordt het warm gegeten?"},
+    {em:"🍖", ar:"فيه لَحمة؟", nl:"Zit er vlees in?"},
+    {em:"⚪", ar:"لونو أبيَض؟", nl:"Is het wit?"},
+    {em:"🌅", ar:"بيتاكَل عَ الفطور؟", nl:"Eet je het bij het ontbijt?"},
+    {em:"🧂", ar:"مالِح؟", nl:"Is het hartig?"},
+    {em:"🥖", ar:"بيتعمَل بالفُرن؟", nl:"Wordt het in de oven gebakken?"}
+  ],
+  plaatsen: [
+    {em:"🛏️", ar:"بتسكُن فيه؟", nl:"Woon je er?"},
+    {em:"🎓", ar:"بتتعَلَّم فيه؟", nl:"Leer je er?"},
+    {em:"🛒", ar:"بتشتري فيه؟", nl:"Koop je er dingen?"},
+    {em:"🍽️", ar:"بتاكُل فيه؟", nl:"Eet je er?"},
+    {em:"✈️", ar:"إلو عِلاقة بالسَّفَر؟", nl:"Heeft het met reizen te maken?"},
+    {em:"⚽", ar:"بتلعَب رياضة فيه؟", nl:"Sport je er?"},
+    {em:"🌳", ar:"بَرّا بالطبيعة؟", nl:"Is het buiten in de natuur?"},
+    {em:"🏢", ar:"مَبنى كبير؟", nl:"Is het een groot gebouw?"}
+  ],
+  kleding: [
+    {em:"🧢", ar:"بتلبسو عَ راسَك؟", nl:"Draag je het op je hoofd?"},
+    {em:"🦶", ar:"بتلبسو عَ إجريك؟", nl:"Draag je het aan je voeten?"},
+    {em:"✋", ar:"بتلبسو عَ إيديك؟", nl:"Draag je het aan je handen?"},
+    {em:"💍", ar:"هَيدا إكسسوار؟", nl:"Is het een accessoire?"},
+    {em:"👕", ar:"إلو كُمّان؟", nl:"Heeft het mouwen?"},
+    {em:"❄️", ar:"بتلبسو بالشِتي؟", nl:"Draag je het in de winter?"},
+    {em:"👟", ar:"هَيدا صَباط؟", nl:"Is het schoeisel?"},
+    {em:"⬛", ar:"لونو غامِق؟", nl:"Is het een donkere kleur?"}
+  ],
+  muziek: [
+    {em:"🎸", ar:"إلو أوتار؟", nl:"Heeft het snaren?"},
+    {em:"🎷", ar:"بْتِنفُخ فيه؟", nl:"Blaas je erin?"},
+    {em:"🥁", ar:"بْتِضرُب عَليه؟", nl:"Sla je erop?"},
+    {em:"🎹", ar:"إلو مَفاتيح؟", nl:"Heeft het toetsen?"},
+    {em:"🎺", ar:"خَشَب وِلّا نُحاس؟", nl:"Is het van hout of koper?"},
+    {em:"🙌", ar:"بْتِمسكو بإيدَك وِلّا عَالأرض؟", nl:"Houd je het vast of staat het op de grond?"}
+  ],
+  zoet: [
+    {em:"❄️", ar:"بارِد وِلّا مْجَمّد؟", nl:"Is het koud of bevroren?"},
+    {em:"🥐", ar:"عَجينة مَخبوزة؟", nl:"Is het gebakken deeg?"},
+    {em:"🍫", ar:"فيه شوكولا؟", nl:"Zit er chocola in?"},
+    {em:"🍭", ar:"عَ عود؟", nl:"Zit het op een stokje?"},
+    {em:"🍰", ar:"كَيكة كاملة وِلّا قِطعة؟", nl:"Hele taart of een stuk?"}
+  ],
+  accessoires: [
+    {em:"🦽", ar:"بْيِساعدَك عَالمَشي؟", nl:"Helpt het je met bewegen of lopen?"},
+    {em:"👜", ar:"بْتِحملو بإيدَك وِلّا عَ كِتفَك؟", nl:"Draag je het in je hand of over je schouder?"},
+    {em:"👓", ar:"بْتِلبسو عَ وِجّك؟", nl:"Zit het op je gezicht?"},
+    {em:"💊", ar:"شي طِبّي؟", nl:"Is het iets medisch?"}
+  ],
+  kleding2: [
+    {em:"🧢", ar:"بْتِلبسو عَ راسَك؟", nl:"Draag je het op je hoofd?"},
+    {em:"⛑️", ar:"هُوّي خوذة؟", nl:"Is het een helm?"},
+    {em:"👑", ar:"تَبَع مَلِك وِلّا مَلِكة؟", nl:"Is het van een koning of koningin?"},
+    {em:"👟", ar:"بْتِلبسو بإجرَيك؟", nl:"Draag je het aan je voeten?"},
+    {em:"👠", ar:"إلو كَعب؟", nl:"Heeft het een hak?"},
+    {em:"👕", ar:"بْتِلبسو عَ فوق؟", nl:"Draag je het op je bovenlichaam?"},
+    {em:"👔", ar:"هِيّي كرافة؟", nl:"Is het een stropdas?"},
+    {em:"🩱", ar:"لِباس سِباحة؟", nl:"Is het zwemkleding?"}
+  ]
+};
+
+const COMMON = [
+  {em:"🔄", ar:"دوري / دورَك", nl:"mijn beurt / jouw beurt"},
+  {em:"✅", ar:"جاوِب بس بآه أو لأ", nl:"antwoord alleen met ja of nee"},
+  {em:"🔁", ar:"ما فهِمت، فيك تعيد؟", nl:"ik snapte het niet, kun je het herhalen?"},
+  {em:"1️⃣", ar:"ضَلّ عندي وحدة", nl:"ik heb nog één kaart over"},
+  {em:"💡", ar:"بظُنّ عرِفت مين", nl:"ik denk dat ik weet wie het is"},
+  {em:"🎯", ar:"هَيدا هُوّي السِرّ تَبَعَك؟", nl:"is dit jouw geheime kaart?"},
+  {em:"👁️", ar:"اكشِف كرتَك", nl:"laat je kaart zien"}
+];
+
+
+
+const ALG = [
+  {em:"📏", ar:"كبير / صْغير", nl:"groot / klein"},
+  {em:"📐", ar:"طَويل / قْصير", nl:"lang / kort"},
+  {em:"🪨", ar:"قاسي / طَري", nl:"hard / zacht"},
+  {em:"🧊", ar:"ناعِم / خِشِن", nl:"glad / ruw"},
+  {em:"🪶", ar:"خَفيف / تْقيل", nl:"licht / zwaar"},
+  {em:"⚡", ar:"سَريع / بَطيء", nl:"snel / langzaam"},
+  {em:"🌈", ar:"مْلَوّن", nl:"kleurrijk"},
+  {em:"🔴", ar:"أَحمَر", nl:"rood"},
+  {em:"🟢", ar:"أَخضَر", nl:"groen"},
+  {em:"🟡", ar:"أَصفَر", nl:"geel"},
+  {em:"🔵", ar:"أَزرَق", nl:"blauw"},
+  {em:"⚫", ar:"أَسوَد", nl:"zwart"},
+  {em:"⚪", ar:"أَبيَض", nl:"wit"},
+  {em:"🟤", ar:"بُنّي", nl:"bruin"}
+];
+const DIER_ALG = [
+  {em:"🦵", ar:"إجر / إجرين", nl:"poot / poten"},
+  {em:"🐈", ar:"ديل", nl:"staart"},
+  {em:"🧥", ar:"فَروة", nl:"vacht"},
+  {em:"🪽", ar:"جْناح", nl:"vleugel"},
+  {em:"🕊️", ar:"بيطير", nl:"vliegen"},
+  {em:"🏊", ar:"بيِسبَح", nl:"zwemmen"},
+  {em:"🦷", ar:"بيعَضّ", nl:"bijten"},
+  {em:"🏠", ar:"حَيوان أليف / بَري", nl:"huisdier / wild"}
+];
+const LAND_X = [
+  {em:"🐾", ar:"مَخالِب", nl:"klauwen"},
+  {em:"🐎", ar:"حَوافِر", nl:"hoeven"},
+  {em:"🐂", ar:"قْرون", nl:"horens"},
+  {em:"🦌", ar:"قْرون مْتَفَرّعة", nl:"gewei"},
+  {em:"🐆", ar:"بُقَع / خْطوط", nl:"vlekken / strepen"},
+  {em:"🐀", ar:"قارِض", nl:"knaagdier"}
+];
+const KLEDING_W = [
+  {em:"👕", ar:"بيِلبِس", nl:"dragen"},
+  {em:"💪", ar:"كمام", nl:"mouwen"},
+  {em:"🧢", ar:"عَ الراس", nl:"op het hoofd"},
+  {em:"👟", ar:"بالإجرين", nl:"aan de voeten"},
+  {em:"🧶", ar:"قُماش / جِلِد", nl:"stof / leer"},
+  {em:"🔥", ar:"دافي", nl:"warm"}
+];
+const WORDS = {
+  mensen: [
+    {em:"🧔", ar:"دَقِن / شَوارِب", nl:"baard / snor"},
+    {em:"💇", ar:"شَعر", nl:"haar"},
+    {em:"👓", ar:"نَضّارة", nl:"bril"},
+    {em:"🎨", ar:"لون البَشرة", nl:"huidskleur"},
+    {em:"👴", ar:"كبير / صْغير بالعُمر", nl:"oud / jong"}
+  ],
+  dieren: DIER_ALG,
+  vogels: [...DIER_ALG,
+    {em:"👄", ar:"مِنقار", nl:"snavel"},
+    {em:"🪶", ar:"ريش", nl:"veren"},
+    {em:"🪺", ar:"عُشّ", nl:"nest"},
+    {em:"🥚", ar:"بيضة", nl:"ei"}
+  ],
+  insecten: [...DIER_ALG,
+    {em:"📡", ar:"قُرون اِستِشعار", nl:"sprieten"},
+    {em:"⚡", ar:"بيِلسَع", nl:"steken"},
+    {em:"🐛", ar:"بيِزحَف", nl:"kruipen"}
+  ],
+  water: [...DIER_ALG,
+    {em:"🐟", ar:"حَراشِف", nl:"schubben"},
+    {em:"🦈", ar:"زَعنَفة", nl:"vin"},
+    {em:"💨", ar:"خَياشيم", nl:"kieuwen"},
+    {em:"🐚", ar:"صَدَفة", nl:"pantser / schaal"},
+    {em:"🐙", ar:"مَجَسّات", nl:"tentakels"},
+    {em:"💧", ar:"مْزَحلَق", nl:"glibberig"}
+  ],
+  klein: [...DIER_ALG, ...LAND_X],
+  middel: [...DIER_ALG, ...LAND_X],
+  groot: [...DIER_ALG, ...LAND_X],
+  muziek: [
+    {em:"🎸", ar:"أوتار", nl:"snaren"},
+    {em:"🎹", ar:"مَفاتيح", nl:"toetsen"},
+    {em:"🎷", ar:"بيِنفُخ", nl:"blazen"},
+    {em:"🥁", ar:"بيدُقّ", nl:"trommelen"},
+    {em:"🪵", ar:"خَشَب / نُحاس", nl:"hout / koper"},
+    {em:"🔊", ar:"صوت / عالي", nl:"geluid / luid"}
+  ],
+  zoet: [
+    {em:"🍬", ar:"حِلو / سُكّر", nl:"zoet / suiker"},
+    {em:"❄️", ar:"بارِد / مْجَمّد", nl:"koud / bevroren"},
+    {em:"🥐", ar:"مَخبوز / عَجين", nl:"gebakken / deeg"},
+    {em:"🍫", ar:"شوكولا", nl:"chocola"},
+    {em:"🍭", ar:"عَ عود", nl:"op een stokje"}
+  ],
+  accessoires: [
+    {em:"🧤", ar:"بيِلبِس / بيِمسِك", nl:"dragen / vasthouden"},
+    {em:"🛠️", ar:"بيِستَعمِل", nl:"gebruiken"},
+    {em:"💊", ar:"طِبّي", nl:"medisch"},
+    {em:"🦽", ar:"بيساعِد عَالمَشي", nl:"helpt met lopen"},
+    {em:"✋", ar:"إيد / كِتف / وِجّ", nl:"hand / schouder / gezicht"}
+  ],
+  fruit: [
+    {em:"🍌", ar:"قِشرة / بيِتقَشّر", nl:"schil / pellen"},
+    {em:"🍒", ar:"بِزرة", nl:"pit"},
+    {em:"🍇", ar:"عَنقود", nl:"tros"},
+    {em:"🍋", ar:"حامِض / حِلو", nl:"zuur / zoet"},
+    {em:"🧃", ar:"عَصير", nl:"sap"},
+    {em:"🌳", ar:"بينبِت عَ شَجرة", nl:"groeit aan een boom"}
+  ],
+  groente: [
+    {em:"🥔", ar:"تَحت الأرض", nl:"onder de grond"},
+    {em:"🥬", ar:"وَرَق", nl:"blad"},
+    {em:"🥗", ar:"ني / مَسلوق", nl:"rauw / gekookt"},
+    {em:"🌶️", ar:"حِرّيف", nl:"scherp / heet"},
+    {em:"🌰", ar:"قِشرة", nl:"schil / dop"}
+  ],
+  beroepen: [
+    {em:"🛠️", ar:"بيِشتغِل", nl:"werken"},
+    {em:"👔", ar:"بَدلة رَسمية", nl:"uniform"},
+    {em:"🏥", ar:"مُستَشفى / مَدرسة", nl:"ziekenhuis / school"},
+    {em:"🆘", ar:"بيساعِد", nl:"helpen"},
+    {em:"⚠️", ar:"خَطير", nl:"gevaarlijk"}
+  ],
+  vervoer: [
+    {em:"🛞", ar:"دَواليب", nl:"wielen"},
+    {em:"⚙️", ar:"مَكَنة", nl:"motor"},
+    {em:"🚗", ar:"بيسوق", nl:"rijden"},
+    {em:"⛵", ar:"بيبَحِّر", nl:"varen"},
+    {em:"💧", ar:"عَ المَيّ", nl:"over water"}
+  ],
+  eten: [
+    {em:"🍽️", ar:"بياكُل / بيِشرَب", nl:"eten / drinken"},
+    {em:"🔥", ar:"سُخن / بارِد", nl:"warm / koud"},
+    {em:"🍬", ar:"حِلو / مالِح", nl:"zoet / zout"},
+    {em:"👨‍🍳", ar:"بيِطبُخ", nl:"koken"}
+  ],
+  plaatsen: [
+    {em:"🏢", ar:"مَبنى", nl:"gebouw"},
+    {em:"🚪", ar:"جُوّا / بَرّا", nl:"binnen / buiten"},
+    {em:"🏠", ar:"بيِسكُن", nl:"wonen"},
+    {em:"🚶", ar:"بيِزور", nl:"bezoeken"},
+    {em:"🏙️", ar:"عالي", nl:"hoog"}
+  ],
+  kleding: KLEDING_W,
+  kleding2: KLEDING_W
+};
+
+const $ = id => document.getElementById(id);
+function syncSeg(seg, attr, val){ seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x.dataset[attr]===String(val)))); }
+
+let learnLang='ar';
+let selectedKey=null;
+let currentKey=null;
+let activeItems=[];
+let secretIndex=null;
+let eliminated=[];
+let pendingAction=null;
+
+function setLang(lang){
+  learnLang=lang;
+  syncSeg($('langSeg'),'lang',lang);
+  $('langAr').classList.toggle('on', lang==='ar');
+  $('langNl').classList.toggle('on', lang==='nl');
+  if(currentKey) buildBoard();
+  if($('faqBg').classList.contains('open')) buildFaq();
+}
+
+const themeList=$('themeList'), startBtn=$('startBtn');
+$('langSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) setLang(b.dataset.lang); });
+function makeThemeBtn(key,t){
+  const b=document.createElement('button');
+  b.className='theme-btn'; b.setAttribute('aria-pressed','false');
+  b.innerHTML='<span class="em">'+t.em+'</span><span class="txt"><span class="nm">'+t.naam+'</span><span class="sub">'+t.sub+'</span></span>';
+  b.addEventListener('click', ()=>{ selectedKey=key; document.querySelectorAll('.theme-btn').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); startBtn.disabled=false; });
+  return b;
+}
+[['easy',''],['hard','Challenging sets']].forEach(([tier,label])=>{
+  const entries=Object.entries(THEMES).filter(([k,t])=>(t.tier||'easy')===tier);
+  if(!entries.length) return;
+  if(label){ const h=document.createElement('div'); h.className='theme-group-head'; h.textContent=label; themeList.appendChild(h); }
+  entries.forEach(([key,t])=> themeList.appendChild(makeThemeBtn(key,t)));
+});
+startBtn.addEventListener('click', ()=>{ currentKey=selectedKey; newSet(); showGame(); openSecret(); });
+
+const setupEl=$('setup'), gameEl=$('game'), boardEl=$('board');
+function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; window.scrollTo(0,0); }
+function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; }
+
+function newSet(){ activeItems=THEMES[currentKey].items.slice(); pickSecret(); buildBoard(); }
+function replaySameCards(){ pickSecret(); buildBoard(); }
+function pickSecret(){ secretIndex=Math.floor(Math.random()*activeItems.length); eliminated=new Array(activeItems.length).fill(false); }
+
+function buildBoard(){
+  boardEl.innerHTML='';
+  const t=THEMES[currentKey];
+  const other = learnLang==='ar'?'nl':'ar';
+  activeItems.forEach((item,i)=>{
+    const tile=document.createElement('div');
+    tile.className='tile'+(eliminated[i]?' out':'');
+    tile.setAttribute('role','button'); tile.setAttribute('tabindex','0');
+    const second = t.dual ? '<div class="lbl2 '+other+'" lang="'+other+'">'+item[other]+'</div>' : '';
+    tile.innerHTML='<div class="emoji">'+item.e+'</div><div class="lbl '+learnLang+'" lang="'+learnLang+'">'+item[learnLang]+'</div>'+second;
+    const toggle=()=>{ eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); };
+    tile.addEventListener('click', toggle);
+    tile.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+    boardEl.appendChild(tile);
+  });
+}
+
+function buildFaq(){
+  const wrap=$('faqRows'); wrap.innerHTML='';
+  const other = learnLang==='ar'?'nl':'ar';
+  const add = list => list.forEach(q=>{
+    const row=document.createElement('div'); row.className='qrow';
+    row.innerHTML='<span class="q-em">'+(q.em||'')+'</span><div class="q-text"><div class="q-main '+learnLang+'" lang="'+learnLang+'">'+q[learnLang]+'</div><div class="q-sub '+other+'" lang="'+other+'">'+q[other]+'</div></div>';
+    wrap.appendChild(row);
+  });
+  add(HELPER[currentKey]||[]);
+  const mkHead = txt => { const h=document.createElement('div'); h.className='faq-sub-head'; h.textContent=txt; wrap.appendChild(h); };
+  mkHead('Useful words');
+  add(WORDS[currentKey]||[]);
+  add(ALG);
+  mkHead('Game phrases');
+  add(COMMON);
+}
+
+const menuOverlay=$('menuOverlay'), menuPanel=$('menuPanel');
+function openMenu(){ menuOverlay.classList.add('open'); menuPanel.classList.add('open'); menuPanel.setAttribute('aria-hidden','false'); }
+function closeMenu(){ menuOverlay.classList.remove('open'); menuPanel.classList.remove('open'); menuPanel.setAttribute('aria-hidden','true'); }
+
+$('hamBtn').addEventListener('click', openMenu);
+$('langBtn').addEventListener('click', ()=> setLang(learnLang==='ar'?'nl':'ar'));
+$('helpBtn').addEventListener('click', ()=>{ buildFaq(); $('faqBg').classList.add('open'); });
+function fillSecretFront(){
+  const item=activeItems[secretIndex]; const other=learnLang==='ar'?'nl':'ar';
+  $('mEmoji').textContent=item.e;
+  const lbl=$('mLbl'); lbl.className='lbl';
+  lbl.innerHTML='<div class="'+learnLang+'" lang="'+learnLang+'">'+item[learnLang]+'</div><div class="lbl2 '+other+'" lang="'+other+'" style="margin-top:6px">'+item[other]+'</div>';
+}
+function openSecret(reveal){ fillSecretFront(); $('scInner').classList.toggle('revealed', !!reveal); $('modalBg').classList.add('open'); }
+function revealSecret(){ $('scInner').classList.add('revealed'); }
+function closeSecret(){ $('modalBg').classList.remove('open'); }
+$('secretCard').addEventListener('click', revealSecret);
+$('secretCard').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); revealSecret(); } });
+$('peekBtn').addEventListener('click', ()=>openSecret(true));
+menuOverlay.addEventListener('click', closeMenu);
+
+function confirmIfProgress(action){ if(currentKey && eliminated.some(x=>x)){ pendingAction=action; $('confirmBg').classList.add('open'); } else action(); }
+$('menuHow').addEventListener('click', ()=>{ closeMenu(); $('howtoBg').classList.add('open'); });
+$('menuReplay').addEventListener('click', ()=>{ replaySameCards(); closeMenu(); });
+$('menuBack').addEventListener('click', ()=>{ closeMenu(); confirmIfProgress(leaveToSetup); });
+$('setupHow').addEventListener('click', ()=> $('howtoBg').classList.add('open'));
+
+$('confirmCancel').addEventListener('click', ()=>{ $('confirmBg').classList.remove('open'); pendingAction=null; });
+$('confirmOk').addEventListener('click', ()=>{ const a=pendingAction; pendingAction=null; $('confirmBg').classList.remove('open'); if(a) a(); });
+
+$('closeModal').addEventListener('click', closeSecret);
+$('closeFaq').addEventListener('click', ()=> $('faqBg').classList.remove('open'));
+$('closeHow').addEventListener('click', ()=> $('howtoBg').classList.remove('open'));
+['faqBg','howtoBg','confirmBg'].forEach(id=>{
+  $(id).addEventListener('click', e=>{ if(e.target===$(id)){ $(id).classList.remove('open'); if(id==='confirmBg') pendingAction=null; } });
+});
+$('modalBg').addEventListener('click', e=>{ if(e.target===$('modalBg')) closeSecret(); });
+
+const modeMql = window.matchMedia('(prefers-color-scheme: dark)');
+let modePref = 'system';
+function applyMode(){ document.documentElement.dataset.mode = (modePref==='system' ? (modeMql.matches?'dark':'light') : modePref); }
+modeMql.addEventListener('change', ()=>{ if(modePref==='system') applyMode(); });
+$('modeSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; modePref=b.dataset.mode; syncSeg($('modeSeg'),'mode',modePref); applyMode(); });
+applyMode();
+
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Escape') return;
+  const ids=['modalBg','faqBg','howtoBg','confirmBg'];
+  const open=ids.find(id=>$(id).classList.contains('open'));
+  if(open){ if(open==='modalBg') closeSecret(); else { $(open).classList.remove('open'); if(open==='confirmBg') pendingAction=null; } }
+  else if(menuPanel.classList.contains('open')) closeMenu();
+});
+
+$('langAr').classList.toggle('on', learnLang==='ar');
+$('langNl').classList.toggle('on', learnLang==='nl');
+</script>
+</body>
+</html>
