@@ -166,24 +166,25 @@
   *{ box-sizing:border-box; }
   html,body{ margin:0; }
   body{ background:var(--field-bg); color:var(--on-bg); font-family:var(--body); font-weight:500;
-    -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased; height:100dvh; overflow:hidden; transition:background-color .3s ease; }
+    -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased; min-height:100dvh; overscroll-behavior:none; transition:background-color .3s ease; }
   html[data-screen="home"] body{ background:var(--home-bg); }
   html[data-screen="game"] body{ background:var(--field-bg); }
-  /* scrolling happens INSIDE .wrap so the fixed background/fade layers never move (iOS) */
-  .wrap{ max-width:760px; margin:0 auto; padding:14px 14px 0; height:100dvh; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:none; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; }
+  .wrap{ max-width:760px; margin:0 auto; padding:14px 14px 0; min-height:100dvh; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; }
   .ar{ font-family:var(--arabic); direction:rtl; }
   .hidden{ display:none !important; }
   .title-depth{ color:var(--on-bg); text-shadow:0 2px 0 var(--title-edge), 0 5px 7px rgba(20,30,25,.2); }
 
   /* rotating sunburst (home only) */
-  #bg{ position:fixed; inset:0; z-index:-1; pointer-events:none; background:var(--field-bg); transition:background-color .3s ease; }
+  /* background/fade layers anchored to lvh (the large viewport height, which does NOT change when the
+     iOS URL bar collapses), so they stay pinned while the URL bar can still hide on scroll */
+  #bg{ position:fixed; top:0; left:0; right:0; height:100vh; height:100lvh; z-index:-1; pointer-events:none; background:var(--field-bg); transition:background-color .3s ease; }
   html[data-screen="home"] #bg{ background:var(--home-bg); }
-  #sunburst{ position:fixed; top:28%; left:50%; width:140vmax; height:140vmax; transform:translate(-50%,-50%);
+  #sunburst{ position:fixed; top:28vh; top:28lvh; left:50%; width:140vmax; height:140vmax; transform:translate(-50%,-50%);
     z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
     background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 15deg, var(--home-bg2) 15deg 30deg);
     animation:sunspin 120s linear infinite; }
   /* vignette as a separate static layer (keeps the heavy mask off the rotating layer) */
-  #sunfade{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
+  #sunfade{ position:fixed; top:0; left:0; right:0; height:100vh; height:100lvh; z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
     background:radial-gradient(circle at 50% 28%, transparent 0%, transparent 34%, var(--home-bg) 80%); }
   /* fixed top fade, only where there's a top safe area (iPhone status bar); 0 height on desktop */
   #topfade{ position:fixed; top:0; left:0; right:0; z-index:5; pointer-events:none; opacity:0; transition:opacity .35s ease;
@@ -1072,11 +1073,11 @@ function showToast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add(
 });
 startBtn.addEventListener('click', ()=>{ if(!selectedKey){ showToast('Choose a set first'); return; } currentKey=selectedKey; newSet(); showGame(); openSecret(); });
 
-const setupEl=$('setup'), gameEl=$('game'), boardEl=$('board'), wrapEl=document.querySelector('.wrap');
+const setupEl=$('setup'), gameEl=$('game'), boardEl=$('board');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 function setThemeColor(c){ if(themeColorMeta) themeColorMeta.setAttribute('content', c); }
-function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; setThemeColor('#2C8C82'); if(wrapEl) wrapEl.scrollTop=0; saveState(); }
-function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); if(wrapEl) wrapEl.scrollTop=0; saveState(); }
+function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; setThemeColor('#2C8C82'); window.scrollTo(0,0); saveState(); }
+function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); window.scrollTo(0,0); saveState(); }
 
 const SAVE_KEY='gw_game';
 function saveState(){
