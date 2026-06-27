@@ -166,10 +166,11 @@
   *{ box-sizing:border-box; }
   html,body{ margin:0; }
   body{ background:var(--field-bg); color:var(--on-bg); font-family:var(--body); font-weight:500;
-    -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased; min-height:100dvh; transition:background-color .3s ease; }
+    -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased; height:100dvh; overflow:hidden; transition:background-color .3s ease; }
   html[data-screen="home"] body{ background:var(--home-bg); }
   html[data-screen="game"] body{ background:var(--field-bg); }
-  .wrap{ max-width:760px; margin:0 auto; padding:14px 14px 0; min-height:100dvh; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; }
+  /* scrolling happens INSIDE .wrap so the fixed background/fade layers never move (iOS) */
+  .wrap{ max-width:760px; margin:0 auto; padding:14px 14px 0; height:100dvh; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:none; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; }
   .ar{ font-family:var(--arabic); direction:rtl; }
   .hidden{ display:none !important; }
   .title-depth{ color:var(--on-bg); text-shadow:0 2px 0 var(--title-edge), 0 5px 7px rgba(20,30,25,.2); }
@@ -254,11 +255,22 @@
   .start-row #startBtn{ flex:1; min-width:0;
     box-shadow:0 6px 0 var(--field-edge); }
   .start-row #startBtn:active{ box-shadow:0 0 0 var(--field-edge); }
+  .start-row #startBtn.is-disabled{ background:#9AA1A8; color:#F2F4F6; box-shadow:0 6px 0 #797F86; opacity:1; }
+  .start-row #startBtn.is-disabled:active{ transform:none; box-shadow:0 6px 0 #797F86; }
+  [data-mode="dark"] .start-row #startBtn.is-disabled{ background:#4A515B; color:#AEB6BF; box-shadow:0 6px 0 #353B43; }
   .how-icon{ flex:0 0 auto; width:60px; min-height:60px; padding:0; display:flex; align-items:center; justify-content:center;
     background:var(--surface); color:var(--ink); border-radius:var(--r);
     box-shadow:0 6px 0 var(--surface-deep); }
   .how-icon:active{ transform:translateY(6px); box-shadow:0 0 0 var(--surface-deep); }
   .how-icon svg{ width:26px; height:26px; }
+
+  /* toast */
+  #toast{ position:fixed; left:50%; bottom:calc(160px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px);
+    z-index:11; max-width:88vw; text-align:center; pointer-events:none; opacity:0;
+    background:var(--seg-bg); color:var(--on-bg); font-family:var(--display); font-weight:500; font-size:.95rem;
+    padding:12px 18px; border-radius:var(--r-pill); box-shadow:0 8px 18px rgba(20,30,25,.32);
+    transition:opacity .2s ease, transform .2s ease; }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
   /* PILL toolbar */
   #game{ padding-bottom:calc(94px + env(safe-area-inset-bottom)); }
@@ -394,11 +406,12 @@
 
     <div id="startBar" class="start-bar">
       <div class="start-row">
-        <button id="startBtn" class="primary" disabled>Start game</button>
+        <button id="startBtn" class="primary is-disabled" aria-disabled="true">Start game</button>
         <button id="setupHow" class="how-icon" aria-label="How to play" title="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.3.8c0 1.8-2.7 2.1-2.7 3.9"/><path d="M12 17.4v.01"/></svg></button>
       </div>
     </div>
   </section>
+  <div id="toast" role="status" aria-live="polite"></div>
 
   <!-- GAME -->
   <div id="game" class="hidden">
@@ -1037,6 +1050,7 @@ function setLang(lang){
   $('langNl').classList.toggle('on', lang==='nl');
   if(currentKey) buildBoard();
   if($('faqBg').classList.contains('open')) buildFaq();
+  saveState();
 }
 
 const themeList=$('themeList'), startBtn=$('startBtn');
@@ -1045,25 +1059,53 @@ function makeThemeBtn(key,t){
   const b=document.createElement('button');
   b.className='theme-btn'; b.setAttribute('aria-pressed','false');
   b.innerHTML='<span class="em">'+t.em+'</span><span class="txt"><span class="nm">'+t.naam+'</span><span class="sub">'+t.sub+'</span></span>';
-  b.addEventListener('click', ()=>{ selectedKey=key; document.querySelectorAll('.theme-btn').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); startBtn.disabled=false; });
+  b.addEventListener('click', ()=>{ selectedKey=key; document.querySelectorAll('.theme-btn').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); startBtn.classList.remove('is-disabled'); startBtn.setAttribute('aria-disabled','false'); });
   return b;
 }
+let toastTimer=null;
+function showToast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'), 1900); }
 [['easy',''],['hard','Challenging sets']].forEach(([tier,label])=>{
   const entries=Object.entries(THEMES).filter(([k,t])=>(t.tier||'easy')===tier);
   if(!entries.length) return;
   if(label){ const h=document.createElement('div'); h.className='theme-group-head'; h.textContent=label; themeList.appendChild(h); }
   entries.forEach(([key,t])=> themeList.appendChild(makeThemeBtn(key,t)));
 });
-startBtn.addEventListener('click', ()=>{ currentKey=selectedKey; newSet(); showGame(); openSecret(); });
+startBtn.addEventListener('click', ()=>{ if(!selectedKey){ showToast('Choose a set first'); return; } currentKey=selectedKey; newSet(); showGame(); openSecret(); });
 
-const setupEl=$('setup'), gameEl=$('game'), boardEl=$('board');
+const setupEl=$('setup'), gameEl=$('game'), boardEl=$('board'), wrapEl=document.querySelector('.wrap');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 function setThemeColor(c){ if(themeColorMeta) themeColorMeta.setAttribute('content', c); }
-function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; setThemeColor('#2C8C82'); window.scrollTo(0,0); }
-function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); }
+function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; setThemeColor('#2C8C82'); if(wrapEl) wrapEl.scrollTop=0; saveState(); }
+function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); if(wrapEl) wrapEl.scrollTop=0; saveState(); }
+
+const SAVE_KEY='gw_game';
+function saveState(){
+  try{
+    if(currentKey && gameEl && !gameEl.classList.contains('hidden')){
+      localStorage.setItem(SAVE_KEY, JSON.stringify({k:currentKey, lang:learnLang, s:secretIndex, e:eliminated}));
+    } else {
+      localStorage.removeItem(SAVE_KEY);
+    }
+  }catch(_){}
+}
+function loadState(){
+  let st; try{ st=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); }catch(_){ st=null; }
+  if(!st || !st.k || !THEMES[st.k]) return false;
+  learnLang = st.lang==='nl' ? 'nl' : 'ar';
+  syncSeg($('langSeg'),'lang',learnLang);
+  $('langAr').classList.toggle('on', learnLang==='ar');
+  $('langNl').classList.toggle('on', learnLang==='nl');
+  currentKey = st.k;
+  activeItems = THEMES[currentKey].items.slice();
+  secretIndex = (typeof st.s==='number' && st.s>=0 && st.s<activeItems.length) ? st.s : Math.floor(Math.random()*activeItems.length);
+  eliminated = (Array.isArray(st.e) && st.e.length===activeItems.length) ? st.e.map(Boolean) : new Array(activeItems.length).fill(false);
+  buildBoard();
+  showGame();
+  return true;
+}
 
 function newSet(){ activeItems=THEMES[currentKey].items.slice(); pickSecret(); buildBoard(); }
-function replaySameCards(){ pickSecret(); buildBoard(); }
+function replaySameCards(){ pickSecret(); buildBoard(); saveState(); }
 function pickSecret(){ secretIndex=Math.floor(Math.random()*activeItems.length); eliminated=new Array(activeItems.length).fill(false); }
 
 function buildBoard(){
@@ -1076,7 +1118,7 @@ function buildBoard(){
     tile.setAttribute('role','button'); tile.setAttribute('tabindex','0');
     const second = t.dual ? '<div class="lbl2 '+other+'" lang="'+other+'">'+item[other]+'</div>' : '';
     tile.innerHTML='<div class="emoji">'+item.e+'</div><div class="lbl '+learnLang+'" lang="'+learnLang+'">'+item[learnLang]+'</div>'+second;
-    const toggle=()=>{ eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); };
+    const toggle=()=>{ eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); saveState(); };
     tile.addEventListener('click', toggle);
     tile.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
     boardEl.appendChild(tile);
@@ -1155,6 +1197,9 @@ document.addEventListener('keydown', e=>{
 
 $('langAr').classList.toggle('on', learnLang==='ar');
 $('langNl').classList.toggle('on', learnLang==='nl');
+
+// restore an in-progress game after reload (no-op if none saved)
+loadState();
 </script>
 </body>
 </html>
