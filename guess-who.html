@@ -134,7 +134,7 @@
     --arabic:"Noto Naskh Arabic","Geeza Pro","Segoe UI","Tahoma", sans-serif;
   }
   /* LIGHT (warm) - ook op :root als vangnet */
-  :root, [data-mode="light"]{
+  :root, :root[data-mode="light"]{
     --surface:#F3E9C8; --surface-deep:#E2D5AC; --surface-line:#FCF7E6;
     --pill-bg:#FFFCF2; --pill-deep:#EBE2C6;
     --disabled-bg:#9AA1A8; --disabled-ink:#F2F4F6; --disabled-deep:#797F86;
@@ -151,7 +151,7 @@
     --overlay:rgba(20,15,5,.5);
   }
   /* DARK */
-  [data-mode="dark"]{
+  :root[data-mode="dark"]{
     --surface:#2E343F; --surface-deep:#1C212A; --surface-line:#3C4450;
     --pill-bg:#4A525F; --pill-deep:#2B313B;
     --disabled-bg:#4A515B; --disabled-ink:#AEB6BF; --disabled-deep:#353B43;
@@ -164,7 +164,7 @@
     --title-edge:#BE7615;
     --accent:#5CB3A7; --accent-deep:#3E847B;
     --primary:#F0A94A; --primary-deep:#C9821F;
-    --seg-bg:#2C3842; --seg-deep:#1B232B;
+    --seg-bg:#3B4752; --seg-deep:#1B232B;
     --tag-bg:#2C3842; --tag-deep:#1B232B;
     --overlay:rgba(0,0,0,.55);
   }
@@ -187,7 +187,7 @@
   html[data-screen="home"] #bg{ background:var(--home-bg); }
   #sunburst{ position:fixed; top:28vh; top:28lvh; left:50%; width:140vmax; height:140vmax; transform:translate(-50%,-50%);
     z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
-    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 15deg, var(--home-bg2) 15deg 30deg);
+    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 30deg, var(--home-bg2) 30deg 60deg);
     animation:sunspin 120s linear infinite; }
   /* vignette as a separate static layer (keeps the heavy mask off the rotating layer) */
   #sunfade{ position:fixed; top:0; left:0; right:0; height:100vh; height:100lvh; z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
@@ -228,8 +228,11 @@
   .intro{ margin:0; align-self:center; max-width:48ch; text-align:center; color:var(--on-bg); font-weight:600; font-size:.96rem; line-height:1.5; text-shadow:var(--label-shadow); }
   .field .lab{ font-family:var(--display); font-weight:600; font-size:1.25rem; color:var(--on-bg); margin-bottom:10px; text-shadow:var(--label-shadow); }
 
-  /* segmented (navy pill, active = teal) */
-  .seg{ display:flex; gap:6px; background:var(--seg-bg); border-radius:var(--r-pill); padding:6px; box-shadow:0 5px 0 var(--seg-deep), var(--ambient-sm); }
+  /* segmented (recessed track, active = teal) */
+  /* worn recessed groove: an inset shadow carves the track into the surface while the active knob sits raised in the
+     channel. bottom padding is deeper than top by exactly the knob's depth lip so the visible top/side/bottom gutters match */
+  .seg{ display:flex; gap:6px; background:var(--seg-bg); border-radius:var(--r-pill); padding:6px 6px 10px;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.22), inset 0 -1px 1px rgba(255,255,255,.06); }
   .seg button{ flex:1; min-height:46px; background:transparent; color:var(--on-control); box-shadow:none; border-radius:var(--r-pill);
     font-family:var(--display); font-weight:500; padding:10px 8px; transition:transform var(--t), background var(--t), box-shadow var(--t); }
   .seg button:hover{ filter:none; }
@@ -290,9 +293,11 @@
   .pill .cell:active{ transform:translateY(1px); background:var(--pill-deep); box-shadow:inset 0 3px 6px rgba(0,0,0,.2); }
   .pill .cell svg{ width:22px; height:22px; }
   .pill .cell .clab{ font-family:var(--body); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink); opacity:.72; line-height:1; }
-  .langpair{ display:flex; align-items:center; gap:3px; font-family:var(--display); font-size:15px; font-weight:600; line-height:1; }
-  .langpair b{ color:var(--ink); opacity:.38; transition:opacity var(--t), color var(--t); }
-  .langpair b.on{ opacity:1; color:var(--accent-deep); }
+  /* langpair is this cell's "icon": match the icon height (22px svg) so its label aligns with the others,
+     and render inactive glyphs in the same --ink as the icons; only the active language takes the accent */
+  .langpair{ display:flex; align-items:center; justify-content:center; gap:3px; height:22px; font-family:var(--display); font-size:15px; font-weight:600; line-height:1; }
+  .langpair b{ color:var(--ink); transition:opacity var(--t), color var(--t); }
+  .langpair b.on{ color:var(--accent-deep); }
   .langpair .sep{ color:var(--ink); opacity:.38; font-weight:400; }
 
   /* BOARD */
@@ -341,7 +346,7 @@
   /* secret modal = home colour + rotating sunburst; flip card with outline */
   .modal.secret-modal{ position:relative; overflow:hidden; border:3px solid rgba(255,255,255,.92); color:var(--on-bg); background:var(--home-bg); }
   .secret-modal::before{ content:""; position:absolute; top:50%; left:50%; width:210%; aspect-ratio:1; transform:translate(-50%,-50%);
-    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 15deg, var(--home-bg2) 15deg 30deg);
+    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 30deg, var(--home-bg2) 30deg 60deg);
     animation:sunspin 100s linear infinite; z-index:0; }
   .secret-modal::after{ content:""; position:absolute; inset:0; z-index:0;
     background:radial-gradient(circle at 50% 50%, transparent 8%, var(--home-edge) 105%); }
