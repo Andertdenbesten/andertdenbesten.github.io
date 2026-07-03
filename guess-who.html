@@ -233,13 +233,18 @@
      recessed groove (inset shadow) holding the raised knob. NO extra bezel ring around the groove: a 5px ring with its
      own gutter was tried and rejected as too bulky, so outer depth and groove share one element and the compact
      padding stays. bottom padding is deeper than top by exactly the knob's depth lip so the visible gutters match */
-  .seg{ display:flex; gap:6px; background:var(--seg-track); border-radius:var(--r-pill); padding:6px 6px 10px;
+  /* track radius 29px = knob radius (46/2) + 6px gutter: the track's cap centres then coincide with the knob's, so the
+     gutter reads a uniform 6px around the rounded ends (a full pill radius leaves a fat crescent beside the knob) */
+  .seg{ position:relative; display:flex; gap:6px; background:var(--seg-track); border-radius:29px; padding:6px 6px 10px;
     box-shadow:0 5px 0 var(--seg-deep), var(--ambient-sm), inset 0 2px 5px rgba(0,0,0,.22), inset 0 -1px 1px rgba(255,255,255,.06); }
-  .seg button{ flex:1; min-height:46px; background:transparent; color:var(--on-control); box-shadow:none; border-radius:var(--r-pill);
-    font-family:var(--display); font-weight:500; padding:10px 8px; transition:transform var(--t), background var(--t), box-shadow var(--t); }
+  /* the teal knob is a JS-positioned thumb that slides between cells; buttons are transparent labels above it */
+  .seg .seg-thumb{ position:absolute; border-radius:var(--r-pill); background:var(--accent); box-shadow:0 4px 0 var(--accent-deep);
+    transition:left .3s cubic-bezier(.25,.9,.3,1), width .3s cubic-bezier(.25,.9,.3,1); pointer-events:none; }
+  .seg button{ position:relative; z-index:1; flex:1; min-height:46px; background:transparent; color:var(--on-control); box-shadow:none; border-radius:var(--r-pill);
+    font-family:var(--display); font-weight:500; padding:10px 8px; transition:transform var(--t), color var(--t), box-shadow var(--t); }
   .seg button:hover{ filter:none; }
   .seg button:active{ transform:translateY(2px); box-shadow:none; }
-  .seg button[aria-pressed="true"]{ background:var(--accent); color:var(--on-accent); box-shadow:0 4px 0 var(--accent-deep); }
+  .seg button[aria-pressed="true"]{ color:var(--on-accent); }
   .seg-mode button{ font-size:.92rem; }
 
   /* theme picker (cards; selected = teal, raised) */
@@ -385,7 +390,7 @@
   .howto-list .he{ font-size:22px; line-height:1.15; flex:0 0 auto; }
   .howto-tip{ margin-top:14px; color:var(--ink); opacity:.7; font-size:14px; }
 
-  @media (prefers-reduced-motion: reduce){ .sc-inner,.menu-panel,.menu-overlay,.tile,button{ transition:none; } #sunburst,.secret-modal::before,.modal-bg.open .secret-modal{ animation:none; } }
+  @media (prefers-reduced-motion: reduce){ .sc-inner,.menu-panel,.menu-overlay,.tile,button,.seg .seg-thumb{ transition:none; } #sunburst,.secret-modal::before,.modal-bg.open .secret-modal{ animation:none; } }
 </style>
 </head>
 <body>
@@ -1045,7 +1050,13 @@ const WORDS = {
 };
 
 const $ = id => document.getElementById(id);
-function syncSeg(seg, attr, val){ seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x.dataset[attr]===String(val)))); }
+function segThumb(seg){
+  let t=seg.querySelector('.seg-thumb');
+  if(!t){ t=document.createElement('div'); t.className='seg-thumb'; t.setAttribute('aria-hidden','true'); seg.prepend(t); }
+  const b=seg.querySelector('button[aria-pressed="true"]');
+  if(b){ t.style.left=b.offsetLeft+'px'; t.style.top=b.offsetTop+'px'; t.style.width=b.offsetWidth+'px'; t.style.height=b.offsetHeight+'px'; }
+}
+function syncSeg(seg, attr, val){ seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x.dataset[attr]===String(val)))); segThumb(seg); }
 
 let learnLang='ar';
 let selectedKey=null;
@@ -1212,6 +1223,10 @@ $('langNl').classList.toggle('on', learnLang==='nl');
 
 // restore an in-progress game after reload (no-op if none saved)
 loadState();
+
+// place the seg thumbs on the initial active buttons (runs pre-paint, so no slide-in flash)
+segThumb($('langSeg')); segThumb($('modeSeg'));
+window.addEventListener('resize', ()=>{ segThumb($('langSeg')); segThumb($('modeSeg')); });
 </script>
 </body>
 </html>
