@@ -228,12 +228,13 @@
   .intro{ margin:0; align-self:center; max-width:48ch; text-align:center; color:var(--on-bg); font-weight:600; font-size:.96rem; line-height:1.5; text-shadow:var(--label-shadow); }
   .field .lab{ font-family:var(--display); font-weight:600; font-size:1.25rem; color:var(--on-bg); margin-bottom:10px; text-shadow:var(--label-shadow); }
 
-  /* segmented (recessed track, active = teal) */
-  /* worn recessed groove: an inset shadow carves the track into the surface while the active knob sits raised in the
-     channel. a raised bezel around the track was tried and rejected; keep the flat carved look. bottom padding is
-     deeper than top by exactly the knob's depth lip so the visible top/side/bottom gutters match */
+  /* segmented (raised slab with a carved track, active = teal) */
+  /* the control is a slab raised off the page (hard drop lip + ambient, like the other controls) whose face is a worn
+     recessed groove (inset shadow) holding the raised knob. NO extra bezel ring around the groove: a 5px ring with its
+     own gutter was tried and rejected as too bulky, so outer depth and groove share one element and the compact
+     padding stays. bottom padding is deeper than top by exactly the knob's depth lip so the visible gutters match */
   .seg{ display:flex; gap:6px; background:var(--seg-track); border-radius:var(--r-pill); padding:6px 6px 10px;
-    box-shadow:inset 0 2px 5px rgba(0,0,0,.22), inset 0 -1px 1px rgba(255,255,255,.06); }
+    box-shadow:0 5px 0 var(--seg-deep), var(--ambient-sm), inset 0 2px 5px rgba(0,0,0,.22), inset 0 -1px 1px rgba(255,255,255,.06); }
   .seg button{ flex:1; min-height:46px; background:transparent; color:var(--on-control); box-shadow:none; border-radius:var(--r-pill);
     font-family:var(--display); font-weight:500; padding:10px 8px; transition:transform var(--t), background var(--t), box-shadow var(--t); }
   .seg button:hover{ filter:none; }
