@@ -129,6 +129,13 @@ Documented so future work builds toward it, not yet implemented:
 - The homepage is the hub. Adding a project = a new page plus a homepage tile.
   Keep navigation simple: homepage overview plus a consistent back-to-home on
   each page.
+- Back-to-home convention (implemented on both project pages): every project
+  page gets a `home-chip`, a real `<a href="./">` with the shared house SVG,
+  top-left at the top of the page, in flow or absolute (not fixed) so it
+  scrolls away with the content, skinned with that page's own tokens. On
+  full-screen game screens the chip is hidden and Home is a menu item instead,
+  so nothing overlaps play. Mark the markup with a `home-chip` comment so the
+  future shared layer can absorb it.
 
 Current state: each page (index.html, guess-who.html, chinese-card-rules.html)
 is self-contained with its own inline tokens and CSS. There is duplication; that

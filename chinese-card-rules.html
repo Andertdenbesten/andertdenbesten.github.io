@@ -48,6 +48,10 @@
   6. Weggehaald tijdens iteratie: Romeinse cijfers per sectie en dark-mode
      toggle. Pagina is dark-only.
 
+  7. Home-chip linksboven in de topbar (site-breed back-to-home patroon, zie
+     CLAUDE.md): echte <a href="./"> met huisje-icoon, in de stijl van de
+     toggle-group. Scrolt mee met de pagina, dus uit de weg tijdens het lezen.
+
   ─── TYPOGRAFIE ─────────────────────────────────────────────────────────────
   Drie fonts, elk een eigen rol:
 
@@ -237,10 +241,26 @@
     margin: 16px auto 0;
     padding: 0 16px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     gap: 8px;
     direction: ltr;
   }
+  /* home chip: shared back-to-home pattern (see CLAUDE.md), skinned like the toggle-group */
+  .home-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: var(--bg-warm);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-soft);
+    transition: color 0.16s ease;
+  }
+  .home-chip:hover { color: var(--ink); }
+  .home-chip svg { width: 16px; height: 16px; }
   .toggle-group {
     display: inline-flex;
     direction: ltr;
@@ -975,6 +995,8 @@
 <body>
 <main>
   <div class="topbar">
+    <!-- home-chip: shared back-to-home pattern (see CLAUDE.md) -->
+    <a class="home-chip" href="./" aria-label="Home" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg></a>
     <div class="toggle-group" role="group" aria-label="Taal">
       <button class="toggle-btn is-active" data-lang="nl" aria-pressed="true">NL</button>
       <button class="toggle-btn" data-lang="en" aria-pressed="false">EN</button>
