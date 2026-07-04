@@ -185,13 +185,15 @@
      iOS URL bar collapses), so they stay pinned while the URL bar can still hide on scroll */
   #bg{ position:fixed; top:0; left:0; right:0; height:100vh; height:100lvh; z-index:-1; pointer-events:none; background:var(--field-bg); transition:background-color .3s ease; }
   html[data-screen="home"] #bg{ background:var(--home-bg); }
-  #sunburst{ position:fixed; top:28vh; top:28lvh; left:50%; width:140vmax; height:140vmax; transform:translate(-50%,-50%);
+  /* 8 rays radiating from the screen centre, fading out along their length (see #sunfade) */
+  #sunburst{ position:fixed; top:50vh; top:50lvh; left:50%; width:140vmax; height:140vmax; transform:translate(-50%,-50%);
     z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
-    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 30deg, var(--home-bg2) 30deg 60deg);
+    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 22.5deg, var(--home-bg2) 22.5deg 45deg);
     animation:sunspin 120s linear infinite; }
-  /* vignette as a separate static layer (keeps the heavy mask off the rotating layer) */
+  /* vignette as a separate static layer (keeps the heavy mask off the rotating layer); centred on the sunburst so
+     the rays fade toward their ends */
   #sunfade{ position:fixed; top:0; left:0; right:0; height:100vh; height:100lvh; z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
-    background:radial-gradient(circle at 50% 28%, transparent 0%, transparent 34%, var(--home-bg) 80%); }
+    background:radial-gradient(circle at 50% 50%, transparent 0%, transparent 20%, var(--home-bg) 72%); }
   /* fixed top fade, only where there's a top safe area (iPhone status bar); 0 height on desktop */
   #topfade{ position:fixed; top:0; left:0; right:0; z-index:5; pointer-events:none; opacity:0; transition:opacity .35s ease;
     height:calc(env(safe-area-inset-top, 0px) * 1.5);
@@ -353,7 +355,7 @@
   /* secret modal = home colour + rotating sunburst; flip card with outline */
   .modal.secret-modal{ position:relative; overflow:hidden; border:3px solid rgba(255,255,255,.92); color:var(--on-bg); background:var(--home-bg); }
   .secret-modal::before{ content:""; position:absolute; top:50%; left:50%; width:210%; aspect-ratio:1; transform:translate(-50%,-50%);
-    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 30deg, var(--home-bg2) 30deg 60deg);
+    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 22.5deg, var(--home-bg2) 22.5deg 45deg);
     animation:sunspin 100s linear infinite; z-index:0; }
   .secret-modal::after{ content:""; position:absolute; inset:0; z-index:0;
     background:radial-gradient(circle at 50% 50%, transparent 8%, var(--home-edge) 105%); }
