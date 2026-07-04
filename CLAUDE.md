@@ -147,11 +147,9 @@ is accepted for now and is the first thing the shared layer will remove.
   also how Andert tests in the browser.
 - Develop on a per-project branch, verify with screenshots, then merge to
   `main`.
-- OPEN DECISION (confirm with Andert): merge style. Recommended default is a
-  squash-merge per project so `main` gets one clean commit per project instead
-  of every tweak. This can be done from the CLI (`git merge --squash`), no PR
-  required. Alternative is plain merges or direct commits to `main`. Until
-  confirmed, ask.
+- Merge style (confirmed by Andert, 2026-07): squash-merge per project from the
+  CLI (`git merge --squash`), no PR, so `main` gets one clean commit per project
+  instead of every tweak.
 - Other Claude sessions may run in parallel and edit shared files, especially
   the homepage `index.html`. Fetch and rebase before merging. Treat the homepage
   as a coordination point.
