@@ -276,10 +276,6 @@
   .start-row #startBtn:active{ box-shadow:0 0 0 var(--field-edge); }
   .start-row #startBtn.is-disabled{ background:var(--disabled-bg); color:var(--disabled-ink); box-shadow:0 var(--lip) 0 var(--disabled-deep), var(--ambient-tight); opacity:1; }
   .start-row #startBtn.is-disabled:active{ transform:none; box-shadow:0 var(--lip) 0 var(--disabled-deep), var(--ambient-tight); }
-  /* TEST (temporary, revert after): start button in the set-tile surface colour as a deploy marker,
-     and topfade disabled to isolate the iOS status-bar hairline */
-  #startBtn, .start-row #startBtn.is-disabled{ background:var(--surface); color:var(--ink); box-shadow:0 var(--lip) 0 var(--surface-deep), var(--ambient); }
-  #topfade{ display:none; }
   .how-icon{ flex:0 0 auto; width:60px; min-height:60px; padding:0; display:flex; align-items:center; justify-content:center;
     background:var(--surface); color:var(--ink); border-radius:var(--r);
     box-shadow:0 var(--lip) 0 var(--surface-deep), var(--ambient-tight); }
