@@ -102,10 +102,13 @@ try{
     dimmed) on the flat game field never fight a busy background. Eliminated
     tiles are OPAQUE (color-mix toward the field, not opacity) so the endgame
     sunburst cannot shine through pressed cards.
-  - ENDGAME SPOTLIGHT (approved 2026-07): when live taps leave exactly ONE card
-    standing, that card pops with a brief teal glow and throws confetti in two
-    waves: a wide burst from the card itself plus a staggered rain from the top
-    edge of the screen. Confetti has its OWN token palette (--confetti-1..4:
+  - ENDGAME SPOTLIGHT (approved 2026-07, confetti timing revised 2026-07):
+    reaching exactly ONE card standing by a live tap gives the quiet spotlight:
+    the card pops with a brief teal glow and keeps a thin teal border. CONFETTI
+    (two waves: a wide burst from the pressed card plus a staggered rain from
+    the top edge) fires only when the LAST card is pressed (zero standing):
+    that press is the deliberate final act, while reaching one-standing can
+    still be a mis-tap. Confetti has its OWN token palette (--confetti-1..4:
     red-led + amber + cream + violet, deliberately NO green/teal so particles
     never blend into the field; owner's choice 2026-07). While exactly one card
     stands, the game field also shows the rotating sunburst retinted in the
@@ -1275,9 +1278,15 @@ function buildBoard(){
     tile.setAttribute('role','button'); tile.setAttribute('tabindex','0');
     const second = t.dual ? '<div class="lbl2 '+other+'" lang="'+other+'">'+item[other]+'</div>' : '';
     tile.innerHTML='<div class="emoji">'+item.e+'</div><div class="lbl '+learnLang+'" lang="'+learnLang+'">'+item[learnLang]+'</div>'+second;
-    // celebrate only when this tap ELIMINATED a card: un-tapping back from zero
-    // to one standing is an undo, not a victory moment
-    const toggle=()=>{ eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); saveState(); updateChosen(eliminated[i]); };
+    // spotlight/confetti react only when this tap ELIMINATED a card: un-tapping
+    // back is an undo, not a victory moment. Confetti fires on pressing the
+    // LAST card (the deliberate final act), not on reaching one-standing,
+    // which can be a mis-tap (see decision log)
+    const toggle=()=>{
+      eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); saveState();
+      updateChosen(eliminated[i]);
+      if(eliminated[i] && eliminated.every(x=>x)){ const r=tile.getBoundingClientRect(); spawnConfetti(r.left+r.width/2, r.top+r.height/2); }
+    };
     tile.addEventListener('click', toggle);
     tile.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
     boardEl.appendChild(tile);
@@ -1292,10 +1301,8 @@ function updateChosen(celebrate){
   boardEl.querySelectorAll('.tile').forEach((el,idx)=>{
     const on = rem===1 && !eliminated[idx];
     if(on && celebrate && !el.classList.contains('chosen')){
-      const r=el.getBoundingClientRect(); // measure before the pop scales the tile
       el.classList.add('celebrate');
       el.addEventListener('animationend', ()=>el.classList.remove('celebrate'), {once:true});
-      spawnConfetti(r.left+r.width/2, r.top+r.height/2);
     }
     el.classList.toggle('chosen', on);
     if(!on) el.classList.remove('celebrate');
