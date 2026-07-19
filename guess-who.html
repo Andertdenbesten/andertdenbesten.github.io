@@ -86,6 +86,20 @@
       * MENU (slideout) matches the home colour, flat (no sunburst).
     Sunburst is confined to home + secret so eliminated tiles (greyscale + fade)
     on the flat game field never fight a busy background.
+  - ENDGAME SPOTLIGHT (approved 2026-07): when live taps leave exactly ONE card
+    standing, that card pops with a brief teal glow and a short confetti burst
+    from its centre. Confetti has its OWN token palette (--confetti-1..4:
+    red-led + amber + cream + violet, deliberately NO green/teal so particles
+    never blend into the field; owner's choice 2026-07). While exactly one card
+    stands, the game field also shows the rotating sunburst retinted in the
+    FIELD teals - an owner-approved exception (2026-07) to the flat-field rule
+    above: once the game is decided, eliminated-tile legibility no longer
+    outweighs the celebratory backdrop. It fades out again on un-tap to 2+,
+    along with the thin teal border that persists on the last card.
+    Deliberately NO win banner or button: the app never knows who wins, guessing
+    stays out loud. A restored one-card game shows border + sunburst statically
+    (no bounce, no confetti on reload). Glow/border are TEAL, not amber, because
+    orange is reserved for the primary action (see accent system below).
   - Depth comes from a darker bottom "lip" + a soft ambient shadow, NOT outlines
     or hard offsets. Tappable things (buttons, board tiles, pill cells, theme
     cards) use the lip and press down; the STATIC secret card uses an outline.
@@ -147,8 +161,11 @@
     --disabled-bg:#9AA1A8; --disabled-ink:#F2F4F6; --disabled-deep:#797F86;
     --ink:#3B4A55; --ink-soft:#6E7A84; --muted:#6E7A84;
     --home-bg:#F59E1A; --home-bg2:#ED9410; --home-edge:#CF7D0E;
-    --field-bg:#2C8C82; --field-edge:#1C6961;
+    --field-bg:#2C8C82; --field-bg2:#27837A; --field-edge:#1C6961;
     --menu-bg:#F59E1A;
+    /* confetti: own palette, deliberately NO green/teal so particles never blend
+       into the field; red-led per the owner's choice. Same in both modes. */
+    --confetti-1:#E85449; --confetti-2:#F5A623; --confetti-3:#FCF4DC; --confetti-4:#A98BE3;
     --on-bg:#F3E9C8; --on-accent:#F8F0D8; --on-control:#3B4A55;
     --title-edge:#BE7615;
     --accent:#57A99F; --accent-deep:#3E847B;
@@ -165,8 +182,9 @@
     --ink:#ECEEF2; --ink-soft:#9AA4B0; --muted:#9AA4B0;
     /* gekleurde achtergronden blijven ook in dark: sunburst altijd geel, veld blauw */
     --home-bg:#F59E1A; --home-bg2:#ED9410; --home-edge:#CF7D0E;
-    --field-bg:#2C8C82; --field-edge:#1C6961;
+    --field-bg:#2C8C82; --field-bg2:#27837A; --field-edge:#1C6961;
     --menu-bg:#F59E1A;
+    --confetti-1:#E85449; --confetti-2:#F5A623; --confetti-3:#FCF4DC; --confetti-4:#A98BE3;
     --on-bg:#F8F0D8; --on-accent:#F8F0D8; --on-control:#F8F0D8;
     --title-edge:#BE7615;
     --accent:#5CB3A7; --accent-deep:#3E847B;
@@ -187,7 +205,8 @@
   .hidden{ display:none !important; }
   .title-depth{ color:var(--on-bg); text-shadow:0 2px 0 var(--title-edge), 0 5px 7px rgba(20,30,25,.2); }
 
-  /* rotating sunburst (home only) */
+  /* rotating sunburst (home, and in teal on the game field while the endgame
+     spotlight is active - see decision log) */
   /* background/fade layers anchored to lvh (the large viewport height, which does NOT change when the
      iOS URL bar collapses), so they stay pinned while the URL bar can still hide on scroll */
   #bg{ position:fixed; top:0; left:0; right:0; height:100vh; height:100lvh; z-index:-1; pointer-events:none; background:var(--field-bg); transition:background-color .3s ease; }
@@ -195,17 +214,23 @@
   /* 8 rays radiating from the screen centre, fading out along their length (see #sunfade) */
   #sunburst{ position:fixed; top:50vh; top:50lvh; left:50%; width:140vmax; height:140vmax; transform:translate(-50%,-50%);
     z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
-    background:repeating-conic-gradient(from 0deg, var(--home-bg) 0deg 22.5deg, var(--home-bg2) 22.5deg 45deg);
+    --burst-a:var(--home-bg); --burst-b:var(--home-bg2);
+    background:repeating-conic-gradient(from 0deg, var(--burst-a) 0deg 22.5deg, var(--burst-b) 22.5deg 45deg);
     animation:sunspin 120s linear infinite; }
   /* vignette as a separate static layer (keeps the heavy mask off the rotating layer); centred on the sunburst so
      the rays fade toward their ends */
   #sunfade{ position:fixed; top:0; left:0; right:0; height:100vh; height:100lvh; z-index:0; pointer-events:none; opacity:0; transition:opacity .35s ease;
-    background:radial-gradient(circle at 50% 50%, transparent 0%, transparent 20%, var(--home-bg) 72%); }
+    --fade-c:var(--home-bg);
+    background:radial-gradient(circle at 50% 50%, transparent 0%, transparent 20%, var(--fade-c) 72%); }
   /* fixed top fade, only where there's a top safe area (iPhone status bar); 0 height on desktop */
   #topfade{ position:fixed; top:0; left:0; right:0; z-index:5; pointer-events:none; opacity:0; transition:opacity .35s ease;
     height:calc(env(safe-area-inset-top, 0px) * 1.5);
     background:linear-gradient(to bottom, var(--home-bg) 0%, rgba(245,158,26,.5) 50%, rgba(245,158,26,0) 100%); }
   html[data-screen="home"] #sunburst, html[data-screen="home"] #sunfade, html[data-screen="home"] #topfade{ opacity:1; }
+  /* endgame: same burst layers, retinted with the field teals; fades in/out via
+     the existing opacity transition when data-endgame toggles */
+  html[data-screen="game"][data-endgame] #sunburst{ --burst-a:var(--field-bg); --burst-b:var(--field-bg2); opacity:1; }
+  html[data-screen="game"][data-endgame] #sunfade{ --fade-c:var(--field-bg); opacity:1; }
   @keyframes sunspin{ from{ transform:translate(-50%,-50%) rotate(0); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
 
   /* home chip: shared back-to-home pattern (see CLAUDE.md). Absolute, not fixed,
@@ -253,14 +278,15 @@
   .field .lab{ font-family:var(--display); font-weight:600; font-size:1.25rem; color:var(--on-bg); margin-bottom:10px; text-shadow:var(--label-shadow); }
 
   /* segmented (raised slab with a carved track, active = teal) */
-  /* the control is a slab raised off the page (hard drop lip + ambient, like the other controls) whose face is a worn
-     recessed groove (inset shadow) holding the raised knob. NO extra bezel ring around the groove: a 5px ring with its
-     own gutter was tried and rejected as too bulky, so outer depth and groove share one element and the compact
-     padding stays. bottom padding is deeper than top by exactly the knob's depth lip so the visible gutters match */
+  /* the control is a slab raised off the page (hard drop lip + ambient, like the other controls) whose face is a flat
+     track holding the raised knob (the top inset shadow that made it a recessed groove was removed as too heavy; only
+     a faint bottom-edge highlight remains). NO extra bezel ring around the track: a 5px ring with its own gutter was
+     tried and rejected as too bulky, so outer depth and track share one element and the compact padding stays.
+     bottom padding is deeper than top by exactly the knob's depth lip so the visible gutters match */
   /* track radius 29px = knob radius (46/2) + 6px gutter: the track's cap centres then coincide with the knob's, so the
      gutter reads a uniform 6px around the rounded ends (a full pill radius leaves a fat crescent beside the knob) */
   .seg{ position:relative; display:flex; gap:6px; background:var(--seg-track); border-radius:29px; padding:6px 6px 10px;
-    box-shadow:0 5px 0 var(--seg-deep), var(--ambient-sm), inset 0 2px 5px rgba(0,0,0,.22), inset 0 -1px 1px rgba(255,255,255,.06); }
+    box-shadow:0 5px 0 var(--seg-deep), var(--ambient-sm), inset 0 -1px 1px rgba(255,255,255,.06); }
   /* the teal knob is a JS-positioned thumb that slides between cells; buttons are transparent labels above it */
   .seg .seg-thumb{ position:absolute; border-radius:var(--r-pill); background:var(--accent); box-shadow:0 4px 0 var(--accent-deep);
     transition:left .3s cubic-bezier(.25,.9,.3,1), width .3s cubic-bezier(.25,.9,.3,1); pointer-events:none; }
@@ -346,6 +372,21 @@
   .tile:active{ transform:translateY(var(--lip)); box-shadow:0 0 0 var(--surface-deep), var(--ambient-sm); }
   .tile.out{ filter:grayscale(1); opacity:.42; transform:translateY(var(--lip)) scale(.96); box-shadow:0 0 0 var(--surface-deep); }
 
+  /* endgame spotlight (see decision log): last card standing pops + brief glow +
+     confetti burst, then the field returns to flat; only the teal border stays */
+  .tile.chosen{ border-color:var(--accent); }
+  .tile.chosen.celebrate{ animation:chosenPop .7s cubic-bezier(.2,1.3,.35,1); }
+  @keyframes chosenPop{
+    35%{ transform:scale(1.07); box-shadow:0 var(--lip) 0 var(--surface-deep), 0 0 24px var(--accent); }
+    100%{ transform:scale(1); box-shadow:0 var(--lip) 0 var(--surface-deep), var(--ambient-sm); }
+  }
+  /* confetti overlay sits above the board (.wrap z1) but under the pill (z6) so
+     chrome stays on top; fixed + out of flow = no CLS */
+  #confettiLayer{ position:fixed; inset:0; z-index:5; pointer-events:none; }
+  #confettiLayer i{ position:absolute; width:9px; height:9px; margin:-5px 0 0 -5px; border-radius:2px;
+    animation:confettiFly .7s cubic-bezier(.15,.55,.4,1) forwards; }
+  @keyframes confettiFly{ 0%{ transform:translate(0,0) rotate(0); opacity:1; } 100%{ transform:translate(var(--dx),var(--dy)) rotate(var(--rot)); opacity:0; } }
+
   /* MENU (matches home bg) */
   .menu-overlay{ position:fixed; inset:0; background:var(--overlay); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:8; }
   .menu-overlay.open{ opacity:1; pointer-events:auto; }
@@ -380,7 +421,6 @@
   .modal{ background:var(--surface); color:var(--ink); border:3px solid var(--surface-line); border-radius:var(--r-lg); padding:22px; width:min(340px,100%); text-align:center; box-shadow:var(--ambient); }
   .modal.wide{ width:min(440px,100%); text-align:left; }
   .modal h3{ margin:0 0 12px; font-family:var(--display); font-weight:600; font-size:1.25rem; }
-  .modal .label{ font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:.8rem; color:var(--muted); }
   .modal .emoji{ font-size:60px; margin:6px 0; }
   .modal .lbl{ font-family:var(--display); font-size:24px; font-weight:600; }
   .modal .lbl .ar, .modal .lbl2.ar{ direction:rtl; font-family:var(--arabic); }
@@ -395,7 +435,8 @@
   .secret-modal::after{ content:""; position:absolute; inset:0; z-index:0;
     background:radial-gradient(circle at 50% 50%, transparent 8%, var(--home-edge) 105%); }
   .secret-modal > *{ position:relative; z-index:1; }
-  .secret-modal .label{ color:var(--on-bg); text-shadow:0 1px 2px rgba(20,30,25,.25); }
+  .secret-modal h3{ margin-bottom:6px; color:var(--on-bg); text-shadow:0 1px 2px rgba(20,30,25,.25); }
+  .secret-modal .sub{ margin:0; font-size:14px; font-weight:600; line-height:1.45; color:var(--on-bg); opacity:.9; text-shadow:0 1px 2px rgba(20,30,25,.25); }
   .secret-card{ perspective:900px; margin:14px 0 4px; cursor:pointer; }
   .sc-inner{ position:relative; width:100%; height:190px; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.2,.9,.3,1.2); }
   .sc-inner.revealed{ transform:rotateY(180deg); }
@@ -408,7 +449,7 @@
   .secret-modal .primary{ background:var(--surface); color:var(--ink); text-shadow:none; box-shadow:0 5px 0 var(--surface-deep), var(--ambient-sm); }
   .secret-modal .primary:active{ transform:translateY(5px); box-shadow:0 0 0 var(--surface-deep), var(--ambient-sm); }
   @keyframes popIn{ 0%{ transform:scale(.55); opacity:0; } 65%{ transform:scale(1.04); opacity:1; } 100%{ transform:scale(1); opacity:1; } }
-  .modal-bg.open .secret-modal{ animation:popIn .42s cubic-bezier(.2,1.3,.35,1); }
+  .modal-bg.open .secret-modal, #faqBg.open .modal{ animation:popIn .42s cubic-bezier(.2,1.3,.35,1); }
 
   /* FAQ */
   .faq-rows{ max-height:60vh; overflow-y:auto; margin:0 -2px; }
@@ -427,7 +468,7 @@
   .howto-list .he{ font-size:22px; line-height:1.15; flex:0 0 auto; }
   .howto-tip{ margin-top:14px; color:var(--ink); opacity:.7; font-size:14px; }
 
-  @media (prefers-reduced-motion: reduce){ .sc-inner,.menu-panel,.menu-overlay,.tile,button,.seg .seg-thumb{ transition:none; } #sunburst,.secret-modal::before,.modal-bg.open .secret-modal{ animation:none; } }
+  @media (prefers-reduced-motion: reduce){ .sc-inner,.menu-panel,.menu-overlay,.tile,button,.seg .seg-thumb{ transition:none; } #sunburst,.secret-modal::before,.modal-bg.open .secret-modal,#faqBg.open .modal,.tile.chosen.celebrate,#confettiLayer i{ animation:none; } }
 </style>
 </head>
 <body>
@@ -501,14 +542,17 @@
       <button data-mode="system" aria-pressed="true">System</button>
     </div>
   </div>
-  <!-- home-chip pattern, menu form: the game screen has no chip, Home lives here -->
-  <a id="menuHome" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg><span>Home</span></a>
+  <!-- home-chip pattern, menu form: the game screen has no chip, Home lives here.
+       Label names the destination because a bare "Home" read as the game's own
+       setup screen next to "Change set" -->
+  <a id="menuHome" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg><span>Back to andert.nl</span></a>
 </aside>
 
 <!-- SECRET MODAL -->
 <div id="modalBg" class="modal-bg">
   <div class="modal secret-modal">
-    <div class="label">Your secret character</div>
+    <h3>Your secret character</h3>
+    <p class="sub">This is the card your opponent has to guess. Keep it to yourself.</p>
     <div id="secretCard" class="secret-card" role="button" tabindex="0" aria-label="Tap to reveal your card">
       <div id="scInner" class="sc-inner">
         <div class="sc-face sc-back">
@@ -1095,7 +1139,9 @@ function segThumb(seg){
   let t=seg.querySelector('.seg-thumb');
   if(!t){ t=document.createElement('div'); t.className='seg-thumb'; t.setAttribute('aria-hidden','true'); seg.prepend(t); }
   const b=seg.querySelector('button[aria-pressed="true"]');
-  if(b){ t.style.left=b.offsetLeft+'px'; t.style.top=b.offsetTop+'px'; t.style.width=b.offsetWidth+'px'; t.style.height=b.offsetHeight+'px'; }
+  // skip while the seg is display:none (offsets read 0): stamping zeros makes the thumb
+  // invisibly small and it stays that way when the screen is shown again
+  if(b && b.offsetWidth){ t.style.left=b.offsetLeft+'px'; t.style.top=b.offsetTop+'px'; t.style.width=b.offsetWidth+'px'; t.style.height=b.offsetHeight+'px'; }
 }
 function syncSeg(seg, attr, val){ seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', String(x.dataset[attr]===String(val)))); segThumb(seg); }
 
@@ -1140,7 +1186,7 @@ const setupEl=$('setup'), gameEl=$('game'), boardEl=$('board');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 function setThemeColor(c){ if(themeColorMeta) themeColorMeta.setAttribute('content', c); }
 function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; setThemeColor('#2C8C82'); window.scrollTo(0,0); saveState(); }
-function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); window.scrollTo(0,0); saveState(); }
+function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); window.scrollTo(0,0); saveState(); segThumb($('langSeg')); }
 
 const SAVE_KEY='gw_game';
 function saveState(){
@@ -1182,11 +1228,52 @@ function buildBoard(){
     tile.setAttribute('role','button'); tile.setAttribute('tabindex','0');
     const second = t.dual ? '<div class="lbl2 '+other+'" lang="'+other+'">'+item[other]+'</div>' : '';
     tile.innerHTML='<div class="emoji">'+item.e+'</div><div class="lbl '+learnLang+'" lang="'+learnLang+'">'+item[learnLang]+'</div>'+second;
-    const toggle=()=>{ eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); saveState(); };
+    const toggle=()=>{ eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); saveState(); updateChosen(true); };
     tile.addEventListener('click', toggle);
     tile.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
     boardEl.appendChild(tile);
   });
+  updateChosen(false);
+}
+
+// endgame spotlight (see decision log): celebrate only on live taps; buildBoard
+// passes celebrate=false so a restored one-card game renders the state statically
+function updateChosen(celebrate){
+  const rem=eliminated.filter(x=>!x).length;
+  boardEl.querySelectorAll('.tile').forEach((el,idx)=>{
+    const on = rem===1 && !eliminated[idx];
+    if(on && celebrate && !el.classList.contains('chosen')){
+      const r=el.getBoundingClientRect(); // measure before the pop scales the tile
+      el.classList.add('celebrate');
+      el.addEventListener('animationend', ()=>el.classList.remove('celebrate'), {once:true});
+      spawnConfetti(r.left+r.width/2, r.top+r.height/2);
+    }
+    el.classList.toggle('chosen', on);
+    if(!on) el.classList.remove('celebrate');
+  });
+  // teal sunburst behind the board while the spotlight is active (see decision log)
+  if(rem===1) document.documentElement.dataset.endgame='1';
+  else delete document.documentElement.dataset.endgame;
+}
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+function spawnConfetti(x,y){
+  if(reduceMotion.matches) return;
+  let layer=$('confettiLayer');
+  if(!layer){ layer=document.createElement('div'); layer.id='confettiLayer'; layer.setAttribute('aria-hidden','true'); document.body.appendChild(layer); }
+  // dedicated confetti tokens (red-led, no green/teal): see the token blocks
+  const colors=['var(--confetti-1)','var(--confetti-2)','var(--confetti-3)','var(--confetti-4)'];
+  for(let n=0;n<16;n++){
+    const p=document.createElement('i');
+    const ang=n/16*Math.PI*2 + (Math.random()-.5)*.6;
+    const dist=60+Math.random()*90;
+    p.style.left=x+'px'; p.style.top=y+'px';
+    p.style.background=colors[n%colors.length];
+    p.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(1)+'px');
+    p.style.setProperty('--dy',(Math.sin(ang)*dist-40).toFixed(1)+'px');
+    p.style.setProperty('--rot',Math.round(Math.random()*540-270)+'deg');
+    p.addEventListener('animationend', ()=>p.remove(), {once:true});
+    layer.appendChild(p);
+  }
 }
 
 function buildFaq(){
