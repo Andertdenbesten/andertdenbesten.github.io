@@ -111,8 +111,9 @@ try{
     stands, the game field also shows the rotating sunburst retinted in the
     FIELD teals - an owner-approved exception (2026-07) to the flat-field rule
     above: once the game is decided, eliminated-tile legibility no longer
-    outweighs the celebratory backdrop. It fades out again on un-tap to 2+,
-    along with the thin teal border that persists on the last card.
+    outweighs the celebratory backdrop. The sunburst also stays when the last
+    card is tapped out (zero cards standing); it only fades out again on un-tap
+    back to 2+, along with the thin teal border that persists on the last card.
     Deliberately NO win banner or button: the app never knows who wins, guessing
     stays out loud. A restored one-card game shows border + sunburst statically
     (no bounce, no confetti on reload). Glow/border are TEAL, not amber, because
@@ -1274,7 +1275,9 @@ function buildBoard(){
     tile.setAttribute('role','button'); tile.setAttribute('tabindex','0');
     const second = t.dual ? '<div class="lbl2 '+other+'" lang="'+other+'">'+item[other]+'</div>' : '';
     tile.innerHTML='<div class="emoji">'+item.e+'</div><div class="lbl '+learnLang+'" lang="'+learnLang+'">'+item[learnLang]+'</div>'+second;
-    const toggle=()=>{ eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); saveState(); updateChosen(true); };
+    // celebrate only when this tap ELIMINATED a card: un-tapping back from zero
+    // to one standing is an undo, not a victory moment
+    const toggle=()=>{ eliminated[i]=!eliminated[i]; tile.classList.toggle('out', eliminated[i]); saveState(); updateChosen(eliminated[i]); };
     tile.addEventListener('click', toggle);
     tile.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
     boardEl.appendChild(tile);
@@ -1297,8 +1300,9 @@ function updateChosen(celebrate){
     el.classList.toggle('chosen', on);
     if(!on) el.classList.remove('celebrate');
   });
-  // teal sunburst behind the board while the spotlight is active (see decision log)
-  if(rem===1) document.documentElement.dataset.endgame='1';
+  // teal sunburst behind the board while the spotlight is active; it STAYS when
+  // the last card is tapped out too (rem 0), and only fades on un-tap to 2+
+  if(rem<=1) document.documentElement.dataset.endgame='1';
   else delete document.documentElement.dataset.endgame;
 }
 const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
