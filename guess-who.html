@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F59E1A">
+<script>
+/* pre-paint screen pick: with a saved game the page must not first paint the
+   yellow home (body, #bg and theme-color key off data-screen) and then flip to
+   the teal game field when the main script runs. Read the save here in the
+   head, before any rendering. The main script re-validates the save and falls
+   back to home if the stored set no longer exists. */
+try{
+  var gwSave=JSON.parse(localStorage.getItem('gw_game')||'null');
+  if(gwSave&&gwSave.k){
+    document.documentElement.dataset.screen='game';
+    document.querySelector('meta[name="theme-color"]').setAttribute('content','#2C8C82');
+  }
+}catch(e){}
+</script>
 <title>Guess Who — language practice</title>
 <!--
   ============================================================
@@ -206,6 +220,10 @@
   .wrap{ max-width:760px; margin:0 auto; padding:14px 14px 0; min-height:100dvh; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; }
   .ar{ font-family:var(--arabic); direction:rtl; }
   .hidden{ display:none !important; }
+  /* belt for the pre-paint game pick (head script): keeps the setup content
+     from flashing on the teal field before the main script hides it. In sync
+     with showGame/leaveToSetup, which always pair data-screen with .hidden */
+  html[data-screen="game"] #setup{ display:none; }
   .title-depth{ color:var(--on-bg); text-shadow:0 2px 0 var(--title-edge), 0 5px 7px rgba(20,30,25,.2); }
 
   /* rotating sunburst (home, and in teal on the game field while the endgame
@@ -1381,8 +1399,12 @@ document.addEventListener('keydown', e=>{
 $('langAr').classList.toggle('on', learnLang==='ar');
 $('langNl').classList.toggle('on', learnLang==='nl');
 
-// restore an in-progress game after reload (no-op if none saved)
-loadState();
+// restore an in-progress game after reload; if the head's pre-paint pick chose
+// the game screen but the save turns out invalid (stale set key), fall back
+if(!loadState() && document.documentElement.dataset.screen==='game'){
+  document.documentElement.dataset.screen='home';
+  setThemeColor('#F59E1A');
+}
 
 // place the seg thumbs on the initial active buttons (runs pre-paint, so no slide-in flash)
 segThumb($('langSeg')); segThumb($('modeSeg'));
