@@ -1187,6 +1187,7 @@ let activeItems=[];
 let secretIndex=null;
 let eliminated=[];
 let pendingAction=null;
+let pendingCancel=null;
 
 function setLang(lang){
   learnLang=lang;
@@ -1220,8 +1221,18 @@ startBtn.addEventListener('click', ()=>{ if(!selectedKey){ showToast('Choose a s
 const setupEl=$('setup'), gameEl=$('game'), boardEl=$('board');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 function setThemeColor(c){ if(themeColorMeta) themeColorMeta.setAttribute('content', c); }
-function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; setThemeColor('#2C8C82'); window.scrollTo(0,0); saveState(); }
-function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); window.scrollTo(0,0); saveState(); segThumb($('langSeg')); }
+function showGame(){ setupEl.classList.add('hidden'); gameEl.classList.remove('hidden'); document.documentElement.dataset.screen='game'; setThemeColor('#2C8C82'); window.scrollTo(0,0); saveState();
+  // the game screen is its own history entry so the browser back button returns
+  // to the set chooser instead of leaving the site. history.state survives a
+  // reload, hence the guard against double-pushing on a restored game
+  if(!(history.state && history.state.gw==='game')) history.pushState({gw:'game'},'');
+}
+function leaveToSetup(){ gameEl.classList.add('hidden'); setupEl.classList.remove('hidden'); document.documentElement.dataset.screen='home'; setThemeColor('#F59E1A'); window.scrollTo(0,0); saveState(); segThumb($('langSeg'));
+  // leaving via the menu must consume the pushed game entry, otherwise back on
+  // the set chooser needs two presses; when we got here via popstate the entry
+  // is already popped and history.state is no longer the game marker
+  if(history.state && history.state.gw==='game') history.back();
+}
 
 const SAVE_KEY='gw_game';
 function saveState(){
@@ -1364,22 +1375,34 @@ $('secretCard').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '
 $('peekBtn').addEventListener('click', ()=>openSecret(true));
 menuOverlay.addEventListener('click', closeMenu);
 
-function confirmIfProgress(action){ if(currentKey && eliminated.some(x=>x)){ pendingAction=action; $('confirmBg').classList.add('open'); } else action(); }
+function confirmIfProgress(action, oncancel){
+  if(currentKey && eliminated.some(x=>x)){ pendingAction=action; pendingCancel=oncancel||null; $('confirmBg').classList.add('open'); }
+  else action();
+}
+function cancelConfirm(){ $('confirmBg').classList.remove('open'); if(pendingCancel) pendingCancel(); pendingCancel=null; pendingAction=null; }
 $('menuHow').addEventListener('click', ()=>{ closeMenu(); $('howtoBg').classList.add('open'); });
 $('menuReplay').addEventListener('click', ()=>{ replaySameCards(); closeMenu(); });
 $('menuBack').addEventListener('click', ()=>{ closeMenu(); confirmIfProgress(leaveToSetup); });
 $('setupHow').addEventListener('click', ()=> $('howtoBg').classList.add('open'));
 
-$('confirmCancel').addEventListener('click', ()=>{ $('confirmBg').classList.remove('open'); pendingAction=null; });
-$('confirmOk').addEventListener('click', ()=>{ const a=pendingAction; pendingAction=null; $('confirmBg').classList.remove('open'); if(a) a(); });
+$('confirmCancel').addEventListener('click', cancelConfirm);
+$('confirmOk').addEventListener('click', ()=>{ const a=pendingAction; pendingAction=null; pendingCancel=null; $('confirmBg').classList.remove('open'); if(a) a(); });
 
 $('closeModal').addEventListener('click', closeSecret);
 $('closeFaq').addEventListener('click', ()=> $('faqBg').classList.remove('open'));
 $('closeHow').addEventListener('click', ()=> $('howtoBg').classList.remove('open'));
 ['faqBg','howtoBg','confirmBg'].forEach(id=>{
-  $(id).addEventListener('click', e=>{ if(e.target===$(id)){ $(id).classList.remove('open'); if(id==='confirmBg') pendingAction=null; } });
+  $(id).addEventListener('click', e=>{ if(e.target===$(id)){ if(id==='confirmBg') cancelConfirm(); else $(id).classList.remove('open'); } });
 });
 $('modalBg').addEventListener('click', e=>{ if(e.target===$('modalBg')) closeSecret(); });
+
+// browser back (button or iOS swipe) on the game screen returns to the set
+// chooser instead of leaving the site, with the same lost-progress warning as
+// the menu route; cancelling re-pushes the game entry so the game stays open
+window.addEventListener('popstate', ()=>{
+  if(document.documentElement.dataset.screen!=='game') return;
+  confirmIfProgress(leaveToSetup, ()=>history.pushState({gw:'game'},''));
+});
 
 const modeMql = window.matchMedia('(prefers-color-scheme: dark)');
 let modePref = 'system';
@@ -1392,7 +1415,7 @@ document.addEventListener('keydown', e=>{
   if(e.key!=='Escape') return;
   const ids=['modalBg','faqBg','howtoBg','confirmBg'];
   const open=ids.find(id=>$(id).classList.contains('open'));
-  if(open){ if(open==='modalBg') closeSecret(); else { $(open).classList.remove('open'); if(open==='confirmBg') pendingAction=null; } }
+  if(open){ if(open==='modalBg') closeSecret(); else if(open==='confirmBg') cancelConfirm(); else $(open).classList.remove('open'); }
   else if(menuPanel.classList.contains('open')) closeMenu();
 });
 
