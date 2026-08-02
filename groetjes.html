@@ -874,9 +874,27 @@ function kiezersHtml() {
   '</section>';
 }
 
+/* Google Translate-broncodes, expliciet in plaats van sl=auto: automatisch
+   herkennen ging mis (de Koreaanse romanisatie werd als Indonesisch gezien).
+   De codes wijken soms af van de spraakcodes: nb wordt no, fil wordt tl.
+   Sranantongo ontbreekt bewust: Google Translate kent die taal niet, dus die
+   kaart krijgt geen Translate-link. */
+const GT_CODE = {
+  fins: "fi", deens: "da", zweeds: "sv", noors: "no", nederlands: "nl",
+  portugees: "pt", spaans: "es", frans: "fr", pools: "pl", roemeens: "ro",
+  kroatisch: "hr", albanees: "sq", kinyarwanda: "rw", zoeloe: "zu",
+  afrikaans: "af", koreaans: "ko", filipino: "tl", engels: "en"
+};
+
 function gtLink(t) {
-  const tekst = t.zinnen.map(z => z.doel).join("\n.........\n");
-  return "https://translate.google.com/?sl=auto&tl=" + T + "&text=" + encodeURIComponent(tekst) + "&op=translate";
+  const code = GT_CODE[t.id];
+  if (!code) return "";
+  /* Koreaans stuurt het hangul mee: de doel-regel is daar romanisatie.
+     Kroatisch juist niet: het schrift op die kaart is de Servische variant. */
+  const tekst = t.zinnen.map(z => t.id === "koreaans" && z.schrift ? z.schrift : z.doel).join("\n.........\n");
+  /* nl naar nl vertalen is zinloos: dan wordt de andere interfacetaal het doel */
+  const doelTaal = code === T ? (T === "nl" ? "en" : "nl") : T;
+  return "https://translate.google.com/?sl=" + code + "&tl=" + doelTaal + "&text=" + encodeURIComponent(tekst) + "&op=translate";
 }
 
 function taalHtml(t) {
@@ -914,7 +932,7 @@ function taalHtml(t) {
           '<span>' + L().luister + '</span>' +
         '</button>' +
         '<button class="meerKnop" aria-expanded="false">' + L().meer + '</button>' +
-        '<a class="gtLink" href="' + gtLink(t) + '" target="_blank" rel="noopener">Google Translate</a>' +
+        (gtLink(t) ? '<a class="gtLink" href="' + gtLink(t) + '" target="_blank" rel="noopener">Google Translate</a>' : '') +
       '</div>' +
       '<div class="notitie" hidden>' + t.notitie[T] + '</div>' +
     '</div>' +
