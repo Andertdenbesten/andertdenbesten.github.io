@@ -64,6 +64,16 @@
   - Spraak via het apparaat zelf; Google Translate blokkeert inbedding met frame-ancestors,
     dus een iframe kan niet. Waar geen stem is, valt hij terug op een link.
   - Mobiel eerst. Geen opslag, geen build, één bestand.
+  - Vijfde zin per kaart: fijne dag (☀️), na tot ziens. Zelfde principe als de rest:
+    gastvrijheid, lokt geen gesprek uit.
+  - Sranantongo heeft een eigen kaart (besloten 2026-08). Suriname staat daardoor twee
+    keer in de landkiezer, net als België; de kiezer lost dat zelf op met de taalnaam
+    erachter. Kleur: het groen uit de Surinaamse vlag, motief: de vlagbanden.
+  - Albanese klemtonen gecorrigeerd na naslag: faleminderit en mirupafshim hebben de
+    klemtoon op de voorlaatste lettergreep, niet op de laatste.
+  - Kroatisch & Servisch lopen bij fijne dag uiteen: ugodan dan tegenover prijatan dan.
+    De kaart toont Kroatisch in Latijns schrift en Servisch in cyrillisch; de notitie
+    legt het uit. De eerste vier zinnen blijven woordelijk identiek.
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,10 +131,11 @@ body {
 
 .tafereel { display: block; width: 100%; height: auto; aspect-ratio: 400 / 240; }
 
-/* Beperkt tot 62,5% hoogte zodat het wordmerk volledig in de lucht staat,
-   met ruimte tot de horizon. Niet weghalen. */
+/* Wordmerk tussen home-chip en horizon: begint pas op 16% hoogte zodat de
+   G-krul vrij blijft van de chip linksboven, en stopt boven de horizon.
+   Niet weghalen: anders overlapt de tekst chip of veld. */
 .ansicht-tekst {
-  position: absolute; left: 0; right: 0; top: 0; height: 62.5%;
+  position: absolute; left: 0; right: 0; top: 16%; bottom: 37.5%;
   display: flex; align-items: center;
   padding: 0 1.4rem .8rem;
   pointer-events: none;
@@ -212,7 +223,8 @@ body {
   display: block; width: 100%; padding: 0; border: 0; background: none;
   font: inherit; color: inherit; text-align: left; cursor: pointer;
 }
-.band { height: 32px; background-image: var(--motief); background-size: var(--maat); }
+/* display:block is essentieel: een span negeert height en de band verdwijnt */
+.band { display: block; height: 32px; background-image: var(--motief); background-size: var(--maat); }
 
 .rijtekst {
   display: grid; grid-template-columns: 1fr 1.25rem;
@@ -344,7 +356,8 @@ const TALEN = [
       { em: "🙋", doel: "Hei", fon: { nl: "hei", en: "hay" } },
       { em: "😊", doel: "Kiitos", fon: { nl: "<u>kie</u>-tos", en: "<u>KEE</u>-toss" } },
       { em: "🎁", doel: "Ole hyvä", fon: { nl: "<u>o</u>-le <u>hy</u>-vae", en: "<u>O</u>-leh <u>HY</u>-va" } },
-      { em: "👋", doel: "Näkemiin", fon: { nl: "<u>nae</u>-ke-mien", en: "<u>NA</u>-keh-meen" } }
+      { em: "👋", doel: "Näkemiin", fon: { nl: "<u>nae</u>-ke-mien", en: "<u>NA</u>-keh-meen" } },
+      { em: "☀️", doel: "Hyvää päivänjatkoa", fon: { nl: "<u>hy</u>-vae <u>pai</u>-vaen-jat-koa", en: "<u>HY</u>-va <u>PIE</u>-van-yat-koh-ah" } }
     ]},
 
   { id: "deens", regio: 1, kleur: "#e4322a",
@@ -358,7 +371,8 @@ const TALEN = [
       { em: "🙋", doel: "Hej", fon: { nl: "hai", en: "hy" } },
       { em: "😊", doel: "Tak", fon: { nl: "tak", en: "tahk" } },
       { em: "🎁", doel: "Værsgo", fon: { nl: "vaers-<u>goo</u>", en: "vairs-<u>GOH</u>" } },
-      { em: "👋", doel: "Farvel", fon: { nl: "fa-<u>vel</u>", en: "fah-<u>VEL</u>" } }
+      { em: "👋", doel: "Farvel", fon: { nl: "fa-<u>vel</u>", en: "fah-<u>VEL</u>" } },
+      { em: "☀️", doel: "Ha' en god dag", fon: { nl: "ha en go <u>daj</u>", en: "hah en go <u>DY</u>" } }
     ]},
 
   { id: "zweeds", regio: 1, kleur: "#0d5aa7",
@@ -372,7 +386,8 @@ const TALEN = [
       { em: "🙋", doel: "Hej", fon: { nl: "hej", en: "hay" } },
       { em: "😊", doel: "Tack", fon: { nl: "tak", en: "tahk" } },
       { em: "🎁", doel: "Varsågod", fon: { nl: "var-sjo-<u>goe</u>", en: "var-sho-<u>GOOD</u>" } },
-      { em: "👋", doel: "Hej då", fon: { nl: "hej <u>doo</u>", en: "hay <u>DAW</u>" } }
+      { em: "👋", doel: "Hej då", fon: { nl: "hej <u>doo</u>", en: "hay <u>DAW</u>" } },
+      { em: "☀️", doel: "Ha en bra dag", fon: { nl: "ha en braa <u>daag</u>", en: "ha en brah <u>DAHG</u>" } }
     ]},
 
   { id: "noors", regio: 1, kleur: "#14264f",
@@ -386,7 +401,8 @@ const TALEN = [
       { em: "🙋", doel: "Hei", fon: { nl: "hai", en: "hay" } },
       { em: "😊", doel: "Takk", fon: { nl: "tak", en: "tahk" } },
       { em: "🎁", doel: "Vær så god", fon: { nl: "vaer sjo <u>goe</u>", en: "var sho <u>GOO</u>" } },
-      { em: "👋", doel: "Ha det", fon: { nl: "<u>ha</u> de", en: "<u>HA</u> deh" } }
+      { em: "👋", doel: "Ha det", fon: { nl: "<u>ha</u> de", en: "<u>HA</u> deh" } },
+      { em: "☀️", doel: "Ha en fin dag", fon: { nl: "ha en fien <u>daag</u>", en: "ha en feen <u>DAHG</u>" } }
     ]},
 
   { id: "nederlands", regio: 2, kleur: "#f0821a",
@@ -395,13 +411,14 @@ const TALEN = [
     motief: "radial-gradient(circle at 50% 0, #f0821a 0 8px, transparent 8.5px)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "22px 22px",
     notitie: {
-      nl: "In Suriname hoor je daarnaast Sranantongo: fa waka is hoe gaat het, en wordt ook als groet gebruikt.",
-      en: "In Suriname you will also hear Sranantongo: fa waka means how are you and doubles as a greeting." },
+      nl: "In Suriname hoor je daarnaast Sranantongo: fa waka is hoe gaat het, en wordt ook als groet gebruikt. Sranantongo heeft een eigen kaart, onder Azië en Amerika.",
+      en: "In Suriname you will also hear Sranantongo: fa waka means how are you and doubles as a greeting. Sranantongo has its own card, under Asia and the Americas." },
     zinnen: [
       { em: "🙋", doel: "Hallo", fon: { en: "<u>HA</u>-loh" } },
       { em: "😊", doel: "Dankjewel", fon: { en: "<u>DUNK</u>-yuh-vel" } },
       { em: "🎁", doel: "Alsjeblieft", fon: { en: "<u>ALS</u>-yuh-bleeft" } },
-      { em: "👋", doel: "Tot ziens", fon: { en: "tot <u>SEENS</u>" } }
+      { em: "👋", doel: "Tot ziens", fon: { en: "tot <u>SEENS</u>" } },
+      { em: "☀️", doel: "Fijne dag", fon: { en: "<u>FY</u>-nuh dakh" } }
     ]},
 
   { id: "portugees", regio: 2, kleur: "#14612b",
@@ -417,7 +434,8 @@ const TALEN = [
       { em: "🙋", doel: "Bom dia", fon: { nl: "bong <u>die</u>-a", en: "bong <u>DEE</u>-uh" } },
       { em: "😊", doel: "Obrigado", fon: { nl: "o-brie-<u>ga</u>-doe", en: "oh-bree-<u>GAH</u>-doo" } },
       { em: "🎁", doel: "Aqui está", fon: { nl: "a-<u>kie</u> isj-<u>ta</u>", en: "a-<u>KEE</u> ish-<u>TAH</u>" } },
-      { em: "👋", doel: "Adeus", fon: { nl: "a-<u>deusj</u>", en: "a-<u>DEH</u>-oosh" } }
+      { em: "👋", doel: "Adeus", fon: { nl: "a-<u>deusj</u>", en: "a-<u>DEH</u>-oosh" } },
+      { em: "☀️", doel: "Tenha um bom dia", fon: { nl: "<u>te</u>-nja oem bong <u>die</u>-a", en: "<u>TEN</u>-ya oom bong <u>DEE</u>-uh" } }
     ]},
 
   { id: "spaans", regio: 2, kleur: "#c9694a",
@@ -432,7 +450,8 @@ const TALEN = [
       { em: "🙋", doel: "Hola", fon: { nl: "<u>o</u>-la", en: "<u>O</u>-la" } },
       { em: "😊", doel: "Gracias", fon: { nl: "<u>gra</u>-sjas", en: "<u>GRA</u>-see-ass" } },
       { em: "🎁", doel: "Aquí tienes", fon: { nl: "a-<u>kie</u> <u>tje</u>-nes", en: "a-<u>KEE</u> <u>TYEH</u>-ness" } },
-      { em: "👋", doel: "Adiós", fon: { nl: "a-<u>djos</u>", en: "a-<u>DYOSS</u>" } }
+      { em: "👋", doel: "Adiós", fon: { nl: "a-<u>djos</u>", en: "a-<u>DYOSS</u>" } },
+      { em: "☀️", doel: "Que tengas un buen día", fon: { nl: "ke <u>ten</u>-gas oen bwen <u>die</u>-a", en: "keh <u>TEN</u>-gas oon bwen <u>DEE</u>-ah" } }
     ]},
 
   { id: "frans", regio: 2, kleur: "#17ab61",
@@ -448,7 +467,8 @@ const TALEN = [
       { em: "🙋", doel: "Bonjour", fon: { nl: "bon-<u>zjoer</u>", en: "bon-<u>ZHOOR</u>" } },
       { em: "😊", doel: "Merci", fon: { nl: "mer-<u>sie</u>", en: "mer-<u>SEE</u>" } },
       { em: "🎁", doel: "Voilà", fon: { nl: "vwa-<u>la</u>", en: "vwa-<u>LA</u>" } },
-      { em: "👋", doel: "Au revoir", fon: { nl: "o-ruh-<u>vwaar</u>", en: "oh-ruh-<u>VWAR</u>" } }
+      { em: "👋", doel: "Au revoir", fon: { nl: "o-ruh-<u>vwaar</u>", en: "oh-ruh-<u>VWAR</u>" } },
+      { em: "☀️", doel: "Bonne journée", fon: { nl: "bon zjoer-<u>nee</u>", en: "bon zhoor-<u>NAY</u>" } }
     ]},
 
   { id: "pools", regio: 3, kleur: "#a80f1c",
@@ -462,7 +482,8 @@ const TALEN = [
       { em: "🙋", doel: "Dzień dobry", fon: { nl: "dzjenj <u>dob</u>-ry", en: "jane <u>DOH</u>-bry" } },
       { em: "😊", doel: "Dziękuję", fon: { nl: "dzjen-<u>koe</u>-je", en: "jen-<u>KOO</u>-yeh" } },
       { em: "🎁", doel: "Proszę", fon: { nl: "<u>pro</u>-sje", en: "<u>PRO</u>-sheh" } },
-      { em: "👋", doel: "Do widzenia", fon: { nl: "do vie-<u>dze</u>-nja", en: "doh vee-<u>DZEN</u>-ya" } }
+      { em: "👋", doel: "Do widzenia", fon: { nl: "do vie-<u>dze</u>-nja", en: "doh vee-<u>DZEN</u>-ya" } },
+      { em: "☀️", doel: "Miłego dnia", fon: { nl: "mi-<u>we</u>-go <u>dnja</u>", en: "mee-<u>WEH</u>-go <u>DNYA</u>" } }
     ]},
 
   { id: "roemeens", regio: 3, kleur: "#f2cb1c",
@@ -476,7 +497,8 @@ const TALEN = [
       { em: "🙋", doel: "Bună ziua", fon: { nl: "<u>boe</u>-na <u>zie</u>-wa", en: "<u>BOO</u>-nuh <u>ZEE</u>-wa" } },
       { em: "😊", doel: "Mulțumesc", fon: { nl: "moel-tsoe-<u>mesk</u>", en: "mool-tsoo-<u>MESK</u>" } },
       { em: "🎁", doel: "Poftim", fon: { nl: "pof-<u>tim</u>", en: "pof-<u>TEEM</u>" } },
-      { em: "👋", doel: "La revedere", fon: { nl: "la re-ve-<u>de</u>-re", en: "la reh-veh-<u>DEH</u>-reh" } }
+      { em: "👋", doel: "La revedere", fon: { nl: "la re-ve-<u>de</u>-re", en: "la reh-veh-<u>DEH</u>-reh" } },
+      { em: "☀️", doel: "O zi bună", fon: { nl: "o zie <u>boe</u>-na", en: "oh zee <u>BOO</u>-nuh" } }
     ]},
 
   { id: "kroatisch", regio: 3, kleur: "#7793b5",
@@ -484,13 +506,14 @@ const TALEN = [
     landen: [{ vlag: "🇭🇷", nl: "Kroatië", en: "Croatia", endo: "Hrvatska" }, { vlag: "🇷🇸", nl: "Servië", en: "Serbia", endo: "Србија" }],
     motief: "conic-gradient(#7793b5 0 25%, " + CREME + " 0 50%, #7793b5 0 75%, " + CREME + " 0)", maat: "18px 18px",
     notitie: {
-      nl: "Taalkundig één taal met twee namen; deze vier zinnen zijn woordelijk identiek. Het verschil zit elders: Servië schrijft ook cyrillisch, Kroatisch zegt lijepo waar Servisch lepo zegt.",
-      en: "Linguistically one language with two names; these four lines are word for word identical. The difference lies elsewhere: Serbia also writes in Cyrillic, Croatian says lijepo where Serbian says lepo." },
+      nl: "Taalkundig één taal met twee namen; de eerste vier zinnen zijn woordelijk identiek. Bij fijne dag lopen ze uiteen: Kroatisch zegt ugodan dan, Servisch prijatan dan (Пријатан дан). Verder schrijft Servië ook cyrillisch, en zegt Kroatisch lijepo waar Servisch lepo zegt.",
+      en: "Linguistically one language with two names; the first four lines are word for word identical. Have a nice day is where they part: Croatian says ugodan dan, Serbian prijatan dan (Пријатан дан). Serbia also writes in Cyrillic, and Croatian says lijepo where Serbian says lepo." },
     zinnen: [
       { em: "🙋", doel: "Dobar dan", schrift: "Добар дан", fon: { nl: "<u>do</u>-bar dan", en: "<u>DO</u>-bar dan" } },
       { em: "😊", doel: "Hvala", schrift: "Хвала", fon: { nl: "<u>hva</u>-la", en: "<u>HVA</u>-la" } },
       { em: "🎁", doel: "Izvolite", schrift: "Изволите", fon: { nl: "iz-<u>vo</u>-li-te", en: "iz-<u>VO</u>-lee-teh" } },
-      { em: "👋", doel: "Doviđenja", schrift: "Довиђења", fon: { nl: "do-vie-<u>dje</u>-nja", en: "do-vee-<u>JEN</u>-ya" } }
+      { em: "👋", doel: "Doviđenja", schrift: "Довиђења", fon: { nl: "do-vie-<u>dje</u>-nja", en: "do-vee-<u>JEN</u>-ya" } },
+      { em: "☀️", doel: "Ugodan dan", schrift: "Пријатан дан", fon: { nl: "<u>oe</u>-go-dan dan", en: "<u>OO</u>-go-dan dan" } }
     ]},
 
   { id: "albanees", regio: 3, kleur: "#26211f",
@@ -504,9 +527,10 @@ const TALEN = [
       en: "Albanian has no close relative in Europe, so nothing sounds familiar. Tungjatjeta is warmer than mirëdita but a mouthful; Albanians shorten it to tung." },
     zinnen: [
       { em: "🙋", doel: "Mirëdita", fon: { nl: "mi-rë-<u>die</u>-ta", en: "mee-ruh-<u>DEE</u>-ta" } },
-      { em: "😊", doel: "Faleminderit", fon: { nl: "fa-le-min-de-<u>rit</u>", en: "fa-leh-min-deh-<u>REET</u>" } },
+      { em: "😊", doel: "Faleminderit", fon: { nl: "fa-le-min-<u>de</u>-rit", en: "fa-leh-min-<u>DEH</u>-reet" } },
       { em: "🎁", doel: "Urdhëroni", fon: { nl: "oer-dhë-<u>ro</u>-ni", en: "oor-dhuh-<u>RO</u>-nee" } },
-      { em: "👋", doel: "Mirupafshim", fon: { nl: "mi-ru-paf-<u>sjim</u>", en: "mee-roo-paf-<u>SHEEM</u>" } }
+      { em: "👋", doel: "Mirupafshim", fon: { nl: "mi-ru-<u>paf</u>-sjim", en: "mee-roo-<u>PAF</u>-sheem" } },
+      { em: "☀️", doel: "Ditën e mirë", fon: { nl: "<u>di</u>-tën e <u>mie</u>-rë", en: "<u>DEE</u>-tun eh <u>MEE</u>-ruh" } }
     ]},
 
   { id: "kinyarwanda", regio: 4, kleur: "#0fa3d0",
@@ -516,13 +540,14 @@ const TALEN = [
             "repeating-linear-gradient(-45deg, #0fa3d0 0 8px, transparent 8px 16px)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "22px 22px",
     notitie: {
-      nl: "Drie van de vier beginnen met mura-, het beleefde voorvoegsel. Dore staat los en betekent kijk. Kinyarwanda heeft toonhoogte die je hier niet ziet.",
-      en: "Three of the four start with mura-, the polite prefix. Dore stands apart and means look. Kinyarwanda is tonal, which this spelling cannot show." },
+      nl: "Drie van de vijf beginnen met mura-, het beleefde voorvoegsel. Dore staat los en betekent kijk. Kinyarwanda heeft toonhoogte die je hier niet ziet.",
+      en: "Three of the five start with mura-, the polite prefix. Dore stands apart and means look. Kinyarwanda is tonal, which this spelling cannot show." },
     zinnen: [
       { em: "🙋", doel: "Muraho", fon: { nl: "moe-ra-<u>ho</u>", en: "moo-ra-<u>HO</u>" } },
       { em: "😊", doel: "Murakoze", fon: { nl: "moe-ra-<u>ko</u>-ze", en: "moo-ra-<u>KO</u>-zeh" } },
       { em: "🎁", doel: "Dore", fon: { nl: "<u>do</u>-re", en: "<u>DO</u>-reh" } },
-      { em: "👋", doel: "Murabeho", fon: { nl: "moe-ra-<u>be</u>-ho", en: "moo-ra-<u>BEH</u>-ho" } }
+      { em: "👋", doel: "Murabeho", fon: { nl: "moe-ra-<u>be</u>-ho", en: "moo-ra-<u>BEH</u>-ho" } },
+      { em: "☀️", doel: "Umunsi mwiza", fon: { nl: "oe-<u>moen</u>-sie <u>mwie</u>-za", en: "oo-<u>MOON</u>-see <u>MWEE</u>-zah" } }
     ]},
 
   { id: "zoeloe", regio: 4, kleur: "#0b7a4a",
@@ -538,7 +563,8 @@ const TALEN = [
       { em: "🙋", doel: "Sawubona", fon: { nl: "sa-woe-<u>bo</u>-na", en: "sa-woo-<u>BO</u>-na" } },
       { em: "😊", doel: "Ngiyabonga", fon: { nl: "ngi-ja-<u>bo</u>-nga", en: "ngee-ya-<u>BON</u>-ga" } },
       { em: "🎁", doel: "Nakhu", fon: { nl: "<u>na</u>-koe", en: "<u>NA</u>-koo" } },
-      { em: "👋", doel: "Sala kahle", fon: { nl: "sa-la <u>ka</u>-shle", en: "sa-la <u>KA</u>-shleh" } }
+      { em: "👋", doel: "Sala kahle", fon: { nl: "sa-la <u>ka</u>-shle", en: "sa-la <u>KA</u>-shleh" } },
+      { em: "☀️", doel: "Ube nosuku oluhle", fon: { nl: "oe-be no-<u>soe</u>-koe o-<u>loe</u>-shle", en: "oo-beh no-<u>SOO</u>-koo o-<u>LOO</u>-shleh" } }
     ]},
 
   { id: "afrikaans", regio: 4, kleur: "#dfa100",
@@ -552,7 +578,8 @@ const TALEN = [
       { em: "🙋", doel: "Goeiedag", fon: { nl: "goei-e-<u>dag</u>", en: "khooy-uh-<u>DAKH</u>" } },
       { em: "😊", doel: "Dankie", fon: { nl: "<u>dan</u>-kie", en: "<u>DUN</u>-kee" } },
       { em: "🎁", doel: "Hier is dit", fon: { nl: "<u>hier</u> is dit", en: "<u>HEER</u> is dit" } },
-      { em: "👋", doel: "Totsiens", fon: { nl: "tot-<u>siens</u>", en: "tot-<u>SEENS</u>" } }
+      { em: "👋", doel: "Totsiens", fon: { nl: "tot-<u>siens</u>", en: "tot-<u>SEENS</u>" } },
+      { em: "☀️", doel: "Lekker dag", fon: { nl: "<u>le</u>-ker dag", en: "<u>LEK</u>-ker dakh" } }
     ]},
 
   /* ---- groep 2 ---- */,
@@ -570,7 +597,8 @@ const TALEN = [
       { em: "🙋", doel: "annyeonghaseyo", schrift: "안녕하세요", fon: { nl: "an-njong-ha-<u>se</u>-jo", en: "an-nyong-ha-<u>SEH</u>-yo" } },
       { em: "😊", doel: "gamsahamnida", schrift: "감사합니다", fon: { nl: "kam-sa-<u>ham</u>-ni-da", en: "kam-sa-<u>HAM</u>-ni-da" } },
       { em: "🎁", doel: "yeogi isseoyo", schrift: "여기 있어요", fon: { nl: "jo-gi <u>i</u>-sso-jo", en: "yaw-gi <u>I</u>-saw-yo" } },
-      { em: "👋", doel: "annyeonghi gaseyo", schrift: "안녕히 가세요", fon: { nl: "an-njong-hi <u>ka</u>-se-jo", en: "an-nyong-hee <u>KA</u>-seh-yo" } }
+      { em: "👋", doel: "annyeonghi gaseyo", schrift: "안녕히 가세요", fon: { nl: "an-njong-hi <u>ka</u>-se-jo", en: "an-nyong-hee <u>KA</u>-seh-yo" } },
+      { em: "☀️", doel: "joeun haru bonaeseyo", schrift: "좋은 하루 보내세요", fon: { nl: "<u>tsjo</u>-eun ha-roe bo-ne-<u>se</u>-jo", en: "<u>JOH</u>-oon ha-roo bo-neh-<u>SEH</u>-yo" } }
     ]},
 
   { id: "filipino", regio: 5, kleur: "#b06f00",
@@ -579,13 +607,14 @@ const TALEN = [
     motief: "repeating-conic-gradient(from 0deg, #b06f00 0 5deg, transparent 5deg 20deg)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "34px 34px",
     notitie: {
-      nl: "Zet po erachter en het wordt respectvol tegen ouderen. Salamat komt via handelscontacten uit het Arabische salāma, wortel s-l-m, het veld van heelheid en veiligheid.",
-      en: "Add po and it becomes respectful towards elders. Salamat came through trade from Arabic salāma, root s-l-m, the field of wholeness and safety." },
+      nl: "Zet po erachter en het wordt respectvol tegen ouderen. Salamat komt via handelscontacten uit het Arabische salāma, wortel s-l-m, het veld van heelheid en veiligheid. Ingat is letterlijk pas goed op jezelf: zo wenst een Filipino je een goede dag; een letterlijke vertaling klinkt stijf.",
+      en: "Add po and it becomes respectful towards elders. Salamat came through trade from Arabic salāma, root s-l-m, the field of wholeness and safety. Ingat literally means take care: that is how a Filipino wishes you a good day; a literal translation sounds stiff." },
     zinnen: [
       { em: "🙋", doel: "Magandang araw", fon: { nl: "ma-gan-<u>dang</u> <u>a</u>-raw", en: "ma-gan-<u>DANG</u> <u>A</u>-raw" } },
       { em: "😊", doel: "Salamat", fon: { nl: "sa-<u>la</u>-mat", en: "sa-<u>LA</u>-mat" } },
       { em: "🎁", doel: "Heto po", fon: { nl: "<u>he</u>-to po", en: "<u>HEH</u>-to po" } },
-      { em: "👋", doel: "Paalam", fon: { nl: "pa-<u>a</u>-lam", en: "pa-<u>A</u>-lam" } }
+      { em: "👋", doel: "Paalam", fon: { nl: "pa-<u>a</u>-lam", en: "pa-<u>A</u>-lam" } },
+      { em: "☀️", doel: "Ingat!", fon: { nl: "<u>ie</u>-ngat", en: "<u>EE</u>-ngat" } }
     ]},
 
   { id: "engels", regio: 5, kleur: "#7c1f2e",
@@ -599,18 +628,36 @@ const TALEN = [
       { em: "🙋", doel: "Hello", fon: { nl: "he-<u>loo</u>" } },
       { em: "😊", doel: "Thank you", fon: { nl: "<u>thenk</u> joe" } },
       { em: "🎁", doel: "Here you go", fon: { nl: "<u>hier</u> joe goo" } },
-      { em: "👋", doel: "Goodbye", fon: { nl: "goed-<u>bai</u>" } }
+      { em: "👋", doel: "Goodbye", fon: { nl: "goed-<u>bai</u>" } },
+      { em: "☀️", doel: "Have a nice day", fon: { nl: "hev e najs <u>deej</u>" } }
+    ]},
+
+  { id: "sranantongo", regio: 5, kleur: "#377e3f",
+    naam: { nl: "Sranantongo", en: "Sranantongo", endo: "Sranan" },
+    landen: [{ vlag: "🇸🇷", nl: "Suriname", en: "Suriname", endo: "Sranan" }],
+    /* motief: de horizontale banden van de Surinaamse vlag, in kaartgroen */
+    motief: "linear-gradient(180deg, #377e3f 0 30%, " + CREME + " 30% 70%, #377e3f 70%)",
+    maat: "100% 100%",
+    notitie: {
+      nl: "De lingua franca van Suriname, naast het officiële Nederlands. Fa waka (hoe gaat het) hoor je ook als groet. Wan switi ... is het vaste wenspatroon: wan switi Kresneti is prettig kerstfeest.",
+      en: "Suriname's lingua franca, alongside official Dutch. Fa waka (how are you) doubles as a greeting. Wan switi ... is the standard well-wishing pattern: wan switi Kresneti is merry Christmas." },
+    zinnen: [
+      { em: "🙋", doel: "Odi", fon: { nl: "<u>o</u>-di", en: "<u>OH</u>-dee" } },
+      { em: "😊", doel: "Grantangi", fon: { nl: "gran-<u>tan</u>-gi", en: "grahn-<u>TAHN</u>-gee" } },
+      { em: "🎁", doel: "A de dya", fon: { nl: "a de <u>dja</u>", en: "ah deh <u>DYAH</u>" } },
+      { em: "👋", doel: "Adyosi", fon: { nl: "a-<u>djo</u>-si", en: "ah-<u>DYOH</u>-see" } },
+      { em: "☀️", doel: "Wan switi dei", fon: { nl: "wan <u>swie</u>-tie dei", en: "wahn <u>SWEE</u>-tee day" } }
     ]}
 ];
 
 const LABELS = {
-  nl: { zin: ["Hallo", "Dankjewel", "Alsjeblieft", "Tot ziens"],
+  nl: { zin: ["Hallo", "Dankjewel", "Alsjeblieft", "Tot ziens", "Fijne dag"],
         kiesLand: "Kies een land", kiesTaal: "Kies een taal",
         regio: ["Noord-Europa", "West- en Zuid-Europa", "Midden- en Oost-Europa", "Afrika", "Azië en Amerika"],
         springTitel: "Spring naar een land",
         titel: "Groetjes!",
         meer: "Toelichting" },
-  en: { zin: ["Hello", "Thank you", "Here you go", "Goodbye"],
+  en: { zin: ["Hello", "Thank you", "Here you go", "Goodbye", "Have a nice day"],
         kiesLand: "Pick a country", kiesTaal: "Pick a language",
         regio: ["Northern Europe", "Western and Southern Europe", "Central and Eastern Europe", "Africa", "Asia and the Americas"],
         springTitel: "Jump to a country",
@@ -641,8 +688,9 @@ const BANNER = {
   breedte: 400, horizon: 150, onder: 240,   /* viewBox-maten; horizon = VP-hoogte */
   vp: 348,                                  /* verdwijnpunt, achter de lucht */
   aantal: 7, padDeel: 0.22,
-  midden: 2,    /* breedtefactor van de middelste banen */
-  afkap: 8      /* px onder het VP waar de zichtbare horizon ligt */
+  midden: 2,        /* breedtefactor van de middelste banen */
+  afkap: 8,         /* px onder het VP waar de zichtbare horizon ligt */
+  molenSchaal: 1.4  /* molen vergroot op verzoek, voet blijft op de horizon */
 };
 
 function tekenBanner() {
@@ -734,7 +782,7 @@ function tekenBanner() {
   }
 
   const molen =
-    '<g transform="translate(' + B.vp + ',' + zichtHorizon + ')" fill="' + B.merk + '">' +
+    '<g transform="translate(' + B.vp + ',' + zichtHorizon + ') scale(' + B.molenSchaal + ')" fill="' + B.merk + '">' +
       '<path d="M-9 0 L-4.5-31 L4.5-31 L9 0 Z"/>' +
       '<g transform="translate(0,-33) rotate(20)">' +
         '<rect x="-2.5" y="-22" width="5" height="44" rx="1.5"/>' +
@@ -911,7 +959,7 @@ const STEM = {
   pools: "pl", koreaans: "ko", roemeens: "ro", kinyarwanda: "rw", albanees: "sq",
   fins: "fi", filipino: "fil", kroatisch: "hr", zoeloe: "zu",
   nederlands: "nl", noors: "nb", zweeds: "sv", deens: "da", engels: "en",
-  afrikaans: "af", portugees: "pt", spaans: "es", frans: "fr"
+  afrikaans: "af", portugees: "pt", spaans: "es", frans: "fr", sranantongo: "srn"
 };
 
 let stemmen = [];
