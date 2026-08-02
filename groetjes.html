@@ -74,6 +74,11 @@
   - Kroatisch & Servisch lopen bij fijne dag uiteen: ugodan dan tegenover prijatan dan.
     De kaart toont Kroatisch in Latijns schrift en Servisch in cyrillisch; de notitie
     legt het uit. De eerste vier zinnen blijven woordelijk identiek.
+  - Luistersessie per kaart (Luister-knop in de voet): label in de interfacetaal, dan
+    de doelzin twee keer, alle vijf de regels, in een loop tot stop. Voor passief leren
+    tijdens het schoonmaken. Bewust via speechSynthesis en niet met audiobestanden;
+    iOS pauzeert spraak bij schermvergrendeling, dus het scherm moet aan blijven.
+    Bewust alleen per kaart, geen alles-achter-elkaar-sessie.
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -275,6 +280,27 @@ body {
 .spreek svg { width: 1.0625rem; height: 1.0625rem; }
 
 .voet { display: flex; flex-wrap: wrap; gap: var(--r3); align-items: center; margin-top: var(--r3); }
+.speelKnop {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: inherit; font-size: .8125rem; font-weight: 700;
+  background: color-mix(in srgb, var(--kleur) 88%, #000);
+  color: #fff; border: 0; border-radius: var(--radius);
+  padding: 5px 12px; cursor: pointer;
+}
+.speelKnop svg { width: .9rem; height: .9rem; }
+.speelKnop .ik-stop { display: none; }
+.speelKnop[aria-pressed="true"] .ik-speel { display: none; }
+.speelKnop[aria-pressed="true"] .ik-stop { display: block; }
+
+/* actieve regel tijdens de luistersessie; negatieve marge + gelijke padding,
+   dus de inhoud verschuift niet */
+.zin.actief {
+  background: color-mix(in srgb, var(--kleur) 14%, transparent);
+  border-radius: var(--radius);
+  margin: 0 calc(-1 * var(--r2));
+  padding-left: var(--r2); padding-right: var(--r2);
+}
+.zin.actief + .zin { border-top-color: transparent; }
 .meerKnop {
   font: inherit; font-size: .8125rem; font-weight: 700;
   background: none; border: 1px solid var(--randkleur); border-radius: var(--radius);
@@ -582,7 +608,7 @@ const TALEN = [
       { em: "☀️", doel: "Lekker dag", fon: { nl: "<u>le</u>-ker dag", en: "<u>LEK</u>-ker dakh" } }
     ]},
 
-  /* ---- groep 2 ---- */,
+  /* ---- groep 2 ---- */
 
   { id: "koreaans", regio: 5, kleur: "#2b2e8f",
     naam: { nl: "Koreaans", en: "Korean", endo: "한국어" },
@@ -656,13 +682,13 @@ const LABELS = {
         regio: ["Noord-Europa", "West- en Zuid-Europa", "Midden- en Oost-Europa", "Afrika", "Azië en Amerika"],
         springTitel: "Spring naar een land",
         titel: "Groetjes!",
-        meer: "Toelichting" },
+        meer: "Toelichting", luister: "Luister", stop: "Stop" },
   en: { zin: ["Hello", "Thank you", "Here you go", "Goodbye", "Have a nice day"],
         kiesLand: "Pick a country", kiesTaal: "Pick a language",
         regio: ["Northern Europe", "Western and Southern Europe", "Central and Eastern Europe", "Africa", "Asia and the Americas"],
         springTitel: "Jump to a country",
         titel: "Greetings!",
-        meer: "Notes" }
+        meer: "Notes", luister: "Listen", stop: "Stop" }
 };
 
 /* ---------------- banner ----------------
@@ -882,6 +908,11 @@ function taalHtml(t) {
     '<div class="uit" id="u-' + t.id + '" hidden>' +
       zinnen +
       '<div class="voet">' +
+        '<button class="speelKnop" data-code="' + t.id + '" aria-pressed="false" hidden>' +
+          '<svg class="ik-speel" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>' +
+          '<svg class="ik-stop" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>' +
+          '<span>' + L().luister + '</span>' +
+        '</button>' +
         '<button class="meerKnop" aria-expanded="false">' + L().meer + '</button>' +
         '<a class="gtLink" href="' + gtLink(t) + '" target="_blank" rel="noopener">Google Translate</a>' +
       '</div>' +
@@ -899,6 +930,7 @@ function lijstHtml() {
 }
 
 function bouw() {
+  stopSessie();
   document.documentElement.lang = T;
   el("wordmerk").textContent = L().titel;
   el("inhoud").innerHTML = kiezersHtml() + lijstHtml();
@@ -933,13 +965,21 @@ document.addEventListener("click", e => {
     return;
   }
 
+  const speel = e.target.closest(".speelKnop");
+  if (speel) {
+    if (sessie && sessie.id === speel.dataset.code) stopSessie();
+    else startSessie(speel.dataset.code);
+    return;
+  }
+
   const spreek = e.target.closest(".spreek");
-  if (spreek) return zeg(spreek.dataset.zin, spreek.dataset.code);
+  if (spreek) { stopSessie(); return zeg(spreek.dataset.zin, spreek.dataset.code); }
 });
 
 function klapOm(knop) {
   const paneel = document.getElementById(knop.getAttribute("aria-controls"));
   const open = paneel.hidden;
+  if (!open && sessie && sessie.id === knop.closest(".rij").id) stopSessie();
   paneel.hidden = !open;
   knop.setAttribute("aria-expanded", String(open));
 }
@@ -980,7 +1020,75 @@ function toonSpreekknoppen() {
   if (!("speechSynthesis" in window)) return;
   stemmen = speechSynthesis.getVoices();
   if (!stemmen.length) return;
-  document.querySelectorAll(".spreek").forEach(k => { k.hidden = !vindStem(STEM[k.dataset.code]); });
+  document.querySelectorAll(".spreek, .speelKnop").forEach(k => { k.hidden = !vindStem(STEM[k.dataset.code]); });
+}
+
+/* ---------------- luistersessie ----------------
+   Eén kaart in een loop, voor passief leren: label in de interfacetaal, dan de
+   doelzin twee keer met de native stem, alle regels langs en weer vooraan, tot
+   stop. Stopt ook bij inklappen van de kaart, een losse spreekknop of
+   taalwissel. iOS pauzeert spraak bij schermvergrendeling; scherm moet aan. */
+
+let sessie = null;   /* { id, rij, stap, timer } */
+
+function stopSessie() {
+  if (!sessie) return;
+  const kaart = document.getElementById(sessie.id);
+  clearTimeout(sessie.timer);
+  sessie = null;
+  speechSynthesis.cancel();
+  if (kaart) {
+    kaart.querySelectorAll(".zin.actief").forEach(z => z.classList.remove("actief"));
+    const knop = kaart.querySelector(".speelKnop");
+    if (knop) {
+      knop.setAttribute("aria-pressed", "false");
+      knop.querySelector("span").textContent = L().luister;
+    }
+  }
+}
+
+function startSessie(id) {
+  stopSessie();
+  const t = TALEN.find(x => x.id === id);
+  const stem = vindStem(STEM[id]);
+  if (!t || !stem) return;
+  const labelStem = vindStem(T);   /* interfacetaalstem; mag ontbreken */
+  speechSynthesis.cancel();
+  sessie = { id, rij: 0, stap: 0, timer: 0 };
+  const knop = document.getElementById(id).querySelector(".speelKnop");
+  knop.setAttribute("aria-pressed", "true");
+  knop.querySelector("span").textContent = L().stop;
+  sessieStap(t, stem, labelStem);
+}
+
+function sessieStap(t, stem, labelStem) {
+  if (!sessie) return;
+  const mijn = sessie;
+  const zinnen = document.getElementById(mijn.id).querySelectorAll(".zin");
+  zinnen.forEach((z, i) => z.classList.toggle("actief", i === mijn.rij));
+
+  const label = mijn.stap === 0;
+  if (label && !labelStem) { mijn.stap = 1; return sessieStap(t, stem, labelStem); }
+
+  const u = new SpeechSynthesisUtterance(label ? L().zin[mijn.rij] : t.zinnen[mijn.rij].doel);
+  const s = label ? labelStem : stem;
+  u.voice = s; u.lang = s.lang; u.rate = label ? 1 : .85;
+
+  let geweest = false;
+  const verder = () => {
+    if (geweest || sessie !== mijn) return;
+    geweest = true;
+    const pauze = label ? 350 : (mijn.stap === 1 ? 700 : 1100);
+    mijn.timer = setTimeout(() => {
+      if (sessie !== mijn) return;
+      mijn.stap++;
+      if (mijn.stap > 2) { mijn.stap = 0; mijn.rij = (mijn.rij + 1) % t.zinnen.length; }
+      sessieStap(t, stem, labelStem);
+    }, pauze);
+  };
+  u.onend = verder;
+  u.onerror = verder;
+  speechSynthesis.speak(u);
 }
 
 tekenBanner();
