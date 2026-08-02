@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Groetjes</title>
+
+<!--
+  BESLISSINGSLOG
+  - Twee keuzelijsten: taal links, land rechts. Eén regel hoog, geen toetsenbord.
+    Beide placeholders beginnen met een emoji (🗣️ en 🌍) zodat de knop zelf al scanbaar is;
+    dat is de enige manier om een icoon in een native select te krijgen zonder hem na te bouwen.
+  - Landopties krijgen de vlag ervoor, dus je kunt visueel zoeken zonder de naam te lezen.
+  - België en Zuid-Afrika staan twee keer, want ze hebben twee talen in deze lijst. In plaats
+    van twee identieke regels staat de taalnaam erachter: Zuid-Afrika — Zoeloe.
+  - Banner is een bollenveld in perspectief met de molen op het verdwijnpunt, in SVG
+    getekend vanuit een klein aantal knoppen (zie tekenBanner). Altijd marine, ook in
+    light mode; dark mode voegt alleen een roomkleurige ring van 3px toe, anders loopt
+    het marine weg in de donkere paginakleur. Palet van het evenement: marine, framboos,
+    oker, paars, room. Deze vijf en niet meer.
+  - Alleen het wordmerk in de banner, geen ondertitel. Het wordmerk volgt de
+    interfacetaal: Groetjes! / Greetings!. De tekstlaag is beperkt tot 62,5% hoogte
+    zodat de tekst volledig in de lucht staat; niet weghalen.
+  - De alfabetische volgorde zit binnen de keuzelijst, niet in de pagina. Dat is belangrijk:
+    alfabetisch verschilt per interfacetaal (Zuid-Korea bij de Z, South Korea bij de S), en
+    zo klapt de kaartenlijst niet om als je van taal wisselt. De lijst houdt zijn kleurritme.
+  - Elke optie toont het endoniem erachter: Polen (Polska), Zuid-Korea (한국). Gratis, en
+    bruikbaar als iemand jou zijn eigen land aanwijst.
+  - Groepen weg. Met achttien talen en twee keuzelijsten voegde de indeling niets meer toe,
+    en 'minder vaak gehoord' klopte niet meer met Nederlands en Scandinavisch erin.
+  - Taalkiezer staat in de flow boven het wordmerk, niet er absoluut overheen: Pacifico is
+    hoog en gedraaid en liep er anders achter.
+  - Afrikaans staat direct onder Zoeloe, zodat het Zuid-Afrikaanse paar bij elkaar blijft.
+  - Portugees staat middenin en niet achteraan: minder algemeen bekend dan Spaans of Frans.
+  - Achttien talen in één lijst, geen restcategorie meer. Scandinavisch is drie losse kaarten, want juist
+    naast elkaar zie je waar Noors, Zweeds en Deens uiteenlopen. Engels en Nederlands krijgen
+    dezelfde behandeling als de rest.
+  - Vier Noordse kruizen in vier kleuren: Fins blauw, Zweeds goud, Noors marine, Deens rood.
+    Gedeelde vorm want gedeelde vlagtraditie; de kleur doet het onderscheid.
+  - Frans krijgt het groen van Ivoorkust; oranje is nu van Nederlands.
+  - Fonetiek in de brontaal zelf blijft leeg: Engelse uitspraak van Engels heeft geen zin.
+  - België staat twee keer in de landlijst, bij Nederlands en bij Frans. Dat is geen fout:
+    het land heeft beide talen en je kiest zelf welke kaart je wilt.
+    Daarmee is de lijstvolgorde geen zoekhulpmiddel meer en mag hij op ritme gekozen worden.
+  - Achttien vlaggen putten grotendeels uit rood, wit en blauw, dus botsing is onvermijdelijk.
+    Twee maatregelen: binnen elke hoefamilie een bewuste lichtheidstrap (diep karmijn,
+    helder scharlaken, terracotta, bordeaux), en een volgorde waarin geen twee buren
+    dezelfde familie delen. Zweeds is van goud naar Zweeds blauw gegaan omdat er drie
+    bijna identieke gouden kaarten stonden; Afrikaans van rood naar het goud uit dezelfde vlag.
+  - Eén kleur per taal uit de vlag, maar gekozen op onderling verschil:
+    Frans krijgt het oranje van Ivoorkust, Spaans terracotta uit het rood dat Spanje en Peru
+    delen, Albanees het zwart (enige donkere blok, dus een anker), Zoeloe groen en Afrikaans
+    rood, allebei uit de huidige Zuid-Afrikaanse vlag.
+  - Ribbon van 14 naar 32px zodat de kleur echt aankomt; kaartvlak juist maar licht getint.
+  - Zuid-Afrika heeft twee talen. De pil springt naar Zoeloe; Afrikaans staat er direct onder,
+    met een groepskop ertussen. Dat is een compromis: adjacency wint het niet van de indeling.
+  - Landpillen rechts naast de taalnaam, met terugval naar de regel eronder. Niet afkorten.
+  - Tweetalig NL/EN. De fonetiek is per brontaal apart geschreven; die is niet uitwisselbaar,
+    want dzjenj DOB-ry is Nederlandse spelling en jane DOH-bry Engelse.
+  - Elke taal heeft fonetiek, ook de wereldtalen. De eerdere uitzondering nam aan dat de
+    lezer Nederlands is; dat gaat niet op zodra de app tweetalig is.
+  - Contrast: tekst is niet met de accentkleur gemengd. Taalnaam wel, maar met zwart erbij.
+  - Spraak via het apparaat zelf; Google Translate blokkeert inbedding met frame-ancestors,
+    dus een iframe kan niet. Waar geen stem is, valt hij terug op een link.
+  - Mobiel eerst. Geen opslag, geen build, één bestand.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+KR:wght@500&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --font: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-schrift: "Noto Sans KR", "Manrope", sans-serif;
+  --font-script: "Pacifico", cursive;
+
+  --papier: #faf8f2;
+  --grond:  #eae7e0;
+  --inkt:   #131416;
+  --zacht:  #55574f;
+  --lijn:   #cdcbc3;
+
+  --r1: .25rem; --r2: .5rem; --r3: .875rem; --r4: 1.25rem; --r5: 1.75rem;
+  --radius: 10px;
+  --radius-groot: 15px;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --papier:#1c1d20; --grond:#101113; --inkt:#f4f3ee; --zacht:#a8aaa3; --lijn:#3b3d40; }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0; padding: var(--r3) var(--r3) 4rem;
+  min-height: 100vh;
+  background: var(--grond); color: var(--inkt);
+  font-family: var(--font); font-size: 16px; font-weight: 600; line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+.omhulsel { max-width: 27rem; margin: 0 auto; }
+
+/* ---------- kop ---------- */
+
+.ansicht {
+  --ill-lucht: #20224e;
+  --ill-merk:  #f7f2e4;
+
+  position: relative;
+  border-radius: var(--radius-groot);
+  overflow: hidden;
+  margin-bottom: var(--r4);
+  background: var(--ill-lucht);
+}
+@media (prefers-color-scheme: dark) {
+  .ansicht { box-shadow: 0 0 0 3px var(--ill-merk); }
+}
+
+.tafereel { display: block; width: 100%; height: auto; aspect-ratio: 400 / 240; }
+
+/* Beperkt tot 62,5% hoogte zodat het wordmerk volledig in de lucht staat,
+   met ruimte tot de horizon. Niet weghalen. */
+.ansicht-tekst {
+  position: absolute; left: 0; right: 0; top: 0; height: 62.5%;
+  display: flex; align-items: center;
+  padding: 0 1.4rem .8rem;
+  pointer-events: none;
+}
+
+.taalschakelaar {
+  position: absolute; top: .6rem; right: .65rem;
+  display: flex; gap: 2px;
+  background: color-mix(in srgb, var(--ill-merk) 16%, transparent);
+  border-radius: 999px; padding: 2px;
+  z-index: 2;
+}
+.taalschakelaar button {
+  font: inherit; font-size: .6875rem; font-weight: 800;
+  border: 0; border-radius: 999px; padding: 3px 9px;
+  background: none; color: color-mix(in srgb, var(--ill-merk) 70%, transparent); cursor: pointer;
+}
+.taalschakelaar button[aria-pressed="true"] { background: var(--ill-lucht); color: var(--ill-merk); }
+
+/* home-chip: gedeeld terug-naar-home-patroon (zie CLAUDE.md),
+   linksboven in de banner, gespiegeld aan de taalschakelaar */
+.home-chip {
+  position: absolute; top: .45rem; left: .6rem; z-index: 2;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--ill-merk) 16%, transparent);
+  border-radius: 999px;
+  color: var(--ill-merk);
+}
+.home-chip svg { width: 16px; height: 16px; }
+
+.wordmerk {
+  font-family: var(--font-script); font-weight: 400;
+  font-size: clamp(2.5rem, 13.5vw, 3.3rem); line-height: 1.05;
+  color: var(--ill-merk); margin: 0; transform: rotate(-4deg);
+}
+
+/* ---------- keuzelijsten ---------- */
+
+.kiezers { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: var(--r5); }
+.kiezer {
+  font: inherit; font-size: .875rem; font-weight: 700;
+  color: var(--inkt);
+  background: var(--papier);
+  border: 2px solid var(--lijn);
+  border-radius: var(--radius);
+  padding: 11px 10px;
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(50% + 1px), calc(100% - 10px) calc(50% + 1px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 26px;
+}
+
+/* ---------- groepen ---------- */
+
+.regio { margin-bottom: 2.25rem; }
+.regiokop {
+  font-size: .75rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .13em;
+  color: var(--zacht);
+  margin: 0 0 var(--r3); padding-left: 2px;
+}
+
+.rijen { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--r4); }
+
+.rij {
+  --vlak: color-mix(in srgb, var(--kleur) 8%, var(--papier));
+  --tekstkleur: color-mix(in srgb, var(--kleur) 76%, #000);
+  --randkleur: color-mix(in srgb, var(--kleur) 40%, var(--lijn));
+  background: var(--vlak);
+  border: 2px solid var(--randkleur);
+  border-radius: var(--radius-groot);
+  overflow: hidden;
+  scroll-margin-top: var(--r3);
+}
+@media (prefers-color-scheme: dark) {
+  .rij { --tekstkleur: color-mix(in srgb, var(--kleur) 58%, #fff); }
+}
+
+.rijknop {
+  display: block; width: 100%; padding: 0; border: 0; background: none;
+  font: inherit; color: inherit; text-align: left; cursor: pointer;
+}
+.band { height: 32px; background-image: var(--motief); background-size: var(--maat); }
+
+.rijtekst {
+  display: grid; grid-template-columns: 1fr 1.25rem;
+  align-items: start; gap: var(--r3);
+  padding: var(--r3);
+}
+.naamblok { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--r2) var(--r3); min-width: 0; }
+.taalnaam { font-size: 1.3125rem; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; color: var(--tekstkleur); }
+.landen { display: flex; flex-wrap: wrap; gap: 5px; }
+.land {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .8125rem; font-weight: 700;
+  background: color-mix(in srgb, var(--kleur) 15%, transparent);
+  border-radius: 999px; padding: 3px 11px 3px 8px; white-space: nowrap;
+}
+.pijl { color: var(--zacht); display: block; margin-top: 5px; }
+.pijl svg { width: 1.1rem; height: 1.1rem; transition: transform .18s; }
+.rijknop[aria-expanded="true"] .pijl svg { transform: rotate(180deg); }
+
+/* ---------- uitgeklapt ---------- */
+
+.uit { border-top: 2px solid var(--randkleur); padding: var(--r1) var(--r3) var(--r3); }
+
+.zin {
+  display: grid; grid-template-columns: 7rem 1fr;
+  gap: var(--r4);
+  align-items: baseline;
+  padding: var(--r3) 0;
+}
+.zin + .zin { border-top: 1px solid color-mix(in srgb, var(--kleur) 22%, transparent); }
+
+.zinnl { font-size: 1rem; font-weight: 700; color: var(--zacht); }
+.zinnl .em { font-size: 1.1875rem; margin-right: .2rem; }
+
+.zinrechts { min-width: 0; display: flex; align-items: flex-start; gap: var(--r2); }
+.zinwoorden { flex: 1; min-width: 0; }
+.zindoel { font-size: 1.25rem; font-weight: 800; letter-spacing: -.025em; line-height: 1.15; overflow-wrap: anywhere; }
+.zinschrift { font-family: var(--font-schrift); font-size: 1rem; font-weight: 500; color: var(--zacht); margin-top: 1px; }
+.zinfon { font-size: .9375rem; font-weight: 700; color: var(--zacht); margin-top: 2px; }
+.zinfon u { text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+.spreek {
+  flex: none; width: 2.25rem; height: 2.25rem;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--kleur) 88%, #000);
+  border: 0; border-radius: 999px; color: #fff; cursor: pointer; padding: 0;
+}
+.spreek svg { width: 1.0625rem; height: 1.0625rem; }
+
+.voet { display: flex; flex-wrap: wrap; gap: var(--r3); align-items: center; margin-top: var(--r3); }
+.meerKnop {
+  font: inherit; font-size: .8125rem; font-weight: 700;
+  background: none; border: 1px solid var(--randkleur); border-radius: var(--radius);
+  color: var(--inkt); padding: 5px 11px; cursor: pointer;
+}
+.gtLink { font-size: .8125rem; font-weight: 700; color: var(--zacht); }
+.notitie {
+  margin-top: var(--r3); padding: var(--r3);
+  background: color-mix(in srgb, var(--kleur) 12%, transparent);
+  border-radius: var(--radius);
+  font-size: .875rem; font-weight: 600;
+}
+
+/* ---------- ook aanwezig ---------- */
+
+.stil {
+  background: var(--papier); border: 2px solid var(--lijn);
+  border-radius: var(--radius-groot); padding: var(--r3) var(--r4);
+  scroll-margin-top: var(--r3);
+}
+.stiltitel { font-size: 1rem; font-weight: 800; margin: 0 0 var(--r2); letter-spacing: -.02em; }
+.stil .land { background: var(--grond); }
+.stilzinnen { font-size: .9375rem; font-weight: 700; color: var(--zacht); margin: var(--r2) 0 0; }
+
+:focus-visible { outline: 3px solid var(--inkt); outline-offset: 2px; }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="omhulsel">
+  <div class="ansicht">
+    <!-- Bollenveld in perspectief, molen op het verdwijnpunt.
+         De inhoud wordt eenmalig getekend door tekenBanner(). -->
+    <svg class="tafereel" id="tafereel" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice"
+         role="img" aria-label="Bollenveld met molen"></svg>
+
+    <!-- home-chip: gedeeld terug-naar-home-patroon (zie CLAUDE.md) -->
+    <a class="home-chip" href="./" aria-label="Home" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg></a>
+
+    <div class="ansicht-tekst">
+      <p class="wordmerk" id="wordmerk">Groetjes!</p>
+    </div>
+
+    <div class="taalschakelaar" id="taalschakelaar">
+      <button data-taal="nl" aria-pressed="true">NL</button>
+      <button data-taal="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+
+  <div id="inhoud"></div>
+</div>
+<script>
+/* ---- talen ----
+   Volgorde is met de hand gezet zodat buren niet dezelfde hoefamilie hebben.
+   kleur komt uit de vlag, maar bewust gekozen op onderling verschil:
+   - Frans krijgt het oranje van Ivoorkust in plaats van Frans blauw
+   - Spaans krijgt terracotta uit het rood dat Spanje en Peru delen
+   - Albanees krijgt het zwart uit de vlag; het enige donkere blok in de lijst en dus een anker
+   - Zoeloe en Afrikaans krijgen groen en rood, allebei uit de huidige Zuid-Afrikaanse vlag  */
+
+const CREME = "#f6f2e6";
+
+const KRUIS = (kruis, grond) =>
+  "linear-gradient(90deg, transparent 30%, " + kruis + " 30% 45%, transparent 45%)," +
+  "linear-gradient(0deg, transparent 40%, " + kruis + " 40% 58%, transparent 58%)," +
+  "linear-gradient(" + grond + "," + grond + ")";
+
+
+const TALEN = [
+  { id: "fins", regio: 1, kleur: "#2f80c9",
+    naam: { nl: "Fins", en: "Finnish", endo: "suomi" },
+    landen: [{ vlag: "🇫🇮", nl: "Finland", en: "Finland", endo: "Suomi" }],
+    motief: KRUIS("#2f80c9", CREME), maat: "30px 22px",
+    notitie: {
+      nl: "Klemtoon altijd op de eerste lettergreep, zonder uitzondering. Kiitos is kort en Finnen horen het bijna nooit van buitenlanders, dus het valt op.",
+      en: "Stress always falls on the first syllable, no exceptions. Kiitos is short and Finns rarely hear it from foreigners, so it lands." },
+    zinnen: [
+      { em: "🙋", doel: "Hei", fon: { nl: "hei", en: "hay" } },
+      { em: "😊", doel: "Kiitos", fon: { nl: "<u>kie</u>-tos", en: "<u>KEE</u>-toss" } },
+      { em: "🎁", doel: "Ole hyvä", fon: { nl: "<u>o</u>-le <u>hy</u>-vae", en: "<u>O</u>-leh <u>HY</u>-va" } },
+      { em: "👋", doel: "Näkemiin", fon: { nl: "<u>nae</u>-ke-mien", en: "<u>NA</u>-keh-meen" } }
+    ]},
+
+  { id: "deens", regio: 1, kleur: "#e4322a",
+    naam: { nl: "Deens", en: "Danish", endo: "dansk" },
+    landen: [{ vlag: "🇩🇰", nl: "Denemarken", en: "Denmark", endo: "Danmark" }],
+    motief: KRUIS(CREME, "#e4322a"), maat: "30px 22px",
+    notitie: {
+      nl: "Zelfde woord als het Zweedse hej, andere klank: Denen zeggen hai. Farvel is ons vaarwel, maar in het Deens gewoon alledaags.",
+      en: "Same word as Swedish hej, different sound: Danes say hy. Farvel is the same word as farewell, but everyday in Danish." },
+    zinnen: [
+      { em: "🙋", doel: "Hej", fon: { nl: "hai", en: "hy" } },
+      { em: "😊", doel: "Tak", fon: { nl: "tak", en: "tahk" } },
+      { em: "🎁", doel: "Værsgo", fon: { nl: "vaers-<u>goo</u>", en: "vairs-<u>GOH</u>" } },
+      { em: "👋", doel: "Farvel", fon: { nl: "fa-<u>vel</u>", en: "fah-<u>VEL</u>" } }
+    ]},
+
+  { id: "zweeds", regio: 1, kleur: "#0d5aa7",
+    naam: { nl: "Zweeds", en: "Swedish", endo: "svenska" },
+    landen: [{ vlag: "🇸🇪", nl: "Zweden", en: "Sweden", endo: "Sverige" }],
+    motief: KRUIS(CREME, "#0d5aa7"), maat: "30px 22px",
+    notitie: {
+      nl: "Hej werkt van de kassa tot een minister. Varsågod is letterlijk wees zo goed, en zeg je zowel bij aanreiken als bij graag gedaan.",
+      en: "Hej works from the checkout to a minister. Varsågod is literally be so good, used both when handing something over and as you are welcome." },
+    zinnen: [
+      { em: "🙋", doel: "Hej", fon: { nl: "hej", en: "hay" } },
+      { em: "😊", doel: "Tack", fon: { nl: "tak", en: "tahk" } },
+      { em: "🎁", doel: "Varsågod", fon: { nl: "var-sjo-<u>goe</u>", en: "var-sho-<u>GOOD</u>" } },
+      { em: "👋", doel: "Hej då", fon: { nl: "hej <u>doo</u>", en: "hay <u>DAW</u>" } }
+    ]},
+
+  { id: "noors", regio: 1, kleur: "#14264f",
+    naam: { nl: "Noors", en: "Norwegian", endo: "norsk" },
+    landen: [{ vlag: "🇳🇴", nl: "Noorwegen", en: "Norway", endo: "Norge" }],
+    motief: KRUIS(CREME, "#14264f"), maat: "30px 22px",
+    notitie: {
+      nl: "Noren groeten informeel, ook vreemden. Ha det is kort voor ha det bra, heb het goed. Hier lopen Noors, Zweeds en Deens uiteen.",
+      en: "Norwegians greet informally, strangers included. Ha det is short for ha det bra, have it good. This is where Norwegian, Swedish and Danish part ways." },
+    zinnen: [
+      { em: "🙋", doel: "Hei", fon: { nl: "hai", en: "hay" } },
+      { em: "😊", doel: "Takk", fon: { nl: "tak", en: "tahk" } },
+      { em: "🎁", doel: "Vær så god", fon: { nl: "vaer sjo <u>goe</u>", en: "var sho <u>GOO</u>" } },
+      { em: "👋", doel: "Ha det", fon: { nl: "<u>ha</u> de", en: "<u>HA</u> deh" } }
+    ]},
+
+  { id: "nederlands", regio: 2, kleur: "#f0821a",
+    naam: { nl: "Nederlands", en: "Dutch" },
+    landen: [{ vlag: "🇧🇪", nl: "België", en: "Belgium" }, { vlag: "🇸🇷", nl: "Suriname", en: "Suriname", endo: "Sranan" }],
+    motief: "radial-gradient(circle at 50% 0, #f0821a 0 8px, transparent 8.5px)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "22px 22px",
+    notitie: {
+      nl: "In Suriname hoor je daarnaast Sranantongo: fa waka is hoe gaat het, en wordt ook als groet gebruikt.",
+      en: "In Suriname you will also hear Sranantongo: fa waka means how are you and doubles as a greeting." },
+    zinnen: [
+      { em: "🙋", doel: "Hallo", fon: { en: "<u>HA</u>-loh" } },
+      { em: "😊", doel: "Dankjewel", fon: { en: "<u>DUNK</u>-yuh-vel" } },
+      { em: "🎁", doel: "Alsjeblieft", fon: { en: "<u>ALS</u>-yuh-bleeft" } },
+      { em: "👋", doel: "Tot ziens", fon: { en: "tot <u>SEENS</u>" } }
+    ]},
+
+  { id: "portugees", regio: 2, kleur: "#14612b",
+    naam: { nl: "Portugees", en: "Portuguese", endo: "português" },
+    landen: [{ vlag: "🇵🇹", nl: "Portugal", en: "Portugal" }],
+    motief: "linear-gradient(45deg, #14612b 22%, transparent 22% 78%, #14612b 78%)," +
+            "linear-gradient(-45deg, #14612b 22%, transparent 22% 78%, #14612b 78%)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "22px 22px",
+    notitie: {
+      nl: "Obrigado volgt de spreker, niet de ander: als man obrigado, als vrouw obrigada. Bom dia geldt tot de middag, daarna boa tarde.",
+      en: "Obrigado agrees with the speaker, not the listener: a man says obrigado, a woman obrigada. Bom dia holds until midday, then boa tarde." },
+    zinnen: [
+      { em: "🙋", doel: "Bom dia", fon: { nl: "bong <u>die</u>-a", en: "bong <u>DEE</u>-uh" } },
+      { em: "😊", doel: "Obrigado", fon: { nl: "o-brie-<u>ga</u>-doe", en: "oh-bree-<u>GAH</u>-doo" } },
+      { em: "🎁", doel: "Aqui está", fon: { nl: "a-<u>kie</u> isj-<u>ta</u>", en: "a-<u>KEE</u> ish-<u>TAH</u>" } },
+      { em: "👋", doel: "Adeus", fon: { nl: "a-<u>deusj</u>", en: "a-<u>DEH</u>-oosh" } }
+    ]},
+
+  { id: "spaans", regio: 2, kleur: "#c9694a",
+    naam: { nl: "Spaans", en: "Spanish", endo: "español" },
+    landen: [{ vlag: "🇪🇸", nl: "Spanje", en: "Spain", endo: "España" }, { vlag: "🇵🇪", nl: "Peru", en: "Peru", endo: "Perú" }],
+    motief: "radial-gradient(circle at 50% 50%, #c9694a 0 4px, transparent 4.5px)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "18px 18px",
+    notitie: {
+      nl: "In Spanje klinkt de ci als de Engelse th, in Peru als een s. Hasta luego hoor je vaker dan adiós en klinkt minder definitief.",
+      en: "In Spain the ci sounds like English th, in Peru like an s. Hasta luego is heard more than adiós and sounds less final." },
+    zinnen: [
+      { em: "🙋", doel: "Hola", fon: { nl: "<u>o</u>-la", en: "<u>O</u>-la" } },
+      { em: "😊", doel: "Gracias", fon: { nl: "<u>gra</u>-sjas", en: "<u>GRA</u>-see-ass" } },
+      { em: "🎁", doel: "Aquí tienes", fon: { nl: "a-<u>kie</u> <u>tje</u>-nes", en: "a-<u>KEE</u> <u>TYEH</u>-ness" } },
+      { em: "👋", doel: "Adiós", fon: { nl: "a-<u>djos</u>", en: "a-<u>DYOSS</u>" } }
+    ]},
+
+  { id: "frans", regio: 2, kleur: "#17ab61",
+    naam: { nl: "Frans", en: "French", endo: "français" },
+    landen: [{ vlag: "🇫🇷", nl: "Frankrijk", en: "France" }, { vlag: "🇧🇪", nl: "België", en: "Belgium" }, { vlag: "🇨🇮", nl: "Ivoorkust", en: "Ivory Coast", endo: "Côte d'Ivoire" }],
+    motief: "repeating-linear-gradient(45deg, #17ab61 0 2px, transparent 2px 13px)," +
+            "repeating-linear-gradient(-45deg, #17ab61 0 2px, transparent 2px 13px)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "12px 12px",
+    notitie: {
+      nl: "In Frankrijk begin je elk contact met bonjour, ook in een winkel; zonder kom je onbeleefd over. Salut werkt alleen onder bekenden.",
+      en: "In France you open every interaction with bonjour, shops included; without it you come across as rude. Salut only works among people you know." },
+    zinnen: [
+      { em: "🙋", doel: "Bonjour", fon: { nl: "bon-<u>zjoer</u>", en: "bon-<u>ZHOOR</u>" } },
+      { em: "😊", doel: "Merci", fon: { nl: "mer-<u>sie</u>", en: "mer-<u>SEE</u>" } },
+      { em: "🎁", doel: "Voilà", fon: { nl: "vwa-<u>la</u>", en: "vwa-<u>LA</u>" } },
+      { em: "👋", doel: "Au revoir", fon: { nl: "o-ruh-<u>vwaar</u>", en: "oh-ruh-<u>VWAR</u>" } }
+    ]},
+
+  { id: "pools", regio: 3, kleur: "#a80f1c",
+    naam: { nl: "Pools", en: "Polish", endo: "polski" },
+    landen: [{ vlag: "🇵🇱", nl: "Polen", en: "Poland", endo: "Polska" }],
+    motief: "linear-gradient(" + CREME + " 0 45%, #a80f1c 45%)", maat: "40px 20px",
+    notitie: {
+      nl: "Dzień dobry is beleefd tegen iedereen en werkt de hele dag. Cześć bewaar je voor bekenden.",
+      en: "Dzień dobry is polite to anyone and works all day. Save Cześć for people you know." },
+    zinnen: [
+      { em: "🙋", doel: "Dzień dobry", fon: { nl: "dzjenj <u>dob</u>-ry", en: "jane <u>DOH</u>-bry" } },
+      { em: "😊", doel: "Dziękuję", fon: { nl: "dzjen-<u>koe</u>-je", en: "jen-<u>KOO</u>-yeh" } },
+      { em: "🎁", doel: "Proszę", fon: { nl: "<u>pro</u>-sje", en: "<u>PRO</u>-sheh" } },
+      { em: "👋", doel: "Do widzenia", fon: { nl: "do vie-<u>dze</u>-nja", en: "doh vee-<u>DZEN</u>-ya" } }
+    ]},
+
+  { id: "roemeens", regio: 3, kleur: "#f2cb1c",
+    naam: { nl: "Roemeens", en: "Romanian", endo: "română" },
+    landen: [{ vlag: "🇲🇩", nl: "Moldavië", en: "Moldova" }],
+    motief: "repeating-linear-gradient(90deg, #f2cb1c 0 7px, " + CREME + " 7px 18px)", maat: "18px 18px",
+    notitie: {
+      nl: "Romaanse taal, dus je herkent losse woorden uit het Frans: la revedere is au revoir met dezelfde bouwstenen. De ă is een doffe e, de ț een ts.",
+      en: "A Romance language, so single words look familiar from French: la revedere is au revoir built from the same parts. The ă is a schwa, the ț a ts." },
+    zinnen: [
+      { em: "🙋", doel: "Bună ziua", fon: { nl: "<u>boe</u>-na <u>zie</u>-wa", en: "<u>BOO</u>-nuh <u>ZEE</u>-wa" } },
+      { em: "😊", doel: "Mulțumesc", fon: { nl: "moel-tsoe-<u>mesk</u>", en: "mool-tsoo-<u>MESK</u>" } },
+      { em: "🎁", doel: "Poftim", fon: { nl: "pof-<u>tim</u>", en: "pof-<u>TEEM</u>" } },
+      { em: "👋", doel: "La revedere", fon: { nl: "la re-ve-<u>de</u>-re", en: "la reh-veh-<u>DEH</u>-reh" } }
+    ]},
+
+  { id: "kroatisch", regio: 3, kleur: "#7793b5",
+    naam: { nl: "Kroatisch & Servisch", en: "Croatian & Serbian", endo: "hrvatski / српски" },
+    landen: [{ vlag: "🇭🇷", nl: "Kroatië", en: "Croatia", endo: "Hrvatska" }, { vlag: "🇷🇸", nl: "Servië", en: "Serbia", endo: "Србија" }],
+    motief: "conic-gradient(#7793b5 0 25%, " + CREME + " 0 50%, #7793b5 0 75%, " + CREME + " 0)", maat: "18px 18px",
+    notitie: {
+      nl: "Taalkundig één taal met twee namen; deze vier zinnen zijn woordelijk identiek. Het verschil zit elders: Servië schrijft ook cyrillisch, Kroatisch zegt lijepo waar Servisch lepo zegt.",
+      en: "Linguistically one language with two names; these four lines are word for word identical. The difference lies elsewhere: Serbia also writes in Cyrillic, Croatian says lijepo where Serbian says lepo." },
+    zinnen: [
+      { em: "🙋", doel: "Dobar dan", schrift: "Добар дан", fon: { nl: "<u>do</u>-bar dan", en: "<u>DO</u>-bar dan" } },
+      { em: "😊", doel: "Hvala", schrift: "Хвала", fon: { nl: "<u>hva</u>-la", en: "<u>HVA</u>-la" } },
+      { em: "🎁", doel: "Izvolite", schrift: "Изволите", fon: { nl: "iz-<u>vo</u>-li-te", en: "iz-<u>VO</u>-lee-teh" } },
+      { em: "👋", doel: "Doviđenja", schrift: "Довиђења", fon: { nl: "do-vie-<u>dje</u>-nja", en: "do-vee-<u>JEN</u>-ya" } }
+    ]},
+
+  { id: "albanees", regio: 3, kleur: "#26211f",
+    naam: { nl: "Albanees", en: "Albanian", endo: "shqip" },
+    landen: [{ vlag: "🇦🇱", nl: "Albanië", en: "Albania", endo: "Shqipëri" }],
+    motief: "repeating-linear-gradient(45deg, #26211f 0 6px, transparent 6px 17px)," +
+            "repeating-linear-gradient(-45deg, #26211f 0 6px, transparent 6px 17px)," +
+            "linear-gradient(#d8342f,#d8342f)", maat: "24px 24px",
+    notitie: {
+      nl: "Albanees heeft geen naaste verwant in Europa, dus niets klinkt bekend. Tungjatjeta is warmer dan mirëdita maar een mondvol; Albanezen korten het af tot tung.",
+      en: "Albanian has no close relative in Europe, so nothing sounds familiar. Tungjatjeta is warmer than mirëdita but a mouthful; Albanians shorten it to tung." },
+    zinnen: [
+      { em: "🙋", doel: "Mirëdita", fon: { nl: "mi-rë-<u>die</u>-ta", en: "mee-ruh-<u>DEE</u>-ta" } },
+      { em: "😊", doel: "Faleminderit", fon: { nl: "fa-le-min-de-<u>rit</u>", en: "fa-leh-min-deh-<u>REET</u>" } },
+      { em: "🎁", doel: "Urdhëroni", fon: { nl: "oer-dhë-<u>ro</u>-ni", en: "oor-dhuh-<u>RO</u>-nee" } },
+      { em: "👋", doel: "Mirupafshim", fon: { nl: "mi-ru-paf-<u>sjim</u>", en: "mee-roo-paf-<u>SHEEM</u>" } }
+    ]},
+
+  { id: "kinyarwanda", regio: 4, kleur: "#0fa3d0",
+    naam: { nl: "Kinyarwanda", en: "Kinyarwanda", endo: "Ikinyarwanda" },
+    landen: [{ vlag: "🇷🇼", nl: "Rwanda", en: "Rwanda", endo: "u Rwanda" }],
+    motief: "repeating-linear-gradient(45deg, #0fa3d0 0 8px, transparent 8px 16px)," +
+            "repeating-linear-gradient(-45deg, #0fa3d0 0 8px, transparent 8px 16px)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "22px 22px",
+    notitie: {
+      nl: "Drie van de vier beginnen met mura-, het beleefde voorvoegsel. Dore staat los en betekent kijk. Kinyarwanda heeft toonhoogte die je hier niet ziet.",
+      en: "Three of the four start with mura-, the polite prefix. Dore stands apart and means look. Kinyarwanda is tonal, which this spelling cannot show." },
+    zinnen: [
+      { em: "🙋", doel: "Muraho", fon: { nl: "moe-ra-<u>ho</u>", en: "moo-ra-<u>HO</u>" } },
+      { em: "😊", doel: "Murakoze", fon: { nl: "moe-ra-<u>ko</u>-ze", en: "moo-ra-<u>KO</u>-zeh" } },
+      { em: "🎁", doel: "Dore", fon: { nl: "<u>do</u>-re", en: "<u>DO</u>-reh" } },
+      { em: "👋", doel: "Murabeho", fon: { nl: "moe-ra-<u>be</u>-ho", en: "moo-ra-<u>BEH</u>-ho" } }
+    ]},
+
+  { id: "zoeloe", regio: 4, kleur: "#0b7a4a",
+    naam: { nl: "Zoeloe", en: "Zulu", endo: "isiZulu" },
+    landen: [{ vlag: "🇿🇦", nl: "Zuid-Afrika", en: "South Africa", endo: "iNingizimu Afrika" }],
+    motief: "linear-gradient(135deg, #0b7a4a 25%, transparent 25%)," +
+            "linear-gradient(-135deg, #0b7a4a 25%, transparent 25%)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "24px 24px",
+    notitie: {
+      nl: "Sawubona is wij zien jou, tegen één persoon; tegen een groep sanibonani. De hl is een blaasklank langs de zijkanten van de tong. Zuid-Afrika heeft twaalf talen: Afrikaans staat direct hieronder.",
+      en: "Sawubona means we see you, to one person; to a group it is sanibonani. The hl is a lateral fricative, air along the sides of the tongue. South Africa has twelve languages: Afrikaans is directly below." },
+    zinnen: [
+      { em: "🙋", doel: "Sawubona", fon: { nl: "sa-woe-<u>bo</u>-na", en: "sa-woo-<u>BO</u>-na" } },
+      { em: "😊", doel: "Ngiyabonga", fon: { nl: "ngi-ja-<u>bo</u>-nga", en: "ngee-ya-<u>BON</u>-ga" } },
+      { em: "🎁", doel: "Nakhu", fon: { nl: "<u>na</u>-koe", en: "<u>NA</u>-koo" } },
+      { em: "👋", doel: "Sala kahle", fon: { nl: "sa-la <u>ka</u>-shle", en: "sa-la <u>KA</u>-shleh" } }
+    ]},
+
+  { id: "afrikaans", regio: 4, kleur: "#dfa100",
+    naam: { nl: "Afrikaans", en: "Afrikaans" },
+    landen: [{ vlag: "🇿🇦", nl: "Zuid-Afrika", en: "South Africa", endo: "iNingizimu Afrika" }],
+    motief: "repeating-linear-gradient(135deg, #dfa100 0 7px, " + CREME + " 7px 20px)", maat: "28px 28px",
+    notitie: {
+      nl: "Als Nederlandstalige krijg je dit grotendeels cadeau. Verstaan is makkelijk, ritme en klinkers zijn dat niet. Baie dankie is hartelijk dank, baie klinkt als baaie.",
+      en: "If you speak Dutch this comes almost free. Understanding is easy, rhythm and vowels are not. Baie dankie is thank you very much." },
+    zinnen: [
+      { em: "🙋", doel: "Goeiedag", fon: { nl: "goei-e-<u>dag</u>", en: "khooy-uh-<u>DAKH</u>" } },
+      { em: "😊", doel: "Dankie", fon: { nl: "<u>dan</u>-kie", en: "<u>DUN</u>-kee" } },
+      { em: "🎁", doel: "Hier is dit", fon: { nl: "<u>hier</u> is dit", en: "<u>HEER</u> is dit" } },
+      { em: "👋", doel: "Totsiens", fon: { nl: "tot-<u>siens</u>", en: "tot-<u>SEENS</u>" } }
+    ]},
+
+  /* ---- groep 2 ---- */,
+
+  { id: "koreaans", regio: 5, kleur: "#2b2e8f",
+    naam: { nl: "Koreaans", en: "Korean", endo: "한국어" },
+    landen: [{ vlag: "🇰🇷", nl: "Zuid-Korea", en: "South Korea", endo: "한국" }],
+    motief: "radial-gradient(circle at 0 100%, transparent 11px, #2b2e8f 11px 14px, transparent 14px)," +
+            "radial-gradient(circle at 100% 0, transparent 11px, #2b2e8f 11px 14px, transparent 14px)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "24px 24px",
+    notitie: {
+      nl: "Annyeong betekent rust: hallo is letterlijk bent u in rust, tot ziens is ga in rust. Gamsahamnida schrijf je met een p maar spreek je met een m uit.",
+      en: "Annyeong means peace: hello is literally are you at peace, goodbye is go in peace. Gamsahamnida is written with a p but pronounced with an m." },
+    zinnen: [
+      { em: "🙋", doel: "annyeonghaseyo", schrift: "안녕하세요", fon: { nl: "an-njong-ha-<u>se</u>-jo", en: "an-nyong-ha-<u>SEH</u>-yo" } },
+      { em: "😊", doel: "gamsahamnida", schrift: "감사합니다", fon: { nl: "kam-sa-<u>ham</u>-ni-da", en: "kam-sa-<u>HAM</u>-ni-da" } },
+      { em: "🎁", doel: "yeogi isseoyo", schrift: "여기 있어요", fon: { nl: "jo-gi <u>i</u>-sso-jo", en: "yaw-gi <u>I</u>-saw-yo" } },
+      { em: "👋", doel: "annyeonghi gaseyo", schrift: "안녕히 가세요", fon: { nl: "an-njong-hi <u>ka</u>-se-jo", en: "an-nyong-hee <u>KA</u>-seh-yo" } }
+    ]},
+
+  { id: "filipino", regio: 5, kleur: "#b06f00",
+    naam: { nl: "Filipino", en: "Filipino" },
+    landen: [{ vlag: "🇵🇭", nl: "Filipijnen", en: "Philippines", endo: "Pilipinas" }],
+    motief: "repeating-conic-gradient(from 0deg, #b06f00 0 5deg, transparent 5deg 20deg)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "34px 34px",
+    notitie: {
+      nl: "Zet po erachter en het wordt respectvol tegen ouderen. Salamat komt via handelscontacten uit het Arabische salāma, wortel s-l-m, het veld van heelheid en veiligheid.",
+      en: "Add po and it becomes respectful towards elders. Salamat came through trade from Arabic salāma, root s-l-m, the field of wholeness and safety." },
+    zinnen: [
+      { em: "🙋", doel: "Magandang araw", fon: { nl: "ma-gan-<u>dang</u> <u>a</u>-raw", en: "ma-gan-<u>DANG</u> <u>A</u>-raw" } },
+      { em: "😊", doel: "Salamat", fon: { nl: "sa-<u>la</u>-mat", en: "sa-<u>LA</u>-mat" } },
+      { em: "🎁", doel: "Heto po", fon: { nl: "<u>he</u>-to po", en: "<u>HEH</u>-to po" } },
+      { em: "👋", doel: "Paalam", fon: { nl: "pa-<u>a</u>-lam", en: "pa-<u>A</u>-lam" } }
+    ]},
+
+  { id: "engels", regio: 5, kleur: "#7c1f2e",
+    naam: { nl: "Engels", en: "English" },
+    landen: [{ vlag: "🇺🇸", nl: "Verenigde Staten", en: "United States" }, { vlag: "🇱🇷", nl: "Liberia", en: "Liberia" }],
+    motief: "repeating-linear-gradient(0deg, #7c1f2e 0 5px, " + CREME + " 5px 10px)", maat: "40px 10px",
+    notitie: {
+      nl: "Liberia werd in de negentiende eeuw gesticht door vrijgelaten Afro-Amerikanen; vandaar de vlag met strepen en het Engels als voertaal.",
+      en: "Liberia was founded in the nineteenth century by freed African Americans, which is why the flag has stripes and English is the official language." },
+    zinnen: [
+      { em: "🙋", doel: "Hello", fon: { nl: "he-<u>loo</u>" } },
+      { em: "😊", doel: "Thank you", fon: { nl: "<u>thenk</u> joe" } },
+      { em: "🎁", doel: "Here you go", fon: { nl: "<u>hier</u> joe goo" } },
+      { em: "👋", doel: "Goodbye", fon: { nl: "goed-<u>bai</u>" } }
+    ]}
+];
+
+const LABELS = {
+  nl: { zin: ["Hallo", "Dankjewel", "Alsjeblieft", "Tot ziens"],
+        kiesLand: "Kies een land", kiesTaal: "Kies een taal",
+        regio: ["Noord-Europa", "West- en Zuid-Europa", "Midden- en Oost-Europa", "Afrika", "Azië en Amerika"],
+        springTitel: "Spring naar een land",
+        titel: "Groetjes!",
+        meer: "Toelichting" },
+  en: { zin: ["Hello", "Thank you", "Here you go", "Goodbye"],
+        kiesLand: "Pick a country", kiesTaal: "Pick a language",
+        regio: ["Northern Europe", "Western and Southern Europe", "Central and Eastern Europe", "Africa", "Asia and the Americas"],
+        springTitel: "Jump to a country",
+        titel: "Greetings!",
+        meer: "Notes" }
+};
+
+/* ---------------- banner ----------------
+   Bollenveld in perspectief, molen op de zichtbare horizon. Alle baangrenzen
+   lopen naar één verdwijnpunt, maar dat ligt (afkap) px achter de lucht: de
+   banen eindigen stomp op de horizonlijn in plaats van in een vlijmscherpe
+   punt, en de molen staat direct op die lijn.
+   De grenzen liggen op gelijke boogafstand rond het verdwijnpunt, zodat elke
+   baan op het scherm even dik oogt waar hij ook uitkomt (links, onder of
+   rechts). Een sinusprofiel (midden) maakt de middelste banen tot 2x breder;
+   dat maakt het geheel rustiger en minder bont. Eerdere verdelingen (gelijke
+   stukken buitenrand, gelijke breedte op de onderrand, gelijke hoek) gaven
+   links of onder rommelige of juist te grote vlakken.
+   De eerste baan heeft geen roompad erachter: dat lag als losse lichte lijn
+   direct onder de horizon. Het roompad van de laatste baan is framboos: room
+   lag daar als losse driehoek tegen de rechterrand (afgekeurd). Met 7 banen
+   zijn de eerste en laatste allebei framboos, dus rechts smelt de laatste baan
+   samen met die strook tot één vlak; bewust zo gekozen. */
+
+const BANNER = {
+  lucht: "#20224e", merk: "#f7f2e4", veld: "#b93a54", pad: "#f7f2e4",
+  banen: ["#b93a54", "#e39b3a", "#7b27a8"],
+  breedte: 400, horizon: 150, onder: 240,   /* viewBox-maten; horizon = VP-hoogte */
+  vp: 348,                                  /* verdwijnpunt, achter de lucht */
+  aantal: 7, padDeel: 0.22,
+  midden: 2,    /* breedtefactor van de middelste banen */
+  afkap: 8      /* px onder het VP waar de zichtbare horizon ligt */
+};
+
+function tekenBanner() {
+  const B = BANNER;
+  const randL = B.onder - B.horizon;
+  const randTotaal = randL + B.breedte + randL;
+  const zichtHorizon = B.horizon + B.afkap;
+
+  const randpunt = s =>
+    s <= randL ? { x: 0, y: B.horizon + s } :
+    s <= randL + B.breedte ? { x: s - randL, y: B.onder } :
+    { x: B.breedte, y: B.onder - (s - randL - B.breedte) };
+
+  const hoekpunten = [
+    { s: randL, x: 0, y: B.onder },
+    { s: randL + B.breedte, x: B.breedte, y: B.onder }
+  ];
+
+  /* knipt een baan af op de zichtbare horizon; het deel eronder blijft */
+  const klem = punten => {
+    const uit = [];
+    for (let i = 0; i < punten.length; i++) {
+      const a = punten[i], b = punten[(i + 1) % punten.length];
+      const aIn = a.y >= zichtHorizon, bIn = b.y >= zichtHorizon;
+      if (aIn) uit.push(a);
+      if (aIn !== bIn) {
+        const t = (zichtHorizon - a.y) / (b.y - a.y);
+        uit.push({ x: a.x + t * (b.x - a.x), y: zichtHorizon });
+      }
+    }
+    return uit;
+  };
+
+  const baan = (s1, s2) => {
+    let punten = [{ x: B.vp, y: B.horizon }, randpunt(s1)];
+    hoekpunten.forEach(c => { if (c.s > s1 && c.s < s2) punten.push(c); });
+    punten.push(randpunt(s2));
+    punten = klem(punten);
+    if (punten.length < 3) return "";
+    return "M" + punten.map(p => p.x.toFixed(2) + " " + p.y.toFixed(2)).join(" L") + " Z";
+  };
+
+  /* hoeken vanuit het VP: pi wijst naar horizon-links, 0 naar horizon-rechts */
+  const afstandTotRand = phi => {
+    const dx = Math.cos(phi), dy = Math.sin(phi);
+    let t = randL / dy;
+    if (dx > 0) t = Math.min(t, (B.breedte - B.vp) / dx);
+    if (dx < 0) t = Math.min(t, -B.vp / dx);
+    return t;
+  };
+
+  const sVanPhi = phi => {
+    const t = afstandTotRand(phi);
+    const x = B.vp + t * Math.cos(phi), y = B.horizon + t * Math.sin(phi);
+    if (Math.abs(x) < 1e-6) return y - B.horizon;
+    if (Math.abs(x - B.breedte) < 1e-6) return randL + B.breedte + (B.onder - y);
+    return randL + x;
+  };
+
+  /* boogafstand langs de veldrand, cumulatief per hoekstapje */
+  const N = 4000, cum = [0], phiVan = k => Math.PI * (1 - k / N);
+  for (let k = 1; k <= N; k++)
+    cum.push(cum[k - 1] + afstandTotRand(phiVan(k - 0.5)) * Math.PI / N);
+  const totaal = cum[N];
+
+  const sVanBoog = a => {
+    let lo = 0, hi = N;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; (cum[m] < a ? lo = m : hi = m); }
+    return sVanPhi(phiVan(lo + (a - cum[lo]) / (cum[hi] - cum[lo])));
+  };
+
+  const gewichten = [];
+  let somG = 0;
+  for (let i = 0; i < B.aantal; i++) {
+    const g = 1 + (B.midden - 1) * Math.sin(Math.PI * (i + 0.5) / B.aantal) ** 2;
+    gewichten.push(g); somG += g;
+  }
+
+  const padArc = totaal * B.padDeel / B.aantal;
+  let boog = 0, veld = "";
+  for (let i = 0; i < B.aantal; i++) {
+    const laatste = i === B.aantal - 1;
+    const sA = i === 0 ? 0 : sVanBoog(boog);
+    boog += gewichten[i] / somG * totaal;
+    const sB = laatste ? randTotaal : sVanBoog(boog);
+    const sSplit = i === 0 ? sB : sVanBoog(boog - padArc);
+    veld += '<path d="' + baan(sA, sSplit) + '" fill="' + B.banen[i % B.banen.length] + '"/>';
+    if (i > 0) veld += '<path d="' + baan(sSplit, sB) + '" fill="' + (laatste ? B.banen[0] : B.pad) + '"/>';
+  }
+
+  const molen =
+    '<g transform="translate(' + B.vp + ',' + zichtHorizon + ')" fill="' + B.merk + '">' +
+      '<path d="M-9 0 L-4.5-31 L4.5-31 L9 0 Z"/>' +
+      '<g transform="translate(0,-33) rotate(20)">' +
+        '<rect x="-2.5" y="-22" width="5" height="44" rx="1.5"/>' +
+        '<rect x="-22" y="-2.5" width="44" height="5" rx="1.5"/>' +
+      '</g>' +
+    '</g>';
+
+  el("tafereel").innerHTML =
+    '<rect width="' + B.breedte + '" height="' + B.onder + '" fill="' + B.lucht + '"/>' +
+    molen +
+    '<path d="M0 ' + zichtHorizon + 'h' + B.breedte + 'v' + (B.onder - zichtHorizon) + 'H0Z" fill="' + B.veld + '"/>' +
+    veld;
+}
+
+/* ---------------- opbouw ---------------- */
+
+const SPREKER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg>';
+const PIJL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+
+let T = "nl";
+const L = () => LABELS[T];
+const el = id => document.getElementById(id);
+const esc = s => s.replace(/"/g, "&quot;");
+
+/* twee keuzelijsten: land links, taal rechts.
+   Beide sorteren alfabetisch in de huidige interfacetaal, en die volgorde zit binnen de
+   lijst opgesloten. De kaartenlijst zelf houdt daardoor zijn kleurritme. */
+
+const kies = (waarde, tekst) => '<option value="' + waarde + '">' + tekst + '</option>';
+
+function kiezersHtml() {
+  /* landen: vlag ervoor zodat je visueel kunt zoeken, endoniem erachter.
+     Een land dat bij twee talen hoort (België, Zuid-Afrika) komt twee keer voor;
+     dan wordt de taalnaam erbij gezet, anders staan er twee identieke regels. */
+  const landen = [];
+  TALEN.forEach(t => t.landen.forEach(l =>
+    landen.push({ vlag: l.vlag, naam: l[T], endo: l.endo, taal: t.naam[T], doel: t.id })));
+
+  const aantal = {};
+  landen.forEach(l => { aantal[l.naam] = (aantal[l.naam] || 0) + 1; });
+
+  landen.sort((x, y) => x.naam.localeCompare(y.naam, T) || x.taal.localeCompare(y.taal, T));
+
+  const landOpties = landen.map(l => {
+    let tekst = l.vlag + "  " + l.naam;
+    if (aantal[l.naam] > 1) tekst += " — " + l.taal;
+    else if (l.endo) tekst += " (" + l.endo + ")";
+    return kies(l.doel, tekst);
+  }).join("");
+
+  const talen = TALEN.map(t => ({
+    tekst: t.naam[T] + (t.naam.endo ? " (" + t.naam.endo + ")" : ""),
+    sorteer: t.naam[T], doel: t.id }));
+  talen.sort((x, y) => x.sorteer.localeCompare(y.sorteer, T));
+
+  return '<section class="kiezers">' +
+    '<select class="kiezer" id="kiezerTaal" aria-label="' + L().kiesTaal + '">' +
+      kies("", "🗣️  " + L().kiesTaal) + talen.map(t => kies(t.doel, t.tekst)).join("") +
+    '</select>' +
+    '<select class="kiezer" id="kiezerLand" aria-label="' + L().kiesLand + '">' +
+      kies("", "🌍  " + L().kiesLand) + landOpties +
+    '</select>' +
+  '</section>';
+}
+
+function gtLink(t) {
+  const tekst = t.zinnen.map(z => z.doel).join("\n.........\n");
+  return "https://translate.google.com/?sl=auto&tl=" + T + "&text=" + encodeURIComponent(tekst) + "&op=translate";
+}
+
+function taalHtml(t) {
+  const zinnen = t.zinnen.map((z, i) =>
+    '<div class="zin">' +
+      '<div class="zinnl"><span class="em">' + z.em + '</span>' + L().zin[i] + '</div>' +
+      '<div class="zinrechts">' +
+        '<div class="zinwoorden">' +
+          '<div class="zindoel">' + z.doel + '</div>' +
+          (z.schrift ? '<div class="zinschrift">' + z.schrift + '</div>' : '') +
+          (z.fon && z.fon[T] ? '<div class="zinfon">' + z.fon[T] + '</div>' : '') +
+        '</div>' +
+        '<button class="spreek" data-code="' + t.id + '" data-zin="' + esc(z.doel) + '" aria-label="' + esc(z.doel) + '" hidden>' + SPREKER + '</button>' +
+      '</div>' +
+    '</div>').join("");
+
+  return '<li class="rij" id="' + t.id + '" style="--kleur:' + t.kleur + ';--motief:' + t.motief + ';--maat:' + t.maat + '">' +
+    '<button class="rijknop" aria-expanded="false" aria-controls="u-' + t.id + '">' +
+      '<span class="band"></span>' +
+      '<span class="rijtekst">' +
+        '<span class="naamblok">' +
+          '<span class="taalnaam">' + t.naam[T] + '</span>' +
+          '<span class="landen">' + t.landen.map(l =>
+            '<span class="land"><span>' + l.vlag + '</span>' + l[T] + '</span>').join("") + '</span>' +
+        '</span>' +
+        '<span class="pijl">' + PIJL + '</span>' +
+      '</span>' +
+    '</button>' +
+    '<div class="uit" id="u-' + t.id + '" hidden>' +
+      zinnen +
+      '<div class="voet">' +
+        '<button class="meerKnop" aria-expanded="false">' + L().meer + '</button>' +
+        '<a class="gtLink" href="' + gtLink(t) + '" target="_blank" rel="noopener">Google Translate</a>' +
+      '</div>' +
+      '<div class="notitie" hidden>' + t.notitie[T] + '</div>' +
+    '</div>' +
+  '</li>';
+}
+
+function lijstHtml() {
+  return L().regio.map((kop, i) =>
+    '<section class="regio">' +
+      '<h2 class="regiokop">' + kop + '</h2>' +
+      '<ul class="rijen">' + TALEN.filter(t => t.regio === i + 1).map(taalHtml).join("") + '</ul>' +
+    '</section>').join("");
+}
+
+function bouw() {
+  document.documentElement.lang = T;
+  el("wordmerk").textContent = L().titel;
+  el("inhoud").innerHTML = kiezersHtml() + lijstHtml();
+  el("kiezerTaal").addEventListener("change", spring);
+  el("kiezerLand").addEventListener("change", spring);
+  toonSpreekknoppen();
+}
+
+/* ---------------- gedrag ---------------- */
+
+function spring(e) {
+  const id = e.target.value;
+  if (!id) return;
+  const doel = document.getElementById(id);
+  const knop = doel.querySelector(".rijknop");
+  if (knop && knop.getAttribute("aria-expanded") === "false") klapOm(knop);
+  doel.scrollIntoView({ block: "start" });
+  /* beide lijsten terug op de placeholder, zodat dezelfde keuze opnieuw kan */
+  el("kiezerLand").selectedIndex = 0;
+  el("kiezerTaal").selectedIndex = 0;
+}
+
+document.addEventListener("click", e => {
+  const rijknop = e.target.closest(".rijknop");
+  if (rijknop) return klapOm(rijknop);
+
+  const meer = e.target.closest(".meerKnop");
+  if (meer) {
+    const n = meer.closest(".uit").querySelector(".notitie");
+    n.hidden = !n.hidden;
+    meer.setAttribute("aria-expanded", String(!n.hidden));
+    return;
+  }
+
+  const spreek = e.target.closest(".spreek");
+  if (spreek) return zeg(spreek.dataset.zin, spreek.dataset.code);
+});
+
+function klapOm(knop) {
+  const paneel = document.getElementById(knop.getAttribute("aria-controls"));
+  const open = paneel.hidden;
+  paneel.hidden = !open;
+  knop.setAttribute("aria-expanded", String(open));
+}
+
+el("taalschakelaar").addEventListener("click", e => {
+  const k = e.target.closest("button");
+  if (!k || k.dataset.taal === T) return;
+  T = k.dataset.taal;
+  el("taalschakelaar").querySelectorAll("button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.taal === T)));
+  bouw();
+});
+
+/* ---------------- spraak ---------------- */
+
+const STEM = {
+  pools: "pl", koreaans: "ko", roemeens: "ro", kinyarwanda: "rw", albanees: "sq",
+  fins: "fi", filipino: "fil", kroatisch: "hr", zoeloe: "zu",
+  nederlands: "nl", noors: "nb", zweeds: "sv", deens: "da", engels: "en",
+  afrikaans: "af", portugees: "pt", spaans: "es", frans: "fr"
+};
+
+let stemmen = [];
+const vindStem = code =>
+  stemmen.find(s => s.lang.toLowerCase().startsWith(code + "-")) ||
+  stemmen.find(s => s.lang.toLowerCase() === code);
+
+function zeg(tekst, id) {
+  const stem = vindStem(STEM[id]);
+  if (!stem) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(tekst);
+  u.voice = stem; u.lang = stem.lang; u.rate = .85;
+  speechSynthesis.speak(u);
+}
+
+function toonSpreekknoppen() {
+  if (!("speechSynthesis" in window)) return;
+  stemmen = speechSynthesis.getVoices();
+  if (!stemmen.length) return;
+  document.querySelectorAll(".spreek").forEach(k => { k.hidden = !vindStem(STEM[k.dataset.code]); });
+}
+
+tekenBanner();
+bouw();
+if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = toonSpreekknoppen;
+
+</script>
+</body>
+</html>
