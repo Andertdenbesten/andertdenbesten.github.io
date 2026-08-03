@@ -963,6 +963,12 @@ function spring(e) {
   const id = e.target.value;
   if (!id) return;
   const doel = document.getElementById(id);
+  /* Springen ruimt op: alle andere open kaarten dicht. Anders klopt de
+     scrollpositie niet en is teruglopen eindeloos scrollen. Handmatig
+     opentikken blijft wel stapelen, voor het vergelijken van buren. */
+  document.querySelectorAll('.rijknop[aria-expanded="true"]').forEach(k => {
+    if (k.closest(".rij").id !== id) klapOm(k);
+  });
   const knop = doel.querySelector(".rijknop");
   if (knop && knop.getAttribute("aria-expanded") === "false") klapOm(knop);
   doel.scrollIntoView({ block: "start" });
