@@ -264,6 +264,16 @@
             pointer-events: none;
         }
 
+        /* In dark mode the marine tile sinks into the page background; the
+           same 3px cream ring the groetjes banner itself uses keeps it
+           visible. Outline instead of border: no layout shift, and it stays
+           out of the lip/hover box-shadow stack. */
+        @media (prefers-color-scheme: dark) {
+            .tile--gr {
+                outline: 3px solid #f7f2e4;
+            }
+        }
+
         /* The tile is the banner: same Pacifico wordmark, kept in the sky
            (top 62.5%, above the horizon) so it never sits on the tulip lanes */
         .tile--gr .tile__merk {
