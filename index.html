@@ -91,7 +91,7 @@
         .tiles {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: clamp(1rem, 3vw, 2.25rem);
+            gap: clamp(1.5rem, 4vw, 2.75rem);
             width: 100%;
             max-width: 46rem;
         }
@@ -264,13 +264,12 @@
             pointer-events: none;
         }
 
-        /* In dark mode the marine tile sinks into the page background; the
-           same 3px cream ring the groetjes banner itself uses keeps it
-           visible. Outline instead of border: no layout shift, and it stays
-           out of the lip/hover box-shadow stack. */
+        /* In dark mode the marine tile sinks into the page background. The
+           dark lip is invisible there, so it flips to cream: same 3D lip
+           mechanic as the other tiles, but in a colour that reads on dark. */
         @media (prefers-color-scheme: dark) {
             .tile--gr {
-                outline: 3px solid #f7f2e4;
+                --tile-lip: #f7f2e4;
             }
         }
 
