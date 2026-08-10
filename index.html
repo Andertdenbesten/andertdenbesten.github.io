@@ -247,10 +247,15 @@
         }
 
         /* --- Groetjes : marine bollenveld banner --- */
+        /* Featured tile: full grid width and the scene's own 400/240 ratio,
+           so the whole bollenveld shows instead of a right-hand crop. The
+           only tile that breaks the shared portrait silhouette, on purpose. */
         .tile--gr {
             --tile-bg: #20224e;
             --tile-lip: #101228;
             --tile-ink: #f7f2e4;
+            grid-column: 1 / -1;
+            aspect-ratio: 400 / 240;
         }
 
         /* Static render of the groetjes banner fills the tile; anchored right
@@ -273,22 +278,41 @@
             }
         }
 
-        /* The tile is the banner: same Pacifico wordmark, kept in the sky
-           (top 62.5%, above the horizon) so it never sits on the tulip lanes */
-        .tile--gr .tile__merk {
+        /* The tile is the banner: same Pacifico wordmark plus one line of
+           explanation, kept in the sky (top 62.5%, above the horizon) so
+           nothing sits on the tulip lanes */
+        .tile--gr .tile__lucht {
             position: absolute;
             inset: 0 0 37.5% 0;
             z-index: 1;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: clamp(1rem, 2vw, 1.5rem);
             padding: 0 1.4rem .8rem;
+            pointer-events: none;
+        }
+
+        .tile--gr .tile__merk {
             font-family: "Pacifico", cursive;
             font-weight: 400;
-            font-size: clamp(2.5rem, 13.5vw, 3.3rem);
+            font-size: clamp(2.5rem, 13.5vw, 4.25rem);
             line-height: 1.05;
             color: #f7f2e4;
             transform: rotate(-4deg);
-            pointer-events: none;
+        }
+
+        /* stays narrower than the mill's column so the two never touch;
+           indented past the wordmark's G-swash */
+        .tile--gr .tile__uitleg {
+            max-width: 68%;
+            margin-left: .4rem;
+            font-size: clamp(.8rem, 2.6vw, 1rem);
+            font-weight: 700;
+            letter-spacing: .02em;
+            line-height: 1.35;
+            color: rgba(247, 242, 228, .85);
         }
 
         /* Shorter, landscape-ish tiles when stacked so both fit on screen.
@@ -296,6 +320,12 @@
         @media (max-width: 560px) {
             .tile {
                 aspect-ratio: 16 / 10;
+            }
+
+            /* keep the featured tile on the scene's own ratio: slightly
+               taller than the others and never cropped */
+            .tile--gr {
+                aspect-ratio: 400 / 240;
             }
         }
     </style>
@@ -346,7 +376,10 @@
                 <path d="M357.66 158.00 L400.00 193.06 L400.00 162.45 L381.41 158.00 Z" fill="#b93a54" />
                 <path d="M381.41 158.00 L400.00 162.45 L400.00 158.00 Z" fill="#b93a54" />
             </svg>
-            <span class="tile__merk">Groetjes!</span>
+            <span class="tile__lucht">
+                <span class="tile__merk">Groetjes!</span>
+                <span class="tile__uitleg">Hello, thank you and goodbye in 19 languages</span>
+            </span>
         </a>
         <a class="tile tile--gw" href="guess-who.html">
             <svg class="tile__icon" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
