@@ -153,17 +153,20 @@ body {
   pointer-events: none;
 }
 
+/* Prominente schakelaar: dichte roomwitte baan met de actieve taal als
+   marine chip. De eerste versie was een doorschijnend vlak met actief
+   marine-op-marine en viel weg tegen de lucht. */
 .taalschakelaar {
   position: absolute; top: .6rem; right: .65rem;
   display: flex; gap: 2px;
-  background: color-mix(in srgb, var(--ill-merk) 16%, transparent);
-  border-radius: 999px; padding: 2px;
+  background: var(--ill-merk);
+  border-radius: 999px; padding: 3px;
   z-index: 2;
 }
 .taalschakelaar button {
-  font: inherit; font-size: .6875rem; font-weight: 800;
-  border: 0; border-radius: 999px; padding: 3px 9px;
-  background: none; color: color-mix(in srgb, var(--ill-merk) 70%, transparent); cursor: pointer;
+  font: inherit; font-size: .8125rem; font-weight: 800;
+  border: 0; border-radius: 999px; padding: 5px 13px;
+  background: none; color: color-mix(in srgb, var(--ill-lucht) 72%, var(--ill-merk)); cursor: pointer;
 }
 .taalschakelaar button[aria-pressed="true"] { background: var(--ill-lucht); color: var(--ill-merk); }
 
