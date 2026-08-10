@@ -74,6 +74,12 @@
   - Kroatisch & Servisch lopen bij fijne dag uiteen: ugodan dan tegenover prijatan dan.
     De kaart toont Kroatisch in Latijns schrift en Servisch in cyrillisch; de notitie
     legt het uit. De eerste vier zinnen blijven woordelijk identiek.
+  - Zesde en zevende zin: we houden van je (🫶) en ik hou van je (💛), als groeps- en
+    persoonlijke bedankvorm. Veiligheidsregel per taal: nooit de letterlijke
+    liefdesverklaring, maar het vriendschaps-idioom (glad i deg, holder af dig, tycker
+    om, querer, adorer, adorar, uwielbiam, tin la tine, xhan, rakas). De wij-vorm is in
+    geen enkele taal romantisch; de ik-vorm gebruikt daarom expliciet de vriendenvorm.
+    Alles per taal nagezocht met bron (2026-08).
   - Luistersessie per kaart (Luister-knop in de voet): label in de interfacetaal, dan
     de doelzin twee keer, alle vijf de regels, in een loop tot stop. Voor passief leren
     tijdens het schoonmaken. Bewust via speechSynthesis en niet met audiobestanden;
@@ -376,14 +382,16 @@ const TALEN = [
     landen: [{ vlag: "🇫🇮", nl: "Finland", en: "Finland", endo: "Suomi" }],
     motief: KRUIS("#2f80c9", CREME), maat: "30px 22px",
     notitie: {
-      nl: "Klemtoon altijd op de eerste lettergreep, zonder uitzondering. Kiitos is kort en Finnen horen het bijna nooit van buitenlanders, dus het valt op.",
-      en: "Stress always falls on the first syllable, no exceptions. Kiitos is short and Finns rarely hear it from foreigners, so it lands." },
+      nl: "Klemtoon altijd op de eerste lettergreep, zonder uitzondering. Kiitos is kort en Finnen horen het bijna nooit van buitenlanders, dus het valt op. Olet (meille) rakas is letterlijk je bent (ons) dierbaar; rakastan sinua bewaren Finnen voor geliefden.",
+      en: "Stress always falls on the first syllable, no exceptions. Kiitos is short and Finns rarely hear it from foreigners, so it lands. Olet (meille) rakas literally means you are dear (to us); Finns keep rakastan sinua for lovers." },
     zinnen: [
       { em: "🙋", doel: "Hei", fon: { nl: "hei", en: "hay" } },
       { em: "😊", doel: "Kiitos", fon: { nl: "<u>kie</u>-tos", en: "<u>KEE</u>-toss" } },
       { em: "🎁", doel: "Ole hyvä", fon: { nl: "<u>o</u>-le <u>hy</u>-vae", en: "<u>O</u>-leh <u>HY</u>-va" } },
       { em: "👋", doel: "Näkemiin", fon: { nl: "<u>nae</u>-ke-mien", en: "<u>NA</u>-keh-meen" } },
-      { em: "☀️", doel: "Hyvää päivänjatkoa", fon: { nl: "<u>hy</u>-vae <u>pai</u>-vaen-jat-koa", en: "<u>HY</u>-va <u>PIE</u>-van-yat-koh-ah" } }
+      { em: "☀️", doel: "Hyvää päivänjatkoa", fon: { nl: "<u>hy</u>-vae <u>pai</u>-vaen-jat-koa", en: "<u>HY</u>-va <u>PIE</u>-van-yat-koh-ah" } },
+      { em: "🫶", doel: "Olet meille rakas", fon: { nl: "<u>o</u>-let <u>mei</u>-le <u>ra</u>-kas", en: "<u>O</u>-let <u>MAY</u>-leh <u>RA</u>-kas" } },
+      { em: "💛", doel: "Olet minulle rakas", fon: { nl: "<u>o</u>-let <u>mi</u>-noel-le <u>ra</u>-kas", en: "<u>O</u>-let <u>MEE</u>-nool-leh <u>RA</u>-kas" } }
     ]},
 
   { id: "deens", regio: 1, kleur: "#e4322a",
@@ -391,14 +399,16 @@ const TALEN = [
     landen: [{ vlag: "🇩🇰", nl: "Denemarken", en: "Denmark", endo: "Danmark" }],
     motief: KRUIS(CREME, "#e4322a"), maat: "30px 22px",
     notitie: {
-      nl: "Zelfde woord als het Zweedse hej, andere klank: Denen zeggen hai. Farvel is ons vaarwel, maar in het Deens gewoon alledaags.",
-      en: "Same word as Swedish hej, different sound: Danes say hy. Farvel is the same word as farewell, but everyday in Danish." },
+      nl: "Zelfde woord als het Zweedse hej, andere klank: Denen zeggen hai. Farvel is ons vaarwel, maar in het Deens gewoon alledaags. Holder af dig is letterlijk we geven om je; elsker is in het Deens zwaar romantisch.",
+      en: "Same word as Swedish hej, different sound: Danes say hy. Farvel is the same word as farewell, but everyday in Danish. Holder af dig literally means we care for you; elsker is heavily romantic in Danish." },
     zinnen: [
       { em: "🙋", doel: "Hej", fon: { nl: "hai", en: "hy" } },
       { em: "😊", doel: "Tak", fon: { nl: "tak", en: "tahk" } },
       { em: "🎁", doel: "Værsgo", fon: { nl: "vaers-<u>goo</u>", en: "vairs-<u>GOH</u>" } },
       { em: "👋", doel: "Farvel", fon: { nl: "fa-<u>vel</u>", en: "fah-<u>VEL</u>" } },
-      { em: "☀️", doel: "Ha' en god dag", fon: { nl: "ha en go <u>daj</u>", en: "hah en go <u>DY</u>" } }
+      { em: "☀️", doel: "Ha' en god dag", fon: { nl: "ha en go <u>daj</u>", en: "hah en go <u>DY</u>" } },
+      { em: "🫶", doel: "Vi holder af dig", fon: { nl: "vie <u>hol</u>-ler af dai", en: "vee <u>HOL</u>-ler af dy" } },
+      { em: "💛", doel: "Jeg holder af dig", fon: { nl: "jai <u>hol</u>-ler af dai", en: "yai <u>HOL</u>-ler af dy" } }
     ]},
 
   { id: "zweeds", regio: 1, kleur: "#0d5aa7",
@@ -406,14 +416,16 @@ const TALEN = [
     landen: [{ vlag: "🇸🇪", nl: "Zweden", en: "Sweden", endo: "Sverige" }],
     motief: KRUIS(CREME, "#0d5aa7"), maat: "30px 22px",
     notitie: {
-      nl: "Hej werkt van de kassa tot een minister. Varsågod is letterlijk wees zo goed, en zeg je zowel bij aanreiken als bij graag gedaan.",
-      en: "Hej works from the checkout to a minister. Varsågod is literally be so good, used both when handing something over and as you are welcome." },
+      nl: "Hej werkt van de kassa tot een minister. Varsågod is letterlijk wees zo goed, en zeg je zowel bij aanreiken als bij graag gedaan. Tycker om is de vriendschapsvorm; älska bewaren Zweden vooral voor geliefden.",
+      en: "Hej works from the checkout to a minister. Varsågod is literally be so good, used both when handing something over and as you are welcome. Tycker om is the friendship form; Swedes mostly keep älska for lovers." },
     zinnen: [
       { em: "🙋", doel: "Hej", fon: { nl: "hej", en: "hay" } },
       { em: "😊", doel: "Tack", fon: { nl: "tak", en: "tahk" } },
       { em: "🎁", doel: "Varsågod", fon: { nl: "var-sjo-<u>goe</u>", en: "var-sho-<u>GOOD</u>" } },
       { em: "👋", doel: "Hej då", fon: { nl: "hej <u>doo</u>", en: "hay <u>DAW</u>" } },
-      { em: "☀️", doel: "Ha en bra dag", fon: { nl: "ha en braa <u>daag</u>", en: "ha en brah <u>DAHG</u>" } }
+      { em: "☀️", doel: "Ha en bra dag", fon: { nl: "ha en braa <u>daag</u>", en: "ha en brah <u>DAHG</u>" } },
+      { em: "🫶", doel: "Vi tycker om dig", fon: { nl: "vie <u>ty</u>-ker om dej", en: "vee <u>TUE</u>-ker om day" } },
+      { em: "💛", doel: "Jag tycker om dig", fon: { nl: "jaag <u>ty</u>-ker om dej", en: "yahg <u>TUE</u>-ker om day" } }
     ]},
 
   { id: "noors", regio: 1, kleur: "#14264f",
@@ -421,14 +433,16 @@ const TALEN = [
     landen: [{ vlag: "🇳🇴", nl: "Noorwegen", en: "Norway", endo: "Norge" }],
     motief: KRUIS(CREME, "#14264f"), maat: "30px 22px",
     notitie: {
-      nl: "Noren groeten informeel, ook vreemden. Ha det is kort voor ha det bra, heb het goed. Hier lopen Noors, Zweeds en Deens uiteen.",
-      en: "Norwegians greet informally, strangers included. Ha det is short for ha det bra, have it good. This is where Norwegian, Swedish and Danish part ways." },
+      nl: "Noren groeten informeel, ook vreemden. Ha det is kort voor ha det bra, heb het goed. Hier lopen Noors, Zweeds en Deens uiteen. Glad i deg is de vorm voor familie en vrienden; jeg elsker deg betekent verliefd zijn.",
+      en: "Norwegians greet informally, strangers included. Ha det is short for ha det bra, have it good. This is where Norwegian, Swedish and Danish part ways. Glad i deg is for family and friends; jeg elsker deg means being in love." },
     zinnen: [
       { em: "🙋", doel: "Hei", fon: { nl: "hai", en: "hay" } },
       { em: "😊", doel: "Takk", fon: { nl: "tak", en: "tahk" } },
       { em: "🎁", doel: "Vær så god", fon: { nl: "vaer sjo <u>goe</u>", en: "var sho <u>GOO</u>" } },
       { em: "👋", doel: "Ha det", fon: { nl: "<u>ha</u> de", en: "<u>HA</u> deh" } },
-      { em: "☀️", doel: "Ha en fin dag", fon: { nl: "ha en fien <u>daag</u>", en: "ha en feen <u>DAHG</u>" } }
+      { em: "☀️", doel: "Ha en fin dag", fon: { nl: "ha en fien <u>daag</u>", en: "ha en feen <u>DAHG</u>" } },
+      { em: "🫶", doel: "Vi er glade i deg", fon: { nl: "vie aer <u>gla</u>-de ie dai", en: "vee ar <u>GLAH</u>-deh ee dy" } },
+      { em: "💛", doel: "Jeg er glad i deg", fon: { nl: "jai aer <u>gla</u> ie dai", en: "yai ar <u>GLAH</u> ee dy" } }
     ]},
 
   { id: "nederlands", regio: 2, kleur: "#f0821a",
@@ -444,7 +458,9 @@ const TALEN = [
       { em: "😊", doel: "Dankjewel", fon: { en: "<u>DUNK</u>-yuh-vel" } },
       { em: "🎁", doel: "Alsjeblieft", fon: { en: "<u>ALS</u>-yuh-bleeft" } },
       { em: "👋", doel: "Tot ziens", fon: { en: "tot <u>SEENS</u>" } },
-      { em: "☀️", doel: "Fijne dag", fon: { en: "<u>FY</u>-nuh dakh" } }
+      { em: "☀️", doel: "Fijne dag", fon: { en: "<u>FY</u>-nuh dakh" } },
+      { em: "🫶", doel: "We houden van je", fon: { en: "wuh <u>HOW</u>-duh van yuh" } },
+      { em: "💛", doel: "Ik hou van je", fon: { en: "ik <u>HOW</u> van yuh" } }
     ]},
 
   { id: "portugees", regio: 2, kleur: "#14612b",
@@ -454,14 +470,16 @@ const TALEN = [
             "linear-gradient(-45deg, #14612b 22%, transparent 22% 78%, #14612b 78%)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "22px 22px",
     notitie: {
-      nl: "Obrigado volgt de spreker, niet de ander: als man obrigado, als vrouw obrigada. Bom dia geldt tot de middag, daarna boa tarde.",
-      en: "Obrigado agrees with the speaker, not the listener: a man says obrigado, a woman obrigada. Bom dia holds until midday, then boa tarde." },
+      nl: "Obrigado volgt de spreker, niet de ander: als man obrigado, als vrouw obrigada. Bom dia geldt tot de middag, daarna boa tarde. Adorar is licht en vriendschappelijk; amar is in Portugal zwaar en zeldzaam.",
+      en: "Obrigado agrees with the speaker, not the listener: a man says obrigado, a woman obrigada. Bom dia holds until midday, then boa tarde. Adorar is light and friendly; amar is heavy and rare in Portugal." },
     zinnen: [
       { em: "🙋", doel: "Bom dia", fon: { nl: "bong <u>die</u>-a", en: "bong <u>DEE</u>-uh" } },
       { em: "😊", doel: "Obrigado", fon: { nl: "o-brie-<u>ga</u>-doe", en: "oh-bree-<u>GAH</u>-doo" } },
       { em: "🎁", doel: "Aqui está", fon: { nl: "a-<u>kie</u> isj-<u>ta</u>", en: "a-<u>KEE</u> ish-<u>TAH</u>" } },
       { em: "👋", doel: "Adeus", fon: { nl: "a-<u>deusj</u>", en: "a-<u>DEH</u>-oosh" } },
-      { em: "☀️", doel: "Tenha um bom dia", fon: { nl: "<u>te</u>-nja oem bong <u>die</u>-a", en: "<u>TEN</u>-ya oom bong <u>DEE</u>-uh" } }
+      { em: "☀️", doel: "Tenha um bom dia", fon: { nl: "<u>te</u>-nja oem bong <u>die</u>-a", en: "<u>TEN</u>-ya oom bong <u>DEE</u>-uh" } },
+      { em: "🫶", doel: "Adoramos-te", fon: { nl: "a-doe-<u>ra</u>-moesj-te", en: "a-doo-<u>RAH</u>-moosh-teh" } },
+      { em: "💛", doel: "Adoro-te", fon: { nl: "a-<u>do</u>-roe-te", en: "a-<u>DOH</u>-roo-teh" } }
     ]},
 
   { id: "spaans", regio: 2, kleur: "#c9694a",
@@ -470,14 +488,16 @@ const TALEN = [
     motief: "radial-gradient(circle at 50% 50%, #c9694a 0 4px, transparent 4.5px)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "18px 18px",
     notitie: {
-      nl: "In Spanje klinkt de ci als de Engelse th, in Peru als een s. Hasta luego hoor je vaker dan adiós en klinkt minder definitief.",
-      en: "In Spain the ci sounds like English th, in Peru like an s. Hasta luego is heard more than adiós and sounds less final." },
+      nl: "In Spanje klinkt de ci als de Engelse th, in Peru als een s. Hasta luego hoor je vaker dan adiós en klinkt minder definitief. Querer is de vriendschaps- en familievorm; amar is romantisch.",
+      en: "In Spain the ci sounds like English th, in Peru like an s. Hasta luego is heard more than adiós and sounds less final. Querer is the friendship and family form; amar is romantic." },
     zinnen: [
       { em: "🙋", doel: "Hola", fon: { nl: "<u>o</u>-la", en: "<u>O</u>-la" } },
       { em: "😊", doel: "Gracias", fon: { nl: "<u>gra</u>-sjas", en: "<u>GRA</u>-see-ass" } },
       { em: "🎁", doel: "Aquí tienes", fon: { nl: "a-<u>kie</u> <u>tje</u>-nes", en: "a-<u>KEE</u> <u>TYEH</u>-ness" } },
       { em: "👋", doel: "Adiós", fon: { nl: "a-<u>djos</u>", en: "a-<u>DYOSS</u>" } },
-      { em: "☀️", doel: "Que tengas un buen día", fon: { nl: "ke <u>ten</u>-gas oen bwen <u>die</u>-a", en: "keh <u>TEN</u>-gas oon bwen <u>DEE</u>-ah" } }
+      { em: "☀️", doel: "Que tengas un buen día", fon: { nl: "ke <u>ten</u>-gas oen bwen <u>die</u>-a", en: "keh <u>TEN</u>-gas oon bwen <u>DEE</u>-ah" } },
+      { em: "🫶", doel: "Te queremos mucho", fon: { nl: "te ke-<u>re</u>-mos <u>moe</u>-tsjo", en: "teh keh-<u>REH</u>-mos <u>MOO</u>-cho" } },
+      { em: "💛", doel: "Te quiero mucho", fon: { nl: "te <u>kje</u>-ro <u>moe</u>-tsjo", en: "teh <u>KYEH</u>-ro <u>MOO</u>-cho" } }
     ]},
 
   { id: "frans", regio: 2, kleur: "#17ab61",
@@ -487,14 +507,16 @@ const TALEN = [
             "repeating-linear-gradient(-45deg, #17ab61 0 2px, transparent 2px 13px)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "12px 12px",
     notitie: {
-      nl: "In Frankrijk begin je elk contact met bonjour, ook in een winkel; zonder kom je onbeleefd over. Salut werkt alleen onder bekenden.",
-      en: "In France you open every interaction with bonjour, shops included; without it you come across as rude. Salut only works among people you know." },
+      nl: "In Frankrijk begin je elk contact met bonjour, ook in een winkel; zonder kom je onbeleefd over. Salut werkt alleen onder bekenden. Adorer is wat vrienden zeggen; je t'aime is een liefdesverklaring.",
+      en: "In France you open every interaction with bonjour, shops included; without it you come across as rude. Salut only works among people you know. Adorer is what friends say; je t'aime is a declaration of love." },
     zinnen: [
       { em: "🙋", doel: "Bonjour", fon: { nl: "bon-<u>zjoer</u>", en: "bon-<u>ZHOOR</u>" } },
       { em: "😊", doel: "Merci", fon: { nl: "mer-<u>sie</u>", en: "mer-<u>SEE</u>" } },
       { em: "🎁", doel: "Voilà", fon: { nl: "vwa-<u>la</u>", en: "vwa-<u>LA</u>" } },
       { em: "👋", doel: "Au revoir", fon: { nl: "o-ruh-<u>vwaar</u>", en: "oh-ruh-<u>VWAR</u>" } },
-      { em: "☀️", doel: "Bonne journée", fon: { nl: "bon zjoer-<u>nee</u>", en: "bon zhoor-<u>NAY</u>" } }
+      { em: "☀️", doel: "Bonne journée", fon: { nl: "bon zjoer-<u>nee</u>", en: "bon zhoor-<u>NAY</u>" } },
+      { em: "🫶", doel: "On t'adore", fon: { nl: "on ta-<u>dor</u>", en: "on ta-<u>DOR</u>" } },
+      { em: "💛", doel: "Je t'adore", fon: { nl: "zjuh ta-<u>dor</u>", en: "zhuh ta-<u>DOR</u>" } }
     ]},
 
   { id: "pools", regio: 3, kleur: "#a80f1c",
@@ -502,14 +524,16 @@ const TALEN = [
     landen: [{ vlag: "🇵🇱", nl: "Polen", en: "Poland", endo: "Polska" }],
     motief: "linear-gradient(" + CREME + " 0 45%, #a80f1c 45%)", maat: "40px 20px",
     notitie: {
-      nl: "Dzień dobry is beleefd tegen iedereen en werkt de hele dag. Cześć bewaar je voor bekenden.",
-      en: "Dzień dobry is polite to anyone and works all day. Save Cześć for people you know." },
+      nl: "Dzień dobry is beleefd tegen iedereen en werkt de hele dag. Cześć bewaar je voor bekenden. Uwielbiam cię is de vriendenvorm; kocham cię is één-op-één te zwaar, maar de groepsvorm kochamy cię is gewone familietaal.",
+      en: "Dzień dobry is polite to anyone and works all day. Save Cześć for people you know. Uwielbiam cię is the friends' form; kocham cię is too heavy one-on-one, but the group form kochamy cię is everyday family language." },
     zinnen: [
       { em: "🙋", doel: "Dzień dobry", fon: { nl: "dzjenj <u>dob</u>-ry", en: "jane <u>DOH</u>-bry" } },
       { em: "😊", doel: "Dziękuję", fon: { nl: "dzjen-<u>koe</u>-je", en: "jen-<u>KOO</u>-yeh" } },
       { em: "🎁", doel: "Proszę", fon: { nl: "<u>pro</u>-sje", en: "<u>PRO</u>-sheh" } },
       { em: "👋", doel: "Do widzenia", fon: { nl: "do vie-<u>dze</u>-nja", en: "doh vee-<u>DZEN</u>-ya" } },
-      { em: "☀️", doel: "Miłego dnia", fon: { nl: "mi-<u>we</u>-go <u>dnja</u>", en: "mee-<u>WEH</u>-go <u>DNYA</u>" } }
+      { em: "☀️", doel: "Miłego dnia", fon: { nl: "mi-<u>we</u>-go <u>dnja</u>", en: "mee-<u>WEH</u>-go <u>DNYA</u>" } },
+      { em: "🫶", doel: "Kochamy cię", fon: { nl: "ko-<u>cha</u>-my tsje", en: "ko-<u>HA</u>-mih chyeh" } },
+      { em: "💛", doel: "Uwielbiam cię", fon: { nl: "oe-<u>vjel</u>-bjam tsje", en: "oo-<u>VYEL</u>-byam chyeh" } }
     ]},
 
   { id: "roemeens", regio: 3, kleur: "#f2cb1c",
@@ -517,14 +541,16 @@ const TALEN = [
     landen: [{ vlag: "🇲🇩", nl: "Moldavië", en: "Moldova" }],
     motief: "repeating-linear-gradient(90deg, #f2cb1c 0 7px, " + CREME + " 7px 18px)", maat: "18px 18px",
     notitie: {
-      nl: "Romaanse taal, dus je herkent losse woorden uit het Frans: la revedere is au revoir met dezelfde bouwstenen. De ă is een doffe e, de ț een ts.",
-      en: "A Romance language, so single words look familiar from French: la revedere is au revoir built from the same parts. The ă is a schwa, the ț a ts." },
+      nl: "Romaanse taal, dus je herkent losse woorden uit het Frans: la revedere is au revoir met dezelfde bouwstenen. De ă is een doffe e, de ț een ts. Ținem la tine is we geven om je; te iubesc is in het Roemeens de grens tussen vriendschap en verliefdheid.",
+      en: "A Romance language, so single words look familiar from French: la revedere is au revoir built from the same parts. The ă is a schwa, the ț a ts. Ținem la tine means we care about you; te iubesc marks the line between friendship and love in Romanian." },
     zinnen: [
       { em: "🙋", doel: "Bună ziua", fon: { nl: "<u>boe</u>-na <u>zie</u>-wa", en: "<u>BOO</u>-nuh <u>ZEE</u>-wa" } },
       { em: "😊", doel: "Mulțumesc", fon: { nl: "moel-tsoe-<u>mesk</u>", en: "mool-tsoo-<u>MESK</u>" } },
       { em: "🎁", doel: "Poftim", fon: { nl: "pof-<u>tim</u>", en: "pof-<u>TEEM</u>" } },
       { em: "👋", doel: "La revedere", fon: { nl: "la re-ve-<u>de</u>-re", en: "la reh-veh-<u>DEH</u>-reh" } },
-      { em: "☀️", doel: "O zi bună", fon: { nl: "o zie <u>boe</u>-na", en: "oh zee <u>BOO</u>-nuh" } }
+      { em: "☀️", doel: "O zi bună", fon: { nl: "o zie <u>boe</u>-na", en: "oh zee <u>BOO</u>-nuh" } },
+      { em: "🫶", doel: "Ținem mult la tine", fon: { nl: "<u>tsie</u>-nem moelt la <u>tie</u>-ne", en: "<u>TSEE</u>-nem moolt la <u>TEE</u>-neh" } },
+      { em: "💛", doel: "Țin mult la tine", fon: { nl: "tsien moelt la <u>tie</u>-ne", en: "tseen moolt la <u>TEE</u>-neh" } }
     ]},
 
   { id: "kroatisch", regio: 3, kleur: "#7793b5",
@@ -539,7 +565,9 @@ const TALEN = [
       { em: "😊", doel: "Hvala", schrift: "Хвала", fon: { nl: "<u>hva</u>-la", en: "<u>HVA</u>-la" } },
       { em: "🎁", doel: "Izvolite", schrift: "Изволите", fon: { nl: "iz-<u>vo</u>-li-te", en: "iz-<u>VO</u>-lee-teh" } },
       { em: "👋", doel: "Doviđenja", schrift: "Довиђења", fon: { nl: "do-vie-<u>dje</u>-nja", en: "do-vee-<u>JEN</u>-ya" } },
-      { em: "☀️", doel: "Ugodan dan", schrift: "Пријатан дан", fon: { nl: "<u>oe</u>-go-dan dan", en: "<u>OO</u>-go-dan dan" } }
+      { em: "☀️", doel: "Ugodan dan", schrift: "Пријатан дан", fon: { nl: "<u>oe</u>-go-dan dan", en: "<u>OO</u>-go-dan dan" } },
+      { em: "🫶", doel: "Volimo te", schrift: "Волимо те", fon: { nl: "<u>vo</u>-li-mo te", en: "<u>VO</u>-lee-mo teh" } },
+      { em: "💛", doel: "Volim te", schrift: "Волим те", fon: { nl: "<u>vo</u>-lim te", en: "<u>VO</u>-leem teh" } }
     ]},
 
   { id: "albanees", regio: 3, kleur: "#26211f",
@@ -549,14 +577,16 @@ const TALEN = [
             "repeating-linear-gradient(-45deg, #26211f 0 6px, transparent 6px 17px)," +
             "linear-gradient(#d8342f,#d8342f)", maat: "24px 24px",
     notitie: {
-      nl: "Albanees heeft geen naaste verwant in Europa, dus niets klinkt bekend. Tungjatjeta is warmer dan mirëdita maar een mondvol; Albanezen korten het af tot tung.",
-      en: "Albanian has no close relative in Europe, so nothing sounds familiar. Tungjatjeta is warmer than mirëdita but a mouthful; Albanians shorten it to tung." },
+      nl: "Albanees heeft geen naaste verwant in Europa, dus niets klinkt bekend. Tungjatjeta is warmer dan mirëdita maar een mondvol; Albanezen korten het af tot tung. Të kam shumë xhan is letterlijk ik draag je in mijn ziel, warm en zonder romantiek.",
+      en: "Albanian has no close relative in Europe, so nothing sounds familiar. Tungjatjeta is warmer than mirëdita but a mouthful; Albanians shorten it to tung. Të kam shumë xhan literally means I carry you in my soul, warm and without romance." },
     zinnen: [
       { em: "🙋", doel: "Mirëdita", fon: { nl: "mi-rë-<u>die</u>-ta", en: "mee-ruh-<u>DEE</u>-ta" } },
       { em: "😊", doel: "Faleminderit", fon: { nl: "fa-le-min-<u>de</u>-rit", en: "fa-leh-min-<u>DEH</u>-reet" } },
       { em: "🎁", doel: "Urdhëroni", fon: { nl: "oer-dhë-<u>ro</u>-ni", en: "oor-dhuh-<u>RO</u>-nee" } },
       { em: "👋", doel: "Mirupafshim", fon: { nl: "mi-ru-<u>paf</u>-sjim", en: "mee-roo-<u>PAF</u>-sheem" } },
-      { em: "☀️", doel: "Ditën e mirë", fon: { nl: "<u>di</u>-tën e <u>mie</u>-rë", en: "<u>DEE</u>-tun eh <u>MEE</u>-ruh" } }
+      { em: "☀️", doel: "Ditën e mirë", fon: { nl: "<u>di</u>-tën e <u>mie</u>-rë", en: "<u>DEE</u>-tun eh <u>MEE</u>-ruh" } },
+      { em: "🫶", doel: "Të duam", fon: { nl: "të <u>doe</u>-am", en: "tuh <u>DOO</u>-am" } },
+      { em: "💛", doel: "Të kam shumë xhan", fon: { nl: "të kam <u>sjoe</u>-më <u>dzjan</u>", en: "tuh kam <u>SHOO</u>-muh <u>JAHN</u>" } }
     ]},
 
   { id: "kinyarwanda", regio: 4, kleur: "#0fa3d0",
@@ -573,7 +603,9 @@ const TALEN = [
       { em: "😊", doel: "Murakoze", fon: { nl: "moe-ra-<u>ko</u>-ze", en: "moo-ra-<u>KO</u>-zeh" } },
       { em: "🎁", doel: "Dore", fon: { nl: "<u>do</u>-re", en: "<u>DO</u>-reh" } },
       { em: "👋", doel: "Murabeho", fon: { nl: "moe-ra-<u>be</u>-ho", en: "moo-ra-<u>BEH</u>-ho" } },
-      { em: "☀️", doel: "Umunsi mwiza", fon: { nl: "oe-<u>moen</u>-sie <u>mwie</u>-za", en: "oo-<u>MOON</u>-see <u>MWEE</u>-zah" } }
+      { em: "☀️", doel: "Umunsi mwiza", fon: { nl: "oe-<u>moen</u>-sie <u>mwie</u>-za", en: "oo-<u>MOON</u>-see <u>MWEE</u>-zah" } },
+      { em: "🫶", doel: "Turagukunda", fon: { nl: "toe-ra-goe-<u>koen</u>-da", en: "too-ra-goo-<u>KOON</u>-da" } },
+      { em: "💛", doel: "Ndagukunda", fon: { nl: "nda-goe-<u>koen</u>-da", en: "nda-goo-<u>KOON</u>-da" } }
     ]},
 
   { id: "zoeloe", regio: 4, kleur: "#0b7a4a",
@@ -590,7 +622,9 @@ const TALEN = [
       { em: "😊", doel: "Ngiyabonga", fon: { nl: "ngi-ja-<u>bo</u>-nga", en: "ngee-ya-<u>BON</u>-ga" } },
       { em: "🎁", doel: "Nakhu", fon: { nl: "<u>na</u>-koe", en: "<u>NA</u>-koo" } },
       { em: "👋", doel: "Sala kahle", fon: { nl: "sa-la <u>ka</u>-shle", en: "sa-la <u>KA</u>-shleh" } },
-      { em: "☀️", doel: "Ube nosuku oluhle", fon: { nl: "oe-be no-<u>soe</u>-koe o-<u>loe</u>-shle", en: "oo-beh no-<u>SOO</u>-koo o-<u>LOO</u>-shleh" } }
+      { em: "☀️", doel: "Ube nosuku oluhle", fon: { nl: "oe-be no-<u>soe</u>-koe o-<u>loe</u>-shle", en: "oo-beh no-<u>SOO</u>-koo o-<u>LOO</u>-shleh" } },
+      { em: "🫶", doel: "Siyakuthanda", fon: { nl: "sie-ja-koe-<u>tan</u>-da", en: "see-ya-koo-<u>TAHN</u>-da" } },
+      { em: "💛", doel: "Ngiyakuthanda", fon: { nl: "ngi-ja-koe-<u>tan</u>-da", en: "ngee-ya-koo-<u>TAHN</u>-da" } }
     ]},
 
   { id: "afrikaans", regio: 4, kleur: "#dfa100",
@@ -605,7 +639,9 @@ const TALEN = [
       { em: "😊", doel: "Dankie", fon: { nl: "<u>dan</u>-kie", en: "<u>DUN</u>-kee" } },
       { em: "🎁", doel: "Hier is dit", fon: { nl: "<u>hier</u> is dit", en: "<u>HEER</u> is dit" } },
       { em: "👋", doel: "Totsiens", fon: { nl: "tot-<u>siens</u>", en: "tot-<u>SEENS</u>" } },
-      { em: "☀️", doel: "Lekker dag", fon: { nl: "<u>le</u>-ker dag", en: "<u>LEK</u>-ker dakh" } }
+      { em: "☀️", doel: "Lekker dag", fon: { nl: "<u>le</u>-ker dag", en: "<u>LEK</u>-ker dakh" } },
+      { em: "🫶", doel: "Ons is lief vir jou", fon: { nl: "ons is <u>lief</u> vir joe", en: "ons is <u>LEEF</u> fer yoh" } },
+      { em: "💛", doel: "Ek is lief vir jou", fon: { nl: "ek is <u>lief</u> vir joe", en: "ek is <u>LEEF</u> fer yoh" } }
     ]},
 
   /* ---- groep 2 ---- */
@@ -617,14 +653,16 @@ const TALEN = [
             "radial-gradient(circle at 100% 0, transparent 11px, #2b2e8f 11px 14px, transparent 14px)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "24px 24px",
     notitie: {
-      nl: "Annyeong betekent rust: hallo is letterlijk bent u in rust, tot ziens is ga in rust. Gamsahamnida schrijf je met een p maar spreek je met een m uit.",
-      en: "Annyeong means peace: hello is literally are you at peace, goodbye is go in peace. Gamsahamnida is written with a p but pronounced with an m." },
+      nl: "Annyeong betekent rust: hallo is letterlijk bent u in rust, tot ziens is ga in rust. Gamsahamnida schrijf je met een p maar spreek je met een m uit. Saranghae is de informele vorm voor een goede vriend; saranghaeyo de beleefde.",
+      en: "Annyeong means peace: hello is literally are you at peace, goodbye is go in peace. Gamsahamnida is written with a p but pronounced with an m. Saranghae is the informal form for a good friend; saranghaeyo the polite one." },
     zinnen: [
       { em: "🙋", doel: "annyeonghaseyo", schrift: "안녕하세요", fon: { nl: "an-njong-ha-<u>se</u>-jo", en: "an-nyong-ha-<u>SEH</u>-yo" } },
       { em: "😊", doel: "gamsahamnida", schrift: "감사합니다", fon: { nl: "kam-sa-<u>ham</u>-ni-da", en: "kam-sa-<u>HAM</u>-ni-da" } },
       { em: "🎁", doel: "yeogi isseoyo", schrift: "여기 있어요", fon: { nl: "jo-gi <u>i</u>-sso-jo", en: "yaw-gi <u>I</u>-saw-yo" } },
       { em: "👋", doel: "annyeonghi gaseyo", schrift: "안녕히 가세요", fon: { nl: "an-njong-hi <u>ka</u>-se-jo", en: "an-nyong-hee <u>KA</u>-seh-yo" } },
-      { em: "☀️", doel: "joeun haru bonaeseyo", schrift: "좋은 하루 보내세요", fon: { nl: "<u>tsjo</u>-eun ha-roe bo-ne-<u>se</u>-jo", en: "<u>JOH</u>-oon ha-roo bo-neh-<u>SEH</u>-yo" } }
+      { em: "☀️", doel: "joeun haru bonaeseyo", schrift: "좋은 하루 보내세요", fon: { nl: "<u>tsjo</u>-eun ha-roe bo-ne-<u>se</u>-jo", en: "<u>JOH</u>-oon ha-roo bo-neh-<u>SEH</u>-yo" } },
+      { em: "🫶", doel: "saranghaeyo", schrift: "사랑해요", fon: { nl: "sa-rang-<u>he</u>-jo", en: "sa-rang-<u>HEH</u>-yo" } },
+      { em: "💛", doel: "saranghae", schrift: "사랑해", fon: { nl: "sa-rang-<u>he</u>", en: "sa-rang-<u>HEH</u>" } }
     ]},
 
   { id: "filipino", regio: 5, kleur: "#b06f00",
@@ -633,14 +671,16 @@ const TALEN = [
     motief: "repeating-conic-gradient(from 0deg, #b06f00 0 5deg, transparent 5deg 20deg)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "34px 34px",
     notitie: {
-      nl: "Zet po erachter en het wordt respectvol tegen ouderen. Salamat komt via handelscontacten uit het Arabische salāma, wortel s-l-m, het veld van heelheid en veiligheid. Ingat is letterlijk pas goed op jezelf: zo wenst een Filipino je een goede dag; een letterlijke vertaling klinkt stijf.",
-      en: "Add po and it becomes respectful towards elders. Salamat came through trade from Arabic salāma, root s-l-m, the field of wholeness and safety. Ingat literally means take care: that is how a Filipino wishes you a good day; a literal translation sounds stiff." },
+      nl: "Zet po erachter en het wordt respectvol tegen ouderen. Salamat komt via handelscontacten uit het Arabische salāma, wortel s-l-m, het veld van heelheid en veiligheid. Ingat is letterlijk pas goed op jezelf: zo wenst een Filipino je een goede dag; een letterlijke vertaling klinkt stijf. Kita in mahal kita is een samensmelting van ik en jij.",
+      en: "Add po and it becomes respectful towards elders. Salamat came through trade from Arabic salāma, root s-l-m, the field of wholeness and safety. Ingat literally means take care: that is how a Filipino wishes you a good day; a literal translation sounds stiff. Kita in mahal kita merges I and you into one word." },
     zinnen: [
       { em: "🙋", doel: "Magandang araw", fon: { nl: "ma-gan-<u>dang</u> <u>a</u>-raw", en: "ma-gan-<u>DANG</u> <u>A</u>-raw" } },
       { em: "😊", doel: "Salamat", fon: { nl: "sa-<u>la</u>-mat", en: "sa-<u>LA</u>-mat" } },
       { em: "🎁", doel: "Heto po", fon: { nl: "<u>he</u>-to po", en: "<u>HEH</u>-to po" } },
       { em: "👋", doel: "Paalam", fon: { nl: "pa-<u>a</u>-lam", en: "pa-<u>A</u>-lam" } },
-      { em: "☀️", doel: "Ingat!", fon: { nl: "<u>ie</u>-ngat", en: "<u>EE</u>-ngat" } }
+      { em: "☀️", doel: "Ingat!", fon: { nl: "<u>ie</u>-ngat", en: "<u>EE</u>-ngat" } },
+      { em: "🫶", doel: "Mahal ka namin", fon: { nl: "ma-<u>hal</u> ka <u>na</u>-min", en: "ma-<u>HAHL</u> ka <u>NA</u>-min" } },
+      { em: "💛", doel: "Mahal kita", fon: { nl: "ma-<u>hal</u> <u>kie</u>-ta", en: "ma-<u>HAHL</u> <u>KEE</u>-tah" } }
     ]},
 
   { id: "engels", regio: 5, kleur: "#7c1f2e",
@@ -655,7 +695,9 @@ const TALEN = [
       { em: "😊", doel: "Thank you", fon: { nl: "<u>thenk</u> joe" } },
       { em: "🎁", doel: "Here you go", fon: { nl: "<u>hier</u> joe goo" } },
       { em: "👋", doel: "Goodbye", fon: { nl: "goed-<u>bai</u>" } },
-      { em: "☀️", doel: "Have a nice day", fon: { nl: "hev e najs <u>deej</u>" } }
+      { em: "☀️", doel: "Have a nice day", fon: { nl: "hev e najs <u>deej</u>" } },
+      { em: "🫶", doel: "We love you", fon: { nl: "wie <u>lov</u> joe" } },
+      { em: "💛", doel: "I love you", fon: { nl: "ai <u>lov</u> joe" } }
     ]},
 
   { id: "sranantongo", regio: 5, kleur: "#377e3f",
@@ -672,18 +714,20 @@ const TALEN = [
       { em: "😊", doel: "Grantangi", fon: { nl: "gran-<u>tan</u>-gi", en: "grahn-<u>TAHN</u>-gee" } },
       { em: "🎁", doel: "A de dya", fon: { nl: "a de <u>dja</u>", en: "ah deh <u>DYAH</u>" } },
       { em: "👋", doel: "Adyosi", fon: { nl: "a-<u>djo</u>-si", en: "ah-<u>DYOH</u>-see" } },
-      { em: "☀️", doel: "Wan switi dei", fon: { nl: "wan <u>swie</u>-tie dei", en: "wahn <u>SWEE</u>-tee day" } }
+      { em: "☀️", doel: "Wan switi dei", fon: { nl: "wan <u>swie</u>-tie dei", en: "wahn <u>SWEE</u>-tee day" } },
+      { em: "🫶", doel: "Wi lobi yu", fon: { nl: "wie <u>lo</u>-bie joe", en: "wee <u>LO</u>-bee yoo" } },
+      { em: "💛", doel: "Mi lobi yu", fon: { nl: "mie <u>lo</u>-bie joe", en: "mee <u>LO</u>-bee yoo" } }
     ]}
 ];
 
 const LABELS = {
-  nl: { zin: ["Hallo", "Dankjewel", "Alsjeblieft", "Tot ziens", "Fijne dag"],
+  nl: { zin: ["Hallo", "Dankjewel", "Alsjeblieft", "Tot ziens", "Fijne dag", "We houden van je", "Ik hou van je"],
         kiesLand: "Kies een land", kiesTaal: "Kies een taal",
         regio: ["Noord-Europa", "West- en Zuid-Europa", "Midden- en Oost-Europa", "Afrika", "Azië en Amerika"],
         springTitel: "Spring naar een land",
         titel: "Groetjes!",
         meer: "Toelichting", luister: "Luister", stop: "Stop" },
-  en: { zin: ["Hello", "Thank you", "Here you go", "Goodbye", "Have a nice day"],
+  en: { zin: ["Hello", "Thank you", "Here you go", "Goodbye", "Have a nice day", "We love you", "I love you"],
         kiesLand: "Pick a country", kiesTaal: "Pick a language",
         regio: ["Northern Europe", "Western and Southern Europe", "Central and Eastern Europe", "Africa", "Asia and the Americas"],
         springTitel: "Jump to a country",
