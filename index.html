@@ -258,16 +258,15 @@
             aspect-ratio: 400 / 240;
         }
 
-        /* Static render of the groetjes banner, pinned to the bottom at its
-           natural ratio; the marine tile background continues the sky upward,
-           so the scene is never cropped whatever the tile height. */
+        /* Static render of the groetjes banner, filling the tile (slice,
+           anchored right): the field keeps its desktop share of the height
+           on every format, and the portrait tile crops the fan on the left
+           while the mill stays in view. */
         .tile--gr .tile__scene {
             position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             width: 100%;
-            height: auto;
+            height: 100%;
             z-index: -1;
             pointer-events: none;
         }
@@ -281,19 +280,17 @@
             }
         }
 
-        /* Text pinned to the top, in the site's own idiom: uppercase sub
-           label above the wordmark, like the other tiles. Fixed position,
-           so the wordmark never shifts with the tile height. */
+        /* Uppercase sub label above the wordmark, like the other tiles,
+           centered as a group in the sky (the top 66%, above the horizon). */
         .tile--gr .tile__lucht {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            inset: 0 0 34% 0;
             z-index: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: flex-start;
-            padding: clamp(1.1rem, 4%, 1.75rem) 1.4rem 0;
+            padding: 0 1.4rem .8rem;
             pointer-events: none;
         }
 
@@ -318,6 +315,12 @@
                at the bottom and the sky extends above it */
             .tile--gr {
                 aspect-ratio: 4 / 5;
+            }
+
+            /* in the portrait crop the mill is relatively wider, so the
+               text group centers in the sky above the mill's top */
+            .tile--gr .tile__lucht {
+                inset: 0 0 58% 0;
             }
         }
     </style>
