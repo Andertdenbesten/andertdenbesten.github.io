@@ -982,6 +982,21 @@
   [dir="rtl"] .stage-progress-label {
     text-align: left;
   }
+  /* RTL: Arabisch is verbonden schrift; tracking (ook negatief) breekt de
+     letterverbindingen. Alleen Latijnse restjes (JKR, slots) houden spacing. */
+  [dir="rtl"] .kicker,
+  [dir="rtl"] .hero h1,
+  [dir="rtl"] .meta-line,
+  [dir="rtl"] .sec h2,
+  [dir="rtl"] .sec-tag,
+  [dir="rtl"] .ladder-hint,
+  [dir="rtl"] .format-name,
+  [dir="rtl"] .troef-name,
+  [dir="rtl"] .troef-rule,
+  [dir="rtl"] .stage-player,
+  [dir="rtl"] .stage-format {
+    letter-spacing: normal;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .stage-cards.dealing .card,
