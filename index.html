@@ -258,13 +258,16 @@
             aspect-ratio: 400 / 240;
         }
 
-        /* Static render of the groetjes banner fills the tile; anchored right
-           so the mill stays in view when the portrait tile crops the wide scene. */
+        /* Static render of the groetjes banner, pinned to the bottom at its
+           natural ratio; the marine tile background continues the sky upward,
+           so the scene is never cropped whatever the tile height. */
         .tile--gr .tile__scene {
             position: absolute;
-            inset: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             width: 100%;
-            height: 100%;
+            height: auto;
             z-index: -1;
             pointer-events: none;
         }
@@ -278,41 +281,30 @@
             }
         }
 
-        /* The tile is the banner: same Pacifico wordmark plus one line of
-           explanation, kept in the sky (top 62.5%, above the horizon) so
-           nothing sits on the tulip lanes */
+        /* Text pinned to the top, in the site's own idiom: uppercase sub
+           label above the wordmark, like the other tiles. Fixed position,
+           so the wordmark never shifts with the tile height. */
         .tile--gr .tile__lucht {
             position: absolute;
-            inset: 0 0 37.5% 0;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: flex-start;
-            gap: clamp(1.25rem, 3vw, 1.9rem);
-            padding: 0 1.4rem .8rem;
+            padding: clamp(1.1rem, 4%, 1.75rem) 1.4rem 0;
             pointer-events: none;
         }
 
         .tile--gr .tile__merk {
+            margin-top: .6rem;
             font-family: "Pacifico", cursive;
             font-weight: 400;
             font-size: clamp(2.5rem, 13.5vw, 4.25rem);
             line-height: 1.05;
             color: #f7f2e4;
             transform: rotate(-4deg);
-        }
-
-        /* stays narrower than the mill's column so the two never touch;
-           indented past the wordmark's G-swash */
-        .tile--gr .tile__uitleg {
-            max-width: 68%;
-            margin-left: .4rem;
-            font-size: clamp(.8rem, 2.6vw, 1rem);
-            font-weight: 700;
-            letter-spacing: .02em;
-            line-height: 1.35;
-            color: rgba(247, 242, 228, .85);
         }
 
         /* Shorter, landscape-ish tiles when stacked so both fit on screen.
@@ -322,10 +314,10 @@
                 aspect-ratio: 16 / 10;
             }
 
-            /* keep the featured tile on the scene's own ratio: slightly
-               taller than the others and never cropped */
+            /* featured tile twice the height of the others; the scene sits
+               at the bottom and the sky extends above it */
             .tile--gr {
-                aspect-ratio: 400 / 240;
+                aspect-ratio: 4 / 5;
             }
         }
     </style>
@@ -377,8 +369,8 @@
                 <path d="M381.41 158.00 L400.00 162.45 L400.00 158.00 Z" fill="#b93a54" />
             </svg>
             <span class="tile__lucht">
+                <span class="tile__sub">Greetings in 19 languages</span>
                 <span class="tile__merk">Groetjes!</span>
-                <span class="tile__uitleg">Greetings in 19 languages</span>
             </span>
         </a>
         <a class="tile tile--gw" href="guess-who.html">
