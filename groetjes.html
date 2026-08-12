@@ -104,6 +104,10 @@
     30%. Filipino-band halve zonnen (het fijne moiré rendeerde kapot), Frans
     grotere zigzag. Landenlint (marquee onderaan) overwogen, uitgeprobeerd en
     afgekeurd: past niet in het thema. Niet opnieuw voorstellen.
+  - Filipino-zonnen om en om geïnverteerd (goud op room, room op goud), zodat
+    de stralen aansluiten op de grondkleur van de buurzon in plaats van als
+    losse vierkantjes af te breken. Als SVG-tegel (zie ZON), want CSS-gradients
+    kunnen niet per tegel van kleur wisselen.
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -433,6 +437,34 @@ const KRUIS = (kruis, grond) =>
   "linear-gradient(0deg, transparent 40%, " + kruis + " 40% 58%, transparent 58%)," +
   "linear-gradient(" + grond + "," + grond + ")";
 
+/* Zonneband (Filipino): tegel van twee halve zonnen naast elkaar, om en om
+   geïnverteerd (goud op room, room op goud) zodat de stralen aansluiten op de
+   grondkleur van de buurzon in plaats van hard af te breken op de tegelrand.
+   CSS-gradients kunnen niet per tegel van kleur wisselen, dus dit is een
+   SVG-tegel als data-URI. Enkele quotes om de url, want hij komt in een
+   dubbel-gequote style-attribute terecht. */
+const ZON = (goud) => {
+  const waaier = (cx, kleur) => {
+    let d = "";
+    for (let i = 0; i < 8; i++) {
+      const a1 = (-90 + i * 22.5) * Math.PI / 180, a2 = (-79 + i * 22.5) * Math.PI / 180;
+      d += "M" + cx + " 32L" + (cx + 90 * Math.sin(a1)).toFixed(1) + " " + (32 - 90 * Math.cos(a1)).toFixed(1) +
+           "L" + (cx + 90 * Math.sin(a2)).toFixed(1) + " " + (32 - 90 * Math.cos(a2)).toFixed(1) + "Z";
+    }
+    return '<path d="' + d + '" fill="' + kleur + '"/>';
+  };
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32">' +
+      '<defs><clipPath id="l"><rect width="64" height="32"/></clipPath>' +
+      '<clipPath id="r"><rect x="64" width="64" height="32"/></clipPath></defs>' +
+      '<rect width="64" height="32" fill="' + CREME + '"/>' +
+      '<rect x="64" width="64" height="32" fill="' + goud + '"/>' +
+      '<g clip-path="url(#l)">' + waaier(32, goud) + '</g>' +
+      '<g clip-path="url(#r)">' + waaier(96, CREME) + '</g>' +
+    '</svg>';
+  return "url('data:image/svg+xml," + encodeURIComponent(svg) + "')";
+};
+
 
 const TALEN = [
   { id: "fins", regio: 1, kleur: "#2f80c9",
@@ -728,8 +760,7 @@ const TALEN = [
   { id: "filipino", regio: 5, kleur: "#d18a00",
     naam: { nl: "Filipino", en: "Filipino" },
     landen: [{ vlag: "🇵🇭", nl: "Filipijnen", en: "Philippines", endo: "Pilipinas" }],
-    motief: "repeating-conic-gradient(from -90deg at 50% 100%, #d18a00 0 11deg, transparent 11deg 22.5deg)," +
-            "linear-gradient(" + CREME + "," + CREME + ")", maat: "64px 32px",
+    motief: ZON("#d18a00"), maat: "128px 32px",
     notitie: {
       nl: "Zet po erachter en het wordt respectvol tegen ouderen. Salamat komt via handelscontacten uit het Arabische salāma, wortel s-l-m, het veld van heelheid en veiligheid. Ingat is letterlijk pas goed op jezelf: zo wenst een Filipino je een goede dag; een letterlijke vertaling klinkt stijf. Kita in mahal kita is een samensmelting van ik en jij.",
       en: "Add po and it becomes respectful towards elders. Salamat came through trade from Arabic salāma, root s-l-m, the field of wholeness and safety. Ingat literally means take care: that is how a Filipino wishes you a good day; a literal translation sounds stiff. Kita in mahal kita merges I and you into one word." },
