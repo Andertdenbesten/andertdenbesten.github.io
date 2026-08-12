@@ -38,8 +38,11 @@
   - Achttien talen in één lijst, geen restcategorie meer. Scandinavisch is drie losse kaarten, want juist
     naast elkaar zie je waar Noors, Zweeds en Deens uiteenlopen. Engels en Nederlands krijgen
     dezelfde behandeling als de rest.
-  - Vier Noordse kruizen in vier kleuren: Fins blauw, Zweeds goud, Noors marine, Deens rood.
-    Gedeelde vorm want gedeelde vlagtraditie; de kleur doet het onderscheid.
+  - Vier Noordse kruizen, elk naar de eigen vlag: Fins blauw op room, Deens room
+    op rood, Zweeds goud op blauw, Noors room met marine binnenkruis op rood.
+    Gedeelde vorm want gedeelde vlagtraditie; de vlagkleuren doen het
+    onderscheid. Eerst deed alleen de grondkleur dat, maar drie van de vier
+    banden waren daardoor vrijwel identiek.
   - Frans krijgt het groen van Ivoorkust; oranje is nu van Nederlands.
   - Fonetiek in de brontaal zelf blijft leeg: Engelse uitspraak van Engels heeft geen zin.
   - België staat twee keer in de landlijst, bij Nederlands en bij Frans. Dat is geen fout:
@@ -87,6 +90,20 @@
     tijdens het schoonmaken. Bewust via speechSynthesis en niet met audiobestanden;
     iOS pauzeert spraak bij schermvergrendeling, dus het scherm moet aan blijven.
     Bewust alleen per kaart, geen alles-achter-elkaar-sessie.
+  - Kaarten klappen open met een grid-rows overgang (0fr naar 1fr), niet met het
+    hidden-attribuut: dat kan niet animeren. Springen via de kiezers wacht 240ms
+    op die animatie voordat het scrolt, anders klopt de eindpositie niet.
+  - Naar-boven-knop onderaan, in de flow (niet fixed, zelfde principe als de
+    home-chip): de lijst is lang, terugkeren naar de kiezers moet één tik zijn.
+  - Feestpas (2026-08): onder de banner deed de pagina niet mee met het feest.
+    Grond warm room i.p.v. grijsbeige, regiokoppen framboos, kiezers in marine
+    op room, kaartvlak van 8% naar 13% tint en de rand gemengd met papier
+    i.p.v. grijs (62% kaartkleur), zodat hij zijn tint houdt. Vaalste
+    kaartkleuren opgefrist: Spaans helder oranjerood, Kroatisch frisser blauw,
+    Filipino goud. Dark mode: navy-getinte grond, kaarttint 18%, landpillen
+    30%. Filipino-band halve zonnen (het fijne moiré rendeerde kapot), Frans
+    grotere zigzag. Landenlint (marquee onderaan) overwogen, uitgeprobeerd en
+    afgekeurd: past niet in het thema. Niet opnieuw voorstellen.
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,18 +116,25 @@
   --font-schrift: "Noto Sans KR", "Manrope", sans-serif;
   --font-script: "Pacifico", cursive;
 
+  --framboos: #b93a54;
+  --kiezer-vlak: #f7f2e4;
+  --kiezer-tekst: #20224e;
+  --kiezer-rand: color-mix(in srgb, #20224e 30%, #f7f2e4);
+
   --papier: #faf8f2;
-  --grond:  #eae7e0;
+  --grond:  #f1e9d3;
   --inkt:   #131416;
   --zacht:  #55574f;
-  --lijn:   #cdcbc3;
+  --lijn:   #d8cfb6;
 
   --r1: .25rem; --r2: .5rem; --r3: .875rem; --r4: 1.25rem; --r5: 1.75rem;
   --radius: 10px;
   --radius-groot: 15px;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --papier:#1c1d20; --grond:#101113; --inkt:#f4f3ee; --zacht:#a8aaa3; --lijn:#3b3d40; }
+  :root { --papier:#20222e; --grond:#131521; --inkt:#f4f3ee; --zacht:#a8aaa3; --lijn:#3f4152;
+          --framboos: #e0748a;
+          --kiezer-vlak: #252849; --kiezer-tekst: #f7f2e4; --kiezer-rand: #3c4070; }
 }
 
 * { box-sizing: border-box; }
@@ -194,9 +218,9 @@ body {
 .kiezers { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: var(--r5); }
 .kiezer {
   font: inherit; font-size: .875rem; font-weight: 700;
-  color: var(--inkt);
-  background: var(--papier);
-  border: 2px solid var(--lijn);
+  color: var(--kiezer-tekst);
+  background: var(--kiezer-vlak);
+  border: 2px solid var(--kiezer-rand);
   border-radius: var(--radius);
   padding: 11px 10px;
   width: 100%;
@@ -215,16 +239,16 @@ body {
 .regiokop {
   font-size: .75rem; font-weight: 800;
   text-transform: uppercase; letter-spacing: .13em;
-  color: var(--zacht);
+  color: var(--framboos);
   margin: 0 0 var(--r3); padding-left: 2px;
 }
 
 .rijen { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--r4); }
 
 .rij {
-  --vlak: color-mix(in srgb, var(--kleur) 8%, var(--papier));
+  --vlak: color-mix(in srgb, var(--kleur) 13%, var(--papier));
   --tekstkleur: color-mix(in srgb, var(--kleur) 76%, #000);
-  --randkleur: color-mix(in srgb, var(--kleur) 40%, var(--lijn));
+  --randkleur: color-mix(in srgb, var(--kleur) 62%, var(--papier));
   background: var(--vlak);
   border: 2px solid var(--randkleur);
   border-radius: var(--radius-groot);
@@ -232,7 +256,9 @@ body {
   scroll-margin-top: var(--r3);
 }
 @media (prefers-color-scheme: dark) {
-  .rij { --tekstkleur: color-mix(in srgb, var(--kleur) 58%, #fff); }
+  .rij { --tekstkleur: color-mix(in srgb, var(--kleur) 62%, #fff);
+         --vlak: color-mix(in srgb, var(--kleur) 18%, var(--papier)); }
+  .land { background: color-mix(in srgb, var(--kleur) 30%, transparent); }
 }
 
 .rijknop {
@@ -261,6 +287,22 @@ body {
 .rijknop[aria-expanded="true"] .pijl svg { transform: rotate(180deg); }
 
 /* ---------- uitgeklapt ---------- */
+
+/* Openklappen met een grid-rows overgang; een hidden-attribuut kan niet
+   animeren. De vertraagde visibility houdt ingeklapte inhoud onzichtbaar en
+   buiten de tab-volgorde. prefers-reduced-motion schakelt dit vanzelf uit
+   via de globale transition-none regel. */
+.klap {
+  display: grid; grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows .22s ease, visibility 0s .22s;
+}
+.rij.open .klap {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows .22s ease, visibility 0s;
+}
+.klapbinnen { overflow: hidden; min-height: 0; }
 
 .uit { border-top: 2px solid var(--randkleur); padding: var(--r1) var(--r3) var(--r3); }
 
@@ -335,6 +377,17 @@ body {
 .stiltitel { font-size: 1rem; font-weight: 800; margin: 0 0 var(--r2); letter-spacing: -.02em; }
 .stil .land { background: var(--grond); }
 .stilzinnen { font-size: .9375rem; font-weight: 700; color: var(--zacht); margin: var(--r2) 0 0; }
+
+/* ---------- naar boven ---------- */
+
+.terug { display: flex; justify-content: center; margin-top: 2.25rem; }
+.terugKnop {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: inherit; font-size: .8125rem; font-weight: 700;
+  background: var(--papier); border: 2px solid var(--lijn); border-radius: 999px;
+  color: var(--inkt); padding: 7px 15px; cursor: pointer;
+}
+.terugKnop svg { width: .9rem; height: .9rem; }
 
 :focus-visible { outline: 3px solid var(--inkt); outline-offset: 2px; }
 [hidden] { display: none !important; }
@@ -419,7 +472,7 @@ const TALEN = [
   { id: "zweeds", regio: 1, kleur: "#0d5aa7",
     naam: { nl: "Zweeds", en: "Swedish", endo: "svenska" },
     landen: [{ vlag: "🇸🇪", nl: "Zweden", en: "Sweden", endo: "Sverige" }],
-    motief: KRUIS(CREME, "#0d5aa7"), maat: "30px 22px",
+    motief: KRUIS("#f2cb1c", "#0d5aa7"), maat: "30px 22px",
     notitie: {
       nl: "Hej werkt van de kassa tot een minister. Varsågod is letterlijk wees zo goed, en zeg je zowel bij aanreiken als bij graag gedaan. Tycker om is de vriendschapsvorm; älska bewaren Zweden vooral voor geliefden.",
       en: "Hej works from the checkout to a minister. Varsågod is literally be so good, used both when handing something over and as you are welcome. Tycker om is the friendship form; Swedes mostly keep älska for lovers." },
@@ -436,7 +489,9 @@ const TALEN = [
   { id: "noors", regio: 1, kleur: "#14264f",
     naam: { nl: "Noors", en: "Norwegian", endo: "norsk" },
     landen: [{ vlag: "🇳🇴", nl: "Noorwegen", en: "Norway", endo: "Norge" }],
-    motief: KRUIS(CREME, "#14264f"), maat: "30px 22px",
+    motief: "linear-gradient(90deg, transparent 34%, #14264f 34% 41%, transparent 41%)," +
+            "linear-gradient(0deg, transparent 45%, #14264f 45% 53%, transparent 53%)," +
+            KRUIS(CREME, "#c8102e"), maat: "30px 22px",
     notitie: {
       nl: "Noren groeten informeel, ook vreemden. Ha det is kort voor ha det bra, heb het goed. Hier lopen Noors, Zweeds en Deens uiteen. Glad i deg is de vorm voor familie en vrienden; jeg elsker deg betekent verliefd zijn.",
       en: "Norwegians greet informally, strangers included. Ha det is short for ha det bra, have it good. This is where Norwegian, Swedish and Danish part ways. Glad i deg is for family and friends; jeg elsker deg means being in love." },
@@ -487,10 +542,10 @@ const TALEN = [
       { em: "💛", doel: "Adoro-te", fon: { nl: "a-<u>do</u>-roe-te", en: "a-<u>DOH</u>-roo-teh" } }
     ]},
 
-  { id: "spaans", regio: 2, kleur: "#c9694a",
+  { id: "spaans", regio: 2, kleur: "#d95b32",
     naam: { nl: "Spaans", en: "Spanish", endo: "español" },
     landen: [{ vlag: "🇪🇸", nl: "Spanje", en: "Spain", endo: "España" }, { vlag: "🇵🇪", nl: "Peru", en: "Peru", endo: "Perú" }],
-    motief: "radial-gradient(circle at 50% 50%, #c9694a 0 4px, transparent 4.5px)," +
+    motief: "radial-gradient(circle at 50% 50%, #d95b32 0 4px, transparent 4.5px)," +
             "linear-gradient(" + CREME + "," + CREME + ")", maat: "18px 18px",
     notitie: {
       nl: "In Spanje klinkt de ci als de Engelse th, in Peru als een s. Hasta luego hoor je vaker dan adiós en klinkt minder definitief. Querer is de vriendschaps- en familievorm; amar is romantisch.",
@@ -508,9 +563,9 @@ const TALEN = [
   { id: "frans", regio: 2, kleur: "#17ab61",
     naam: { nl: "Frans", en: "French", endo: "français" },
     landen: [{ vlag: "🇫🇷", nl: "Frankrijk", en: "France" }, { vlag: "🇧🇪", nl: "België", en: "Belgium" }, { vlag: "🇨🇮", nl: "Ivoorkust", en: "Ivory Coast", endo: "Côte d'Ivoire" }],
-    motief: "repeating-linear-gradient(45deg, #17ab61 0 2px, transparent 2px 13px)," +
-            "repeating-linear-gradient(-45deg, #17ab61 0 2px, transparent 2px 13px)," +
-            "linear-gradient(" + CREME + "," + CREME + ")", maat: "12px 12px",
+    motief: "repeating-linear-gradient(45deg, #17ab61 0 3px, transparent 3px 21px)," +
+            "repeating-linear-gradient(-45deg, #17ab61 0 3px, transparent 3px 21px)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "20px 20px",
     notitie: {
       nl: "In Frankrijk begin je elk contact met bonjour, ook in een winkel; zonder kom je onbeleefd over. Salut werkt alleen onder bekenden. Adorer is wat vrienden zeggen; je t'aime is een liefdesverklaring.",
       en: "In France you open every interaction with bonjour, shops included; without it you come across as rude. Salut only works among people you know. Adorer is what friends say; je t'aime is a declaration of love." },
@@ -558,10 +613,10 @@ const TALEN = [
       { em: "💛", doel: "Țin mult la tine", fon: { nl: "tsien moelt la <u>tie</u>-ne", en: "tseen moolt la <u>TEE</u>-neh" } }
     ]},
 
-  { id: "kroatisch", regio: 3, kleur: "#7793b5",
+  { id: "kroatisch", regio: 3, kleur: "#5b87c5",
     naam: { nl: "Kroatisch & Servisch", en: "Croatian & Serbian", endo: "hrvatski / српски" },
     landen: [{ vlag: "🇭🇷", nl: "Kroatië", en: "Croatia", endo: "Hrvatska" }, { vlag: "🇷🇸", nl: "Servië", en: "Serbia", endo: "Србија" }],
-    motief: "conic-gradient(#7793b5 0 25%, " + CREME + " 0 50%, #7793b5 0 75%, " + CREME + " 0)", maat: "18px 18px",
+    motief: "conic-gradient(#5b87c5 0 25%, " + CREME + " 0 50%, #5b87c5 0 75%, " + CREME + " 0)", maat: "18px 18px",
     notitie: {
       nl: "Taalkundig één taal met twee namen; de eerste vier zinnen zijn woordelijk identiek. Bij fijne dag lopen ze uiteen: Kroatisch zegt ugodan dan, Servisch prijatan dan (Пријатан дан). Verder schrijft Servië ook cyrillisch, en zegt Kroatisch lijepo waar Servisch lepo zegt.",
       en: "Linguistically one language with two names; the first four lines are word for word identical. Have a nice day is where they part: Croatian says ugodan dan, Serbian prijatan dan (Пријатан дан). Serbia also writes in Cyrillic, and Croatian says lijepo where Serbian says lepo." },
@@ -670,11 +725,11 @@ const TALEN = [
       { em: "💛", doel: "saranghae", schrift: "사랑해", fon: { nl: "sa-rang-<u>he</u>", en: "sa-rang-<u>HEH</u>" } }
     ]},
 
-  { id: "filipino", regio: 5, kleur: "#b06f00",
+  { id: "filipino", regio: 5, kleur: "#d18a00",
     naam: { nl: "Filipino", en: "Filipino" },
     landen: [{ vlag: "🇵🇭", nl: "Filipijnen", en: "Philippines", endo: "Pilipinas" }],
-    motief: "repeating-conic-gradient(from 0deg, #b06f00 0 5deg, transparent 5deg 20deg)," +
-            "linear-gradient(" + CREME + "," + CREME + ")", maat: "34px 34px",
+    motief: "repeating-conic-gradient(from -90deg at 50% 100%, #d18a00 0 11deg, transparent 11deg 22.5deg)," +
+            "linear-gradient(" + CREME + "," + CREME + ")", maat: "64px 32px",
     notitie: {
       nl: "Zet po erachter en het wordt respectvol tegen ouderen. Salamat komt via handelscontacten uit het Arabische salāma, wortel s-l-m, het veld van heelheid en veiligheid. Ingat is letterlijk pas goed op jezelf: zo wenst een Filipino je een goede dag; een letterlijke vertaling klinkt stijf. Kita in mahal kita is een samensmelting van ik en jij.",
       en: "Add po and it becomes respectful towards elders. Salamat came through trade from Arabic salāma, root s-l-m, the field of wholeness and safety. Ingat literally means take care: that is how a Filipino wishes you a good day; a literal translation sounds stiff. Kita in mahal kita merges I and you into one word." },
@@ -731,13 +786,15 @@ const LABELS = {
         regio: ["Noord-Europa", "West- en Zuid-Europa", "Midden- en Oost-Europa", "Afrika", "Azië en Amerika"],
         springTitel: "Spring naar een land",
         titel: "Groetjes!",
-        meer: "Toelichting", luister: "Luister", stop: "Stop" },
+        meer: "Toelichting", luister: "Luister", stop: "Stop",
+        naarBoven: "Naar boven" },
   en: { zin: ["Hello", "Thank you", "Here you go", "Goodbye", "Have a nice day", "We love you", "I love you"],
         kiesLand: "Pick a country", kiesTaal: "Pick a language",
         regio: ["Northern Europe", "Western and Southern Europe", "Central and Eastern Europe", "Africa", "Asia and the Americas"],
         springTitel: "Jump to a country",
         titel: "Greetings!",
-        meer: "Notes", luister: "Listen", stop: "Stop" }
+        meer: "Notes", luister: "Listen", stop: "Stop",
+        naarBoven: "Back to top" }
 };
 
 /* ---------------- banner ----------------
@@ -972,7 +1029,7 @@ function taalHtml(t) {
         '<span class="pijl">' + PIJL + '</span>' +
       '</span>' +
     '</button>' +
-    '<div class="uit" id="u-' + t.id + '" hidden>' +
+    '<div class="klap" id="u-' + t.id + '"><div class="klapbinnen"><div class="uit">' +
       zinnen +
       '<div class="voet">' +
         '<button class="speelKnop" data-code="' + t.id + '" aria-pressed="false" hidden>' +
@@ -984,7 +1041,7 @@ function taalHtml(t) {
         (gtLink(t) ? '<a class="gtLink" href="' + gtLink(t) + '" target="_blank" rel="noopener">Google Translate</a>' : '') +
       '</div>' +
       '<div class="notitie" hidden>' + t.notitie[T] + '</div>' +
-    '</div>' +
+    '</div></div></div>' +
   '</li>';
 }
 
@@ -996,11 +1053,18 @@ function lijstHtml() {
     '</section>').join("");
 }
 
+function terugHtml() {
+  return '<div class="terug"><button class="terugKnop" id="terugKnop">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>' +
+    '<span>' + L().naarBoven + '</span>' +
+  '</button></div>';
+}
+
 function bouw() {
   stopSessie();
   document.documentElement.lang = T;
   el("wordmerk").textContent = L().titel;
-  el("inhoud").innerHTML = kiezersHtml() + lijstHtml();
+  el("inhoud").innerHTML = kiezersHtml() + lijstHtml() + terugHtml();
   el("kiezerTaal").addEventListener("change", spring);
   el("kiezerLand").addEventListener("change", spring);
   toonSpreekknoppen();
@@ -1020,7 +1084,9 @@ function spring(e) {
   });
   const knop = doel.querySelector(".rijknop");
   if (knop && knop.getAttribute("aria-expanded") === "false") klapOm(knop);
-  doel.scrollIntoView({ block: "start" });
+  /* pas scrollen na de klap-animatie: tijdens het dichtklappen van andere
+     kaarten verschuiven de posities nog */
+  setTimeout(() => doel.scrollIntoView({ block: "start" }), 240);
   /* beide lijsten terug op de placeholder, zodat dezelfde keuze opnieuw kan */
   el("kiezerLand").selectedIndex = 0;
   el("kiezerTaal").selectedIndex = 0;
@@ -1047,13 +1113,15 @@ document.addEventListener("click", e => {
 
   const spreek = e.target.closest(".spreek");
   if (spreek) { stopSessie(); return zeg(spreek.dataset.zin, spreek.dataset.code); }
+
+  if (e.target.closest("#terugKnop")) window.scrollTo({ top: 0 });
 });
 
 function klapOm(knop) {
-  const paneel = document.getElementById(knop.getAttribute("aria-controls"));
-  const open = paneel.hidden;
-  if (!open && sessie && sessie.id === knop.closest(".rij").id) stopSessie();
-  paneel.hidden = !open;
+  const rij = knop.closest(".rij");
+  const open = !rij.classList.contains("open");
+  if (!open && sessie && sessie.id === rij.id) stopSessie();
+  rij.classList.toggle("open", open);
   knop.setAttribute("aria-expanded", String(open));
 }
 
