@@ -65,6 +65,32 @@
   • Plus Jakarta Sans (400-700) → body, UI, kicker, sec-tags, knoppen,
     joker "JKR"-tekst. Vriendelijke sans met stevigheid.
 
+  Alle groottes lopen via tokens (--fs-*) in :root. Componenten hardcoden
+  nooit een fontgrootte. Zie MOBIELE SCHAAL hieronder.
+
+  ─── MOBIELE SCHAAL ─────────────────────────────────────────────────────────
+  Telefoon is het primaire apparaat en de pagina was daar te klein: de
+  kaartindexen, sterkte-blokjes en micro-caps zaten rond 10-15px.
+
+  Aanpak: één media-query (max-width: 520px) die ALLEEN het tokenblok
+  overschrijft — type-tokens (--fs-*), blokmaten (--rank-*, --slot-*) en
+  kaartmaten (--card-w/h-*). Geen tweede set component-regels, dus schalen
+  blijft één plek. Grofweg +15% op koppen tot +70% op kaarten.
+
+  Wat daaruit volgt:
+  • Troef gaat op mobiel naar één kolom. Twee kolommen laten geen leesbare
+    kaart toe op 390px; onder elkaar past een rij van 5 kaarten van 44px.
+  • Ladder-rijen mogen wrappen i.p.v. clippen tegen de booklet-rand.
+    <=380px trimt de blokjes, <=340px vervallen de scheidings-puntjes zodat
+    de ladder op 2 rijen blijft.
+  • Meer scrollen is expliciet geaccepteerd (pagina ~1750 -> ~2000px hoog).
+
+  Kaart-SVG: de hoekindex rechtsonder was een losse rotate(180 47 60) waarvan
+  het suit-teken buiten de kaartrand viel (zichtbaar afgekapt). Nu spiegelt
+  één <g transform="rotate(180 27 38)"> het hele hoekblok om het kaartmidden,
+  dus beide hoeken zijn per definitie gelijk en vallen binnen de rand.
+  Index zelf van 16/13 naar 18/15 en het kleine suit-teken van 11 naar 12.
+
   ─── KLEUR ──────────────────────────────────────────────────────────────────
   Donker, warm. Iets donkerder dan gemiddelde dark mode zodat lakrood gloeit.
   Alle tokens staan in :root als CSS-variabelen — wijzig daar.
@@ -161,7 +187,8 @@
     - Geluidseffecten bij dealen (uit-default, met toggle)
 
   Bekende beperkingen:
-    - Zeer smalle viewports (<340px) krappe sterkte-ladder (geaccepteerd)
+    - Zeer smalle viewports (<340px) krappe sterkte-ladder (geaccepteerd;
+      daar vervallen de scheidings-puntjes om 2 rijen te houden)
     - Stapel-animatie heeft hardcoded rotaties voor max 6 kaarten — bij
       langere zetten (7-kaart straat) zijn extra kaarten minder uitgewaaierd
 ═══════════════════════════════════════════════════════════════════════════════
@@ -201,8 +228,91 @@
     --font-display: 'Instrument Serif', Georgia, serif;
     --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
 
+    /* ---- Type scale ----------------------------------------------------
+       Desktop-waarden. Mobiel overschrijft ALLEEN dit tokenblok (zie
+       "MOBIELE SCHAAL" hieronder), zodat vergroten nooit een tweede
+       component-CSS wordt. Nooit een fontgrootte hardcoden in een component. */
+    --fs-micro: 0.65rem;        /* kicker, sec-tag, ladder-hint, meta-line */
+    --fs-caps: 0.72rem;         /* troef-rule, colofon, progress-label */
+    --fs-text: 0.82rem;         /* lopende tekst in joker-bar */
+    --fs-ui: 0.85rem;           /* knoppen */
+    --fs-toggle: 0.72rem;       /* taal-toggle */
+    --fs-rank: 1.1rem;          /* sterkte-blokjes */
+    --fs-rank-joker: 0.66rem;   /* JKR-blokjes in de ladder */
+    --fs-slot: 0.95rem;         /* format-patroon-blokjes */
+    --fs-sep: 0.78rem;
+    --fs-format-name: 1.2rem;
+    --fs-format-tag: 1rem;
+    --fs-troef-name: 1.3rem;
+    --fs-stage-player: 1.3rem;
+    --fs-stage-format: 1.1rem;
+
+    /* ---- Blokjes die met het type mee moeten groeien ---- */
+    --rank-minw: 30px;  --rank-h: 32px;  --rank-padx: 8px;
+    --slot-minw: 26px;  --slot-h: 28px;
+
+    /* ---- Kaartformaten per context ---- */
+    --card-w: 36px;        --card-h: 50px;
+    --card-w-troef: 26px;  --card-h-troef: 36px;
+    --card-w-joker: 28px;  --card-h-joker: 39px;
+    --card-w-stage: 40px;  --card-h-stage: 56px;
+    --card-w-prev: 32px;   --card-h-prev: 44px;
+
     --radius: 10px;
     --card-shadow: 0 2px 4px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35);
+  }
+
+  /* ============ MOBIELE SCHAAL ============
+     Telefoon is het primaire apparaat: alles wat je moet LEZEN (kaartindexen,
+     rang-blokjes, patronen, micro-caps) gaat fors omhoog. Extra scrollen is
+     expliciet geaccepteerd; leesbaarheid wint van compactheid.
+     Eén blok, alleen tokens, geen component-regels. */
+  @media (max-width: 520px) {
+    :root {
+      --fs-micro: 0.75rem;
+      --fs-caps: 0.8rem;
+      --fs-text: 0.95rem;
+      --fs-ui: 0.95rem;
+      --fs-toggle: 0.78rem;
+      --fs-rank: 1.35rem;
+      --fs-rank-joker: 0.76rem;
+      --fs-slot: 1.2rem;
+      --fs-sep: 0.9rem;
+      --fs-format-name: 1.35rem;
+      --fs-format-tag: 1.05rem;
+      --fs-troef-name: 1.45rem;
+      --fs-stage-player: 1.45rem;
+      --fs-stage-format: 1.2rem;
+
+      --rank-minw: 32px;  --rank-h: 38px;  --rank-padx: 5px;
+      --slot-minw: 31px;  --slot-h: 35px;
+
+      --card-w: 42px;        --card-h: 58px;
+      --card-w-troef: 44px;  --card-h-troef: 61px;
+      --card-w-joker: 40px;  --card-h-joker: 56px;
+      --card-w-stage: 48px;  --card-h-stage: 67px;
+      --card-w-prev: 38px;   --card-h-prev: 53px;
+    }
+  }
+
+  /* Zeer smalle telefoons (<=380px): alleen de ladder-blokjes terug in maat,
+     anders wikkelt de sterkte-rij naar een derde regel. De rest blijft groot. */
+  @media (max-width: 380px) {
+    :root {
+      --fs-rank: 1.25rem;
+      --fs-rank-joker: 0.7rem;
+      --rank-minw: 28px;
+      --rank-padx: 4px;
+    }
+    .booklet { padding: 24px 14px 28px; }
+  }
+
+  /* Legacy-smal (<=340px, iPhone SE 1e gen): de scheidings-puntjes kosten
+     precies de ruimte die de ladder nodig heeft om op 2 rijen te blijven.
+     Liever geen puntjes dan een weeskind-blokje op een derde regel. */
+  @media (max-width: 340px) {
+    .ladder-row { gap: 3px; }
+    .step { display: none; }
   }
 
   * { box-sizing: border-box; }
@@ -277,7 +387,7 @@
     color: var(--ink-soft);
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: 0.72rem;
+    font-size: var(--fs-toggle);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 6px 12px;
@@ -368,7 +478,7 @@
   .hero .kicker {
     letter-spacing: 0.32em;
     text-transform: uppercase;
-    font-size: 0.65rem;
+    font-size: var(--fs-micro);
     color: var(--ink-soft);
     margin-bottom: 12px;
     font-weight: 600;
@@ -396,7 +506,7 @@
     display: flex;
     justify-content: space-between;
     font-family: var(--font-body);
-    font-size: 0.66rem;
+    font-size: var(--fs-micro);
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--ink-soft);
@@ -443,7 +553,7 @@
   }
   .sec-tag {
     margin-left: auto;
-    font-size: 0.65rem;
+    font-size: var(--fs-micro);
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--ink-soft);
@@ -461,21 +571,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 6px;
     gap: 2px;
   }
   .rank {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 30px;
-    height: 32px;
-    padding: 0 8px;
+    min-width: var(--rank-minw);
+    height: var(--rank-h);
+    padding: 0 var(--rank-padx);
     background: var(--bg-elev);
     border: 1px solid var(--line);
     border-radius: 4px;
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 1.1rem;
+    font-size: var(--fs-rank);
     color: var(--ink);
     flex: 0 0 auto;
   }
@@ -484,15 +596,15 @@
     background: var(--card-bg);
     border-color: var(--card-bg-edge);
     font-family: var(--font-body);
-    font-size: 0.66rem;
+    font-size: var(--fs-rank-joker);
     letter-spacing: 0.06em;
-    padding: 0 8px;
+    padding: 0 var(--rank-padx);
     font-weight: 700;
   }
   .rank.joker.red { color: var(--accent); }
   .step {
     color: var(--ink-muted);
-    font-size: 0.75rem;
+    font-size: var(--fs-micro);
     opacity: 0.35;
   }
   .ladder-hint {
@@ -500,7 +612,7 @@
     justify-content: space-between;
     margin-top: 8px;
     padding: 0 4px;
-    font-size: 0.65rem;
+    font-size: var(--fs-micro);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--ink-soft);
@@ -525,7 +637,7 @@
   .format-name {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 1.2rem;
+    font-size: var(--fs-format-name);
     color: var(--ink);
     line-height: 1;
     letter-spacing: -0.005em;
@@ -540,8 +652,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 26px;
-    height: 28px;
+    min-width: var(--slot-minw);
+    height: var(--slot-h);
     padding: 0 8px;
     background: var(--bg-elev);
     border: 1px solid var(--line);
@@ -549,7 +661,7 @@
     color: var(--ink);
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 0.95rem;
+    font-size: var(--fs-slot);
     letter-spacing: 0.05em;
     line-height: 1;
   }
@@ -557,7 +669,7 @@
     color: var(--ink-muted);
     font-family: var(--font-body);
     font-weight: 400;
-    font-size: 0.78rem;
+    font-size: var(--fs-sep);
     opacity: 0.5;
     padding: 0 2px;
   }
@@ -569,7 +681,7 @@
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 400;
-    font-size: 1rem;
+    font-size: var(--fs-format-tag);
     color: var(--ocher);
     justify-self: end;
   }
@@ -601,7 +713,7 @@
   .troef-name {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 1.3rem;
+    font-size: var(--fs-troef-name);
     color: var(--accent);
     margin-bottom: 4px;
     letter-spacing: -0.01em;
@@ -609,7 +721,7 @@
   }
   .troef-rule {
     font-family: var(--font-body);
-    font-size: 0.72rem;
+    font-size: var(--fs-caps);
     color: var(--ink-soft);
     margin-top: 4px;
     margin-bottom: 10px;
@@ -622,7 +734,7 @@
     gap: 2px;
     flex-wrap: wrap;
   }
-  .troef-cards .card { width: 26px; height: 36px; }
+  .troef-cards .card { width: var(--card-w-troef); height: var(--card-h-troef); }
 
   .joker-bar {
     margin-top: 12px;
@@ -634,21 +746,28 @@
     flex-wrap: wrap;
   }
   .joker-bar .cards { display: flex; gap: 2px; }
-  .joker-bar .card { width: 28px; height: 39px; }
+  .joker-bar .card { width: var(--card-w-joker); height: var(--card-h-joker); }
   .joker-bar p {
     flex: 1;
     min-width: 160px;
-    font-size: 0.82rem;
+    font-size: var(--fs-text);
     color: var(--ink-soft);
     margin: 0;
   }
   .joker-bar strong { color: var(--ink); font-weight: 600; }
 
+  @media (max-width: 520px) {
+    /* Twee kolommen knijpen de troefkaarten op telefoonbreedte plat.
+       Onder elkaar = volle breedte per rij = leesbare kaarten. */
+    .troef { grid-template-columns: 1fr; }
+    .troef-card { padding: 14px 16px; }
+  }
+
   /* ============ CARD SVG ============ */
   .card {
     display: inline-block;
-    width: 36px;
-    height: 50px;
+    width: var(--card-w);
+    height: var(--card-h);
     vertical-align: middle;
     filter: drop-shadow(var(--card-shadow));
   }
@@ -709,7 +828,7 @@
   .stage-player {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 1.3rem;
+    font-size: var(--fs-stage-player);
     color: var(--ink);
     letter-spacing: -0.005em;
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -741,7 +860,7 @@
     font-family: var(--font-display);
     font-weight: 400;
     font-style: italic;
-    font-size: 1.1rem;
+    font-size: var(--fs-stage-format);
     color: var(--ink-soft);
     letter-spacing: 0.005em;
     line-height: 1.3;
@@ -757,7 +876,7 @@
   .stage-floor {
     position: relative;
     z-index: 1;
-    min-height: 80px;
+    min-height: calc(var(--card-h-stage) + 24px);
   }
 
   /* Vorige zet — blijft als stapel zichtbaar onder de nieuwe */
@@ -775,8 +894,8 @@
     transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.4, 0.0, 0.2, 1);
   }
   .stage-prev .card {
-    width: 32px;
-    height: 44px;
+    width: var(--card-w-prev);
+    height: var(--card-h-prev);
     transition: transform 0.55s cubic-bezier(0.4, 0.0, 0.2, 1);
   }
   /* Kaarten in de stapel waaieren licht uit — gebruikt bij elke nieuwe zet */
@@ -812,7 +931,7 @@
     align-items: center;
     position: relative;
     z-index: 2;
-    min-height: 56px;
+    min-height: var(--card-h-stage);
     padding-left: 6px;
     transition: padding-top 0.3s ease;
   }
@@ -820,11 +939,11 @@
   .stage-floor.has-prev .stage-cards {
     padding-top: 30px;
   }
-  .stage-cards .card { width: 40px; height: 56px; }
+  .stage-cards .card { width: var(--card-w-stage); height: var(--card-h-stage); }
   .stage-empty {
     color: var(--ink-muted);
     font-style: italic;
-    font-size: 0.88rem;
+    font-size: var(--fs-text);
     opacity: 0.7;
   }
 
@@ -865,7 +984,7 @@
     border-radius: 999px;
     color: var(--ink-soft);
     font-style: italic;
-    font-size: 0.9rem;
+    font-size: var(--fs-text);
     animation: passIn 0.4s ease;
   }
   .pass-bubble::before {
@@ -907,7 +1026,7 @@
   .stage-progress-label {
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: 0.72rem;
+    font-size: var(--fs-caps);
     color: var(--ink-soft);
     letter-spacing: 0.08em;
     min-width: 40px;
@@ -924,7 +1043,7 @@
   .btn {
     font-family: var(--font-body);
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: var(--fs-ui);
     padding: 7px 16px;
     border: 1px solid var(--line);
     background: var(--bg-elev);
@@ -951,7 +1070,6 @@
       flex: 1 1 0;
       min-width: 0;
       padding: 11px 12px;
-      font-size: 0.88rem;
       text-align: center;
     }
   }
@@ -961,7 +1079,7 @@
     text-align: center;
     margin-top: 28px;
     color: var(--ink-muted);
-    font-size: 0.72rem;
+    font-size: var(--fs-caps);
   }
   .colofon .suits {
     color: var(--accent);
@@ -1286,10 +1404,10 @@ function renderCard(code) {
       <svg class="card" viewBox="0 0 54 76" xmlns="http://www.w3.org/2000/svg" aria-label="${red?'Rode joker':'Zwarte joker'}">
         <rect x="1" y="1" width="52" height="74" rx="5" ry="5" fill="var(--card-bg)" stroke="var(--card-bg-edge)" stroke-width="1"/>
         <rect x="3" y="3" width="48" height="70" rx="3.5" ry="3.5" fill="none" stroke="${color}" stroke-width="0.7" stroke-dasharray="2 1.5" opacity="0.5"/>
-        <text x="6" y="14" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="${color}" letter-spacing="0.5">JKR</text>
+        <text x="6" y="15" font-family="Plus Jakarta Sans, sans-serif" font-size="10.5" font-weight="700" fill="${color}" letter-spacing="0.5">JKR</text>
         <text x="27" y="48" text-anchor="middle" font-size="28" fill="${color}">★</text>
-        <g transform="rotate(180 48 63)">
-          <text x="48" y="63" text-anchor="end" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="${color}" letter-spacing="0.5">JKR</text>
+        <g transform="rotate(180 27 38)">
+          <text x="6" y="15" font-family="Plus Jakarta Sans, sans-serif" font-size="10.5" font-weight="700" fill="${color}" letter-spacing="0.5">JKR</text>
         </g>
       </svg>
     `;
@@ -1299,16 +1417,16 @@ function renderCard(code) {
   const suit = SUIT_DATA[suitChar];
   const label = RANK_LABEL[rankChar] || rankChar;
   if (!suit) return '';
-  const rankSize = label.length > 1 ? 13 : 16;
+  const rankSize = label.length > 1 ? 15 : 18;
   return `
     <svg class="card" viewBox="0 0 54 76" xmlns="http://www.w3.org/2000/svg" aria-label="${label}${suit.symbol}">
       <rect x="1" y="1" width="52" height="74" rx="5" ry="5" fill="var(--card-bg)" stroke="var(--card-bg-edge)" stroke-width="1"/>
-      <text x="7" y="17" font-family="Fraunces, serif" font-size="${rankSize}" font-weight="600" fill="${suit.color}">${label}</text>
-      <text x="7" y="28" font-size="11" fill="${suit.color}">${suit.symbol}</text>
-      <text x="27" y="50" text-anchor="middle" font-size="30" fill="${suit.color}">${suit.symbol}</text>
-      <g transform="rotate(180 47 60)">
-        <text x="47" y="60" text-anchor="end" font-family="Fraunces, serif" font-size="${rankSize}" font-weight="600" fill="${suit.color}">${label}</text>
-        <text x="47" y="49" text-anchor="end" font-size="11" fill="${suit.color}">${suit.symbol}</text>
+      <text x="6.5" y="18" font-family="Fraunces, serif" font-size="${rankSize}" font-weight="600" fill="${suit.color}">${label}</text>
+      <text x="7" y="29.5" font-size="12" fill="${suit.color}">${suit.symbol}</text>
+      <text x="27" y="51" text-anchor="middle" font-size="30" fill="${suit.color}">${suit.symbol}</text>
+      <g transform="rotate(180 27 38)">
+        <text x="6.5" y="18" font-family="Fraunces, serif" font-size="${rankSize}" font-weight="600" fill="${suit.color}">${label}</text>
+        <text x="7" y="29.5" font-size="12" fill="${suit.color}">${suit.symbol}</text>
       </g>
     </svg>
   `;
